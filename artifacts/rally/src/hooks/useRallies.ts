@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
-import { defaultRallies, defaultUserProfile, Rally, UserProfile, defaultCircles, Circle, ChatMessage, mockMessages } from "@/data/mockData";
+import {
+  defaultRallies, defaultUserProfile,
+  Rally, UserProfile,
+  defaultCircles, Circle,
+  ChatMessage, mockMessages,
+  RallyHistoryItem, mockRallyHistory, FeedbackLabel,
+} from "@/data/mockData";
 
-const RALLIES_KEY = "rally_rallies";
-const USER_KEY = "rally_user";
+const RALLIES_KEY  = "rally_rallies";
+const USER_KEY     = "rally_user";
 const ONBOARDING_KEY = "rally_onboarding";
 const MESSAGES_KEY = "rally_messages";
+const HISTORY_KEY  = "rally_history";
 
 export function useRallies() {
   const [rallies, setRallies] = useState<Rally[]>([]);
@@ -30,12 +37,9 @@ export function useRallies() {
 
   const joinRally = (id: string) => {
     saveRallies(
-      rallies.map((r) => {
-        if (r.id === id) {
-          return { ...r, joined: true, going: r.going + 1 };
-        }
-        return r;
-      })
+      rallies.map((r) =>
+        r.id === id ? { ...r, joined: true, going: r.going + 1 } : r
+      )
     );
   };
 
@@ -88,11 +92,10 @@ export function useMessages(rallyId: string) {
 
   useEffect(() => {
     const storedStr = localStorage.getItem(MESSAGES_KEY);
-    let allMessages = storedStr ? JSON.parse(storedStr) : mockMessages;
+    const allMessages = storedStr ? JSON.parse(storedStr) : mockMessages;
     if (!storedStr) {
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(mockMessages));
     }
-    
     setMessages(allMessages[rallyId] || []);
   }, [rallyId]);
 
@@ -102,18 +105,46 @@ export function useMessages(rallyId: string) {
       rallyId,
       senderName: "You",
       text,
-      isMe: true
+      isMe: true,
     };
-    
+
     const storedStr = localStorage.getItem(MESSAGES_KEY);
     const allMessages = storedStr ? JSON.parse(storedStr) : {};
-    
     const updatedRallyMessages = [...(allMessages[rallyId] || []), newMessage];
     const updatedAll = { ...allMessages, [rallyId]: updatedRallyMessages };
-    
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(updatedAll));
     setMessages(updatedRallyMessages);
   };
 
   return { messages, sendMessage };
+}
+
+export function useRallyHistory() {
+  const [history, setHistory] = useState<RallyHistoryItem[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(HISTORY_KEY);
+    if (stored) {
+      setHistory(JSON.parse(stored));
+    } else {
+      setHistory(mockRallyHistory);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(mockRallyHistory));
+    }
+  }, []);
+
+  const setFeedback = (id: string, feedback: FeedbackLabel) => {
+    setHistory(prev => {
+      const updated = prev.map(item =>
+        item.id === id ? { ...item, feedback } : item
+      );
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const attendedCount = history.filter(h => h.role === "attended").length;
+  const hostedCount   = history.filter(h => h.role === "hosted").length;
+  const crewCount     = history.filter(h => h.tags.includes("Crew Rally")).length;
+
+  return { history, setFeedback, attendedCount, hostedCount, crewCount };
 }

@@ -219,3 +219,90 @@ export const mockMessages: Record<string, ChatMessage[]> = {
     { id: "m7", rallyId: "r3", senderName: "Marcus L.", text: "Yeah we need 1 more anyway", isMe: false },
   ]
 };
+
+// ─── Rally History ────────────────────────────────────────────────────────────
+
+export type FeedbackLabel = "Good vibes" | "Would Rally again" | "No-show" | "Felt off";
+
+export type RallyHistoryItem = {
+  id: string;
+  title: string;
+  category: string;
+  date: string;
+  role: "hosted" | "attended";
+  attendeeCount: number;
+  tags: ("Recurring" | "Crew Rally")[];
+  feedback?: FeedbackLabel;
+};
+
+export const mockRallyHistory: RallyHistoryItem[] = [
+  {
+    id: "h1",
+    title: "Sunday Coffee Run",
+    category: "Coffee",
+    date: "May 18",
+    role: "hosted",
+    attendeeCount: 4,
+    tags: ["Recurring"],
+    feedback: "Good vibes",
+  },
+  {
+    id: "h2",
+    title: "Tuesday Trivia Team",
+    category: "Nightlife",
+    date: "May 13",
+    role: "attended",
+    attendeeCount: 6,
+    tags: [],
+    feedback: "Would Rally again",
+  },
+  {
+    id: "h3",
+    title: "Weekly Gym Crew",
+    category: "Fitness",
+    date: "May 12",
+    role: "attended",
+    attendeeCount: 3,
+    tags: ["Crew Rally"],
+    feedback: "Good vibes",
+  },
+  {
+    id: "h4",
+    title: "Pickup Basketball",
+    category: "Sports",
+    date: "May 10",
+    role: "hosted",
+    attendeeCount: 8,
+    tags: [],
+    feedback: "Would Rally again",
+  },
+  {
+    id: "h5",
+    title: "Jazz at the Green Mill",
+    category: "Nightlife",
+    date: "May 5",
+    role: "attended",
+    attendeeCount: 5,
+    tags: [],
+  },
+  {
+    id: "h6",
+    title: "Lakefront Sunset Run",
+    category: "Outdoors",
+    date: "Apr 29",
+    role: "attended",
+    attendeeCount: 7,
+    tags: ["Recurring"],
+    feedback: "Good vibes",
+  },
+  {
+    id: "h7",
+    title: "Board Games Night",
+    category: "Gaming",
+    date: "Apr 22",
+    role: "hosted",
+    attendeeCount: 5,
+    tags: ["Crew Rally"],
+    feedback: "Would Rally again",
+  },
+];
