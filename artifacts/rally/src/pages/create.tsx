@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { useLocation, Link } from "wouter";
-import { ChevronLeft } from "lucide-react";
+import { useLocation } from "wouter";
+import { ChevronLeft, MapPin, Clock, Users } from "lucide-react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRallies, useUser } from "@/hooks/useRallies";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import { CAT_CONFIG } from "@/data/mockData";
 
-const CATEGORIES = ["Fitness", "Coffee", "Food", "Study", "Sports", "Nightlife", "Outdoors", "Concerts", "Errands", "Gaming", "Creative", "Networking"];
-const TIMES = ["Now", "In 1 hour", "Later today", "Tomorrow", "Pick time"];
+const CATEGORIES = ["Fitness", "Coffee", "Food", "Study", "Sports", "Nightlife", "Outdoors", "Concerts", "Gaming", "Creative", "Networking", "Errands"];
+const TIMES = ["Now", "In 30 min", "In 1 hour", "Later today", "Tomorrow"];
 const VIBES = ["Chill", "Productive", "Social", "Hype", "Quick Hang", "First Timers Welcome"];
 
 export default function CreateRally() {
-  const [, setLocation] = useLocation();
+  const [, setLoc] = useLocation();
   const { addRally } = useRallies();
   const { user } = useUser();
   const { toast } = useToast();
@@ -21,88 +23,109 @@ export default function CreateRally() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [time, setTime] = useState(TIMES[0]);
-  const [location, setLoc] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
   const [maxSpots, setMaxSpots] = useState(4);
   const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
   const [requiresApproval, setRequiresApproval] = useState(false);
 
   const handleCreate = () => {
-    if (!title || !location) {
-      toast({ title: "Please fill out all fields", variant: "destructive" });
+    if (!title.trim() || !location.trim()) {
+      toast({ title: "Fill in the title and location", variant: "destructive" });
       return;
     }
 
     const newRally = {
       id: "r" + Date.now(),
-      title,
+      title: title.trim(),
       category,
       time,
-      location,
+      location: location.trim(),
       maxSpots,
       going: 1,
       distance: "0.1 mi",
       hostName: user.username,
       hostLevel: user.level,
       vibeTags: selectedVibes,
-      description: "Come join my rally!",
+      description: description.trim() || "Come join my rally!",
       requiresApproval,
-      joined: true
+      joined: true,
     };
 
     addRally(newRally);
-    toast({ title: "Rally started!", description: "You are now hosting a rally." });
-    setLocation("/discover");
+    toast({ title: "🚀 Rally started!", description: "You're now hosting. Check your chat." });
+    setLoc("/discover");
   };
 
   const toggleVibe = (v: string) => {
-    setSelectedVibes(prev => 
+    setSelectedVibes(prev =>
       prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]
     );
   };
 
+  const catCfg = CAT_CONFIG[category];
+
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-24 pt-16">
-      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/90 backdrop-blur-md z-40 px-4 h-16 flex items-center border-b border-gray-800">
-        <Link href="/discover" className="mr-4">
-          <ChevronLeft className="w-6 h-6 text-white" />
+    <div className="min-h-screen bg-[#0d0d0d] pb-32">
+      {/* Header */}
+      <header className="sticky top-0 bg-[#0d0d0d]/95 backdrop-blur-xl z-40 px-4 h-14 flex items-center border-b border-white/5">
+        <Link href="/discover" className="mr-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
+          <ChevronLeft className="w-5 h-5 text-white" />
         </Link>
-        <h1 className="text-xl font-bold text-white">Create Rally</h1>
+        <h1 className="text-lg font-black text-white">Host a Rally</h1>
       </header>
 
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-5">
+        {/* Title */}
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-400">Rally Title</label>
-          <Input 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            placeholder="What are we doing?" 
-            className="bg-[#1a1a1a] border-gray-800 text-white rounded-xl h-12"
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">What are you doing?</label>
+          <Input
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="e.g. Coffee run at Intelligentsia"
+            className="bg-[#1a1a1a] border-white/8 text-white rounded-xl h-12 text-base placeholder:text-gray-600 focus-visible:border-primary/50"
           />
         </div>
 
+        {/* Category */}
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-400">Category</label>
-          <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={cn("whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold border", category === cat ? "bg-primary text-black border-primary" : "bg-transparent text-gray-400 border-gray-800")}
-              >
-                {cat}
-              </button>
-            ))}
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">Category</label>
+          <div className="flex overflow-x-auto gap-2 no-scrollbar pb-1">
+            {CATEGORIES.map(cat => {
+              const cfg = CAT_CONFIG[cat];
+              const isSelected = category === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={cn(
+                    "whitespace-nowrap flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold border transition-all shrink-0",
+                    isSelected
+                      ? "bg-primary text-black border-primary"
+                      : "bg-white/5 text-gray-400 border-white/5"
+                  )}
+                >
+                  <span>{cfg?.emoji}</span> {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
 
+        {/* When */}
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-400">When</label>
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5" /> When
+          </label>
           <div className="flex flex-wrap gap-2">
             {TIMES.map(t => (
               <button
                 key={t}
                 onClick={() => setTime(t)}
-                className={cn("px-4 py-2 rounded-full text-xs font-bold border", time === t ? "bg-white text-black border-white" : "bg-transparent text-gray-400 border-gray-800")}
+                className={cn(
+                  "px-4 py-2 rounded-full text-xs font-bold border transition-all",
+                  time === t ? "bg-white text-black border-white" : "bg-white/5 text-gray-400 border-white/5"
+                )}
               >
                 {t}
               </button>
@@ -110,33 +133,71 @@ export default function CreateRally() {
           </div>
         </div>
 
+        {/* Location */}
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-400">Location</label>
-          <Input 
-            value={location} 
-            onChange={(e) => setLoc(e.target.value)} 
-            placeholder="Where to meet?" 
-            className="bg-[#1a1a1a] border-gray-800 text-white rounded-xl h-12"
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5" /> Location
+          </label>
+          <Input
+            value={location}
+            onChange={e => setLocation(e.target.value)}
+            placeholder="e.g. Intelligentsia Coffee, Randolph St"
+            className="bg-[#1a1a1a] border-white/8 text-white rounded-xl h-12 placeholder:text-gray-600 focus-visible:border-primary/50"
           />
         </div>
 
-        <div className="space-y-2 flex items-center justify-between">
-          <label className="text-sm font-bold text-gray-400">Max Attendees (including you)</label>
-          <div className="flex items-center gap-4 bg-[#1a1a1a] rounded-full border border-gray-800 px-2 py-1">
-            <button onClick={() => setMaxSpots(Math.max(2, maxSpots - 1))} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white">-</button>
-            <span className="font-bold text-white w-4 text-center">{maxSpots}</span>
-            <button onClick={() => setMaxSpots(maxSpots + 1)} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white">+</button>
+        {/* Description */}
+        <div className="space-y-2">
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">Details (optional)</label>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Tell people what to expect, what to bring, etc."
+            rows={3}
+            className="w-full bg-[#1a1a1a] border border-white/8 text-white rounded-xl px-3 py-3 text-sm placeholder:text-gray-600 focus:outline-none focus:border-primary/50 resize-none"
+          />
+        </div>
+
+        {/* Max spots */}
+        <div className="flex items-center justify-between bg-[#1a1a1a] border border-white/8 rounded-xl p-4">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-primary" />
+            <div>
+              <div className="text-sm font-bold text-white">Max Attendees</div>
+              <div className="text-xs text-gray-500">Including you</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 bg-black/30 rounded-full border border-white/8 px-1 py-1">
+            <button
+              onClick={() => setMaxSpots(Math.max(2, maxSpots - 1))}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white font-bold text-lg rounded-full hover:bg-white/5 transition-all"
+            >
+              −
+            </button>
+            <span className="font-black text-white w-5 text-center">{maxSpots}</span>
+            <button
+              onClick={() => setMaxSpots(Math.min(50, maxSpots + 1))}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white font-bold text-lg rounded-full hover:bg-white/5 transition-all"
+            >
+              +
+            </button>
           </div>
         </div>
 
+        {/* Vibe tags */}
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-400">Vibe Tags</label>
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">Vibe Tags</label>
           <div className="flex flex-wrap gap-2">
             {VIBES.map(v => (
               <button
                 key={v}
                 onClick={() => toggleVibe(v)}
-                className={cn("px-3 py-1.5 rounded-md text-[10px] uppercase tracking-wider font-bold border", selectedVibes.includes(v) ? "bg-gray-800 text-white border-gray-600" : "bg-[#1a1a1a] text-gray-500 border-gray-800")}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold border transition-all",
+                  selectedVibes.includes(v)
+                    ? "bg-white/10 text-white border-white/20"
+                    : "bg-white/3 text-gray-500 border-white/5"
+                )}
               >
                 {v}
               </button>
@@ -144,19 +205,23 @@ export default function CreateRally() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-[#1a1a1a] rounded-xl border border-gray-800">
+        {/* Approval toggle */}
+        <div className="flex items-center justify-between p-4 bg-[#1a1a1a] rounded-xl border border-white/8">
           <div>
-            <div className="font-bold text-white">Host approval required</div>
-            <div className="text-xs text-gray-400">Review people before they join</div>
+            <div className="font-bold text-white text-sm">Host approval required</div>
+            <div className="text-xs text-gray-500 mt-0.5">Review people before they join</div>
           </div>
           <Switch checked={requiresApproval} onCheckedChange={setRequiresApproval} />
         </div>
+      </div>
 
-        <Button 
-          onClick={handleCreate} 
-          className="w-full bg-primary hover:bg-primary/90 text-black font-bold text-lg rounded-xl h-14 shadow-[0_0_15px_rgba(250,204,21,0.3)] mt-6"
+      {/* Fixed bottom CTA */}
+      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto px-4 pb-8 pt-4 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/95 to-transparent">
+        <Button
+          onClick={handleCreate}
+          className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)]"
         >
-          Start Rally
+          🚀 Start Rally
         </Button>
       </div>
     </div>

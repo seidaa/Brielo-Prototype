@@ -1,83 +1,165 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, X } from "lucide-react";
 import { useRallies } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
+import { CAT_CONFIG } from "@/data/mockData";
+import { cn } from "@/lib/utils";
 
-// Color mapping based on categories
-const CAT_COLORS: Record<string, string> = {
-  Fitness: "bg-yellow-500",
-  Coffee: "bg-blue-500",
-  Food: "bg-green-500",
-  Sports: "bg-orange-500",
-  Nightlife: "bg-purple-500",
+const PIN_POSITIONS: Record<string, { top: string; left: string }> = {
+  r1: { top: "38%", left: "22%" },
+  r2: { top: "28%", left: "62%" },
+  r3: { top: "58%", left: "72%" },
+  r4: { top: "72%", left: "28%" },
+  r5: { top: "65%", left: "48%" },
+  r6: { top: "45%", left: "78%" },
+  r7: { top: "80%", left: "65%" },
 };
 
 export default function Map() {
   const { rallies } = useRallies();
-  const [selectedRally, setSelectedRally] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const activeRally = selectedRally ? rallies.find(r => r.id === selectedRally) : null;
-
-  // Mock static positions
-  const PINS = [
-    { id: "r1", top: "40%", left: "25%", color: CAT_COLORS["Fitness"] || "bg-primary" },
-    { id: "r2", top: "30%", left: "60%", color: CAT_COLORS["Coffee"] || "bg-primary" },
-    { id: "r5", top: "65%", left: "45%", color: CAT_COLORS["Food"] || "bg-primary" },
-    { id: "r3", top: "55%", left: "70%", color: CAT_COLORS["Sports"] || "bg-primary" },
-    { id: "r4", top: "70%", left: "30%", color: CAT_COLORS["Nightlife"] || "bg-primary" },
-  ];
+  const activeRally = selectedId ? rallies.find(r => r.id === selectedId) : null;
+  const nowRallies = rallies.filter(r => r.time === "Now");
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-24 relative overflow-hidden">
-      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto z-40 px-4 h-16 flex items-center justify-between pointer-events-none">
-        <h1 className="text-xl font-bold text-white drop-shadow-md">Map</h1>
-        <div className="w-10 h-10 bg-[#1a1a1a] rounded-full flex items-center justify-center border border-gray-800 pointer-events-auto shadow-lg">
-          <Navigation className="w-5 h-5 text-primary" />
+    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+      {/* Map Header — floating */}
+      <div className="absolute top-0 left-0 right-0 max-w-sm mx-auto z-40 px-4 pt-12 flex items-center justify-between pointer-events-none">
+        <div className="bg-[#0d0d0d]/90 backdrop-blur-xl border border-white/8 rounded-2xl px-4 py-2.5 pointer-events-auto shadow-xl">
+          <h1 className="text-sm font-black text-white">Chicago</h1>
+          <p className="text-[10px] text-primary font-bold">{nowRallies.length} live near you</p>
         </div>
-      </header>
-
-      {/* Map Background Grid */}
-      <div className="absolute inset-0 z-0 bg-[#0d0d0d]" onClick={() => setSelectedRally(null)}>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1a_2px,transparent_2px),linear-gradient(to_bottom,#1a1a1a_2px,transparent_2px)] bg-[size:4rem_4rem]"></div>
-        
-        {/* Fake streets */}
-        <div className="absolute top-[20%] left-0 right-0 h-4 bg-[#111] border-y border-[#222]"></div>
-        <div className="absolute top-[60%] left-0 right-0 h-4 bg-[#111] border-y border-[#222]"></div>
-        <div className="absolute left-[35%] top-0 bottom-0 w-4 bg-[#111] border-x border-[#222]"></div>
-        <div className="absolute left-[80%] top-0 bottom-0 w-4 bg-[#111] border-x border-[#222]"></div>
-
-        {/* You are here dot */}
-        <div className="absolute top-[50%] left-[50%] w-4 h-4 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)] z-10 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-50"></div>
-        </div>
-
-        {/* Pins */}
-        {PINS.map(pin => (
-          <button
-            key={pin.id}
-            onClick={(e) => { e.stopPropagation(); setSelectedRally(pin.id); }}
-            className={`absolute w-8 h-8 rounded-full border-2 shadow-lg transform -translate-x-1/2 -translate-y-1/2 z-20 transition-transform ${selectedRally === pin.id ? 'scale-125 border-white z-30' : 'border-[#0d0d0d] hover:scale-110'} ${pin.color}`}
-            style={{ top: pin.top, left: pin.left }}
-          />
-        ))}
+        <button className="w-10 h-10 bg-[#0d0d0d]/90 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/8 pointer-events-auto shadow-xl">
+          <Navigation className="w-4 h-4 text-primary fill-primary/20" />
+        </button>
       </div>
 
-      {/* Bottom slide-up card */}
-      <div className={`absolute bottom-24 left-4 right-4 z-40 transition-transform duration-300 ${activeRally ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}>
+      {/* Map Grid Background */}
+      <div
+        className="absolute inset-0 z-0"
+        onClick={() => setSelectedId(null)}
+      >
+        {/* Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#181818_1px,transparent_1px),linear-gradient(to_bottom,#181818_1px,transparent_1px)] bg-[size:3rem_3rem]" />
+        {/* City blocks */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#141414_3px,transparent_3px),linear-gradient(to_bottom,#141414_3px,transparent_3px)] bg-[size:9rem_9rem] opacity-60" />
+
+        {/* Streets */}
+        <div className="absolute top-[22%] left-0 right-0 h-5 bg-[#0f0f0f] border-y border-[#1e1e1e]" />
+        <div className="absolute top-[55%] left-0 right-0 h-5 bg-[#0f0f0f] border-y border-[#1e1e1e]" />
+        <div className="absolute top-[78%] left-0 right-0 h-4 bg-[#0f0f0f] border-y border-[#1e1e1e]" />
+        <div className="absolute left-[32%] top-0 bottom-0 w-5 bg-[#0f0f0f] border-x border-[#1e1e1e]" />
+        <div className="absolute left-[68%] top-0 bottom-0 w-4 bg-[#0f0f0f] border-x border-[#1e1e1e]" />
+
+        {/* Parks / blocks */}
+        <div className="absolute top-[30%] left-[38%] w-16 h-16 bg-emerald-950/30 border border-emerald-900/20 rounded-sm" />
+        <div className="absolute top-[60%] left-[50%] w-12 h-12 bg-emerald-950/20 border border-emerald-900/15 rounded-sm" />
+
+        {/* You are here */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="relative w-5 h-5">
+            <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
+            <div className="absolute inset-1 bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
+          </div>
+        </div>
+
+        {/* Rally Pins */}
+        {rallies.map(rally => {
+          const pos = PIN_POSITIONS[rally.id];
+          if (!pos) return null;
+          const cat = CAT_CONFIG[rally.category];
+          const isLive = rally.time === "Now";
+          const isSelected = selectedId === rally.id;
+
+          return (
+            <button
+              key={rally.id}
+              style={{ top: pos.top, left: pos.left }}
+              onClick={e => { e.stopPropagation(); setSelectedId(isSelected ? null : rally.id); }}
+              className={cn(
+                "absolute -translate-x-1/2 -translate-y-1/2 z-20 transition-all duration-200",
+                isSelected ? "scale-125 z-30" : "hover:scale-110"
+              )}
+            >
+              {/* Pin */}
+              <div className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border shadow-lg font-bold text-xs transition-all",
+                isSelected
+                  ? "bg-primary text-black border-primary shadow-[0_0_16px_rgba(250,204,21,0.5)]"
+                  : "bg-[#161616] text-white border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+              )}>
+                <span>{cat?.emoji ?? "📍"}</span>
+                <span className={cn("font-black text-[11px]", isSelected ? "text-black" : "text-gray-200")}>
+                  {rally.going}
+                </span>
+                {isLive && !isSelected && (
+                  <span className="relative flex h-1.5 w-1.5 ml-0.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Category legend */}
+      <div className="absolute bottom-[140px] right-4 z-30">
+        <div className="bg-[#0d0d0d]/90 backdrop-blur-xl border border-white/8 rounded-xl p-2 space-y-1.5 shadow-xl">
+          {Object.entries(CAT_CONFIG).slice(0, 5).map(([cat, cfg]) => (
+            <div key={cat} className="flex items-center gap-2">
+              <span className="text-sm">{cfg.emoji}</span>
+              <span className="text-[10px] font-bold text-gray-400">{cat}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Rally slide-up card */}
+      <div className={cn(
+        "absolute bottom-24 left-4 right-4 z-40 transition-all duration-300",
+        activeRally ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0 pointer-events-none"
+      )}>
         {activeRally && (
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-gray-800 shadow-2xl">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-bold text-white text-lg">{activeRally.title}</h3>
-              <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">{activeRally.category}</span>
+          <div className="bg-[#161616] rounded-2xl p-4 border border-white/10 shadow-2xl">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1 min-w-0 pr-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-base">{CAT_CONFIG[activeRally.category]?.emoji}</span>
+                  <span className={cn("text-[11px] font-bold px-2 py-0.5 rounded-full", CAT_CONFIG[activeRally.category]?.color, CAT_CONFIG[activeRally.category]?.text)}>
+                    {activeRally.category}
+                  </span>
+                  {activeRally.time === "Now" && (
+                    <span className="flex items-center gap-1 text-[10px] font-black text-red-400">
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute h-full w-full rounded-full bg-red-400 opacity-75" />
+                        <span className="relative rounded-full h-1.5 w-1.5 bg-red-500" />
+                      </span>
+                      Live
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-black text-white text-base leading-snug">{activeRally.title}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedId(null)}
+                className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center shrink-0"
+              >
+                <X className="w-3.5 h-3.5 text-gray-400" />
+              </button>
             </div>
-            <div className="flex items-center gap-4 text-xs font-medium text-gray-400 mb-4">
-              <span className="flex items-center gap-1"><MapPin className="w-3 h-3"/> {activeRally.distance}</span>
-              <span>{activeRally.going} going</span>
+
+            <div className="flex items-center gap-4 text-xs text-gray-500 font-medium mb-4">
+              <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {activeRally.distance}</span>
+              <span>{activeRally.going} going · {activeRally.maxSpots - activeRally.going} spots left</span>
             </div>
+
             <Link href={`/rally/${activeRally.id}`}>
-              <Button className="w-full bg-primary hover:bg-primary/90 text-black font-bold rounded-xl h-12">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-black font-bold rounded-xl h-11 shadow-[0_0_12px_rgba(250,204,21,0.25)]">
                 View Rally
               </Button>
             </Link>

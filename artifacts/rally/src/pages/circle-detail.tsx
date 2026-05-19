@@ -1,72 +1,159 @@
 import { Link, useParams } from "wouter";
-import { ChevronLeft, Plus, Users, Calendar, Lock, Globe } from "lucide-react";
+import { ChevronLeft, Plus, Users, Calendar, Lock, Globe, Star } from "lucide-react";
 import { useCircles } from "@/hooks/useRallies";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "@/components/BottomNav";
+import { cn } from "@/lib/utils";
+
+const MEMBER_COLORS = ["bg-orange-500", "bg-blue-500", "bg-emerald-500", "bg-purple-500", "bg-pink-500", "bg-amber-500"];
+
+const CIRCLE_MEMBERS: Record<string, { name: string; level: number; initials: string }[]> = {
+  c1: [
+    { name: "Priya S.", level: 3, initials: "PS" },
+    { name: "Marcus L.", level: 7, initials: "ML" },
+    { name: "You", level: 3, initials: "YR" },
+    { name: "Taylor M.", level: 4, initials: "TM" },
+  ],
+  c2: [
+    { name: "Marcus L.", level: 7, initials: "ML" },
+    { name: "Jordan K.", level: 5, initials: "JK" },
+    { name: "You", level: 3, initials: "YR" },
+    { name: "Alex T.", level: 4, initials: "AT" },
+  ],
+  c3: [
+    { name: "Alex T.", level: 4, initials: "AT" },
+    { name: "You", level: 3, initials: "YR" },
+    { name: "Sofia R.", level: 6, initials: "SR" },
+  ],
+  c4: [
+    { name: "Devon A.", level: 8, initials: "DA" },
+    { name: "You", level: 3, initials: "YR" },
+    { name: "Camille D.", level: 5, initials: "CD" },
+  ],
+  c5: [
+    { name: "Jordan K.", level: 5, initials: "JK" },
+    { name: "Marcus L.", level: 7, initials: "ML" },
+    { name: "You", level: 3, initials: "YR" },
+    { name: "Riley S.", level: 6, initials: "RS" },
+  ],
+};
 
 export default function CircleDetail() {
   const { id } = useParams<{ id: string }>();
   const { circles } = useCircles();
   const circle = circles.find(c => c.id === id);
 
-  if (!circle) return <div className="p-8 text-white">Circle not found.</div>;
+  if (!circle) return (
+    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-4xl mb-3">🫂</div>
+        <p className="text-white font-bold mb-2">Circle not found</p>
+        <Link href="/circles"><span className="text-primary text-sm">← Back to Circles</span></Link>
+      </div>
+    </div>
+  );
+
+  const members = CIRCLE_MEMBERS[id] ?? [];
+  const isAdmin = true;
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-24 pt-16">
-      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/90 backdrop-blur-md z-40 px-4 h-16 flex items-center border-b border-gray-800">
-        <Link href="/circles" className="mr-4">
-          <ChevronLeft className="w-6 h-6 text-white" />
+    <div className="min-h-screen bg-[#0d0d0d] pb-28 pt-14">
+      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/95 backdrop-blur-xl z-40 px-4 h-14 flex items-center border-b border-white/5">
+        <Link href="/circles" className="mr-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
+          <ChevronLeft className="w-5 h-5 text-white" />
         </Link>
-        <h1 className="text-base font-bold text-white truncate flex-1">{circle.name}</h1>
+        <h1 className="text-base font-black text-white flex-1 truncate">{circle.name}</h1>
+        {isAdmin && (
+          <span className="text-[10px] font-black text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded-full">ADMIN</span>
+        )}
       </header>
 
-      <div className="p-4 space-y-6">
-        <div className="text-center py-6">
-          <div className="w-20 h-20 rounded-2xl bg-gray-900 border border-gray-800 mx-auto flex items-center justify-center mb-4">
-            <Users className="w-10 h-10 text-primary" />
+      <div className="p-4 space-y-5">
+        {/* Hero */}
+        <div className="flex flex-col items-center text-center pt-2 pb-2">
+          <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center text-4xl mb-3">
+            {circle.emoji}
           </div>
-          <h2 className="text-2xl font-black text-white mb-2">{circle.name}</h2>
-          <div className="flex justify-center items-center gap-3 text-sm text-gray-400 font-medium">
-            <span className="flex items-center gap-1"><Users className="w-4 h-4"/> {circle.membersCount} members</span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              {circle.isPublic ? <Globe className="w-4 h-4"/> : <Lock className="w-4 h-4"/>} 
-              {circle.isPublic ? 'Public' : 'Private'}
+          <h2 className="text-2xl font-black text-white mb-1">{circle.name}</h2>
+          <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
+            <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {circle.membersCount} members</span>
+            <span>·</span>
+            <span className={cn("flex items-center gap-1", circle.isPublic ? "text-emerald-400" : "text-amber-400")}>
+              {circle.isPublic ? <Globe className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+              {circle.isPublic ? "Public" : "Private"}
             </span>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold text-white">Upcoming Rallies</h3>
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Members", value: circle.membersCount, icon: Users },
+            { label: "Rallies", value: 12, icon: Calendar },
+            { label: "Rating", value: "4.8", icon: Star },
+          ].map(({ label, value, icon: Icon }) => (
+            <div key={label} className="bg-[#161616] border border-white/5 rounded-xl p-3 text-center">
+              <Icon className="w-4 h-4 text-primary mx-auto mb-1" />
+              <div className="text-lg font-black text-white">{value}</div>
+              <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Upcoming Rallies */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base font-black text-white">Upcoming Rallies</h3>
+            <Link href="/create">
+              <button className="flex items-center gap-1 text-[11px] font-bold text-primary">
+                <Plus className="w-3.5 h-3.5" /> Schedule
+              </button>
+            </Link>
           </div>
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-gray-800 text-center">
-            <Calendar className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p className="text-sm font-bold text-white">No scheduled rallies</p>
-            <p className="text-xs text-gray-400 mt-1">Be the first to schedule one for this circle.</p>
-            <Button className="mt-4 w-full bg-gray-800 hover:bg-gray-700 text-white rounded-xl">
-              <Plus className="w-4 h-4 mr-2" /> Create Circle Rally
-            </Button>
+          <div className="bg-[#161616] border border-white/5 rounded-2xl p-5 flex flex-col items-center text-center">
+            <Calendar className="w-8 h-8 text-gray-700 mb-2" />
+            <p className="text-sm font-bold text-white mb-1">Next: {circle.nextRallyTime}</p>
+            <p className="text-xs text-gray-500 mb-4">No specific rally scheduled yet.</p>
+            <Link href="/create" className="w-full">
+              <Button className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold rounded-xl h-10 text-sm">
+                <Plus className="w-4 h-4 mr-1.5" /> Create Circle Rally
+              </Button>
+            </Link>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-white">Members</h3>
-          <div className="bg-[#1a1a1a] rounded-2xl border border-gray-800 divide-y divide-gray-800">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="p-3 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white text-xs font-bold border border-gray-700">
-                  U{i}
+        {/* Members */}
+        <div>
+          <h3 className="text-base font-black text-white mb-3">Members</h3>
+          <div className="bg-[#161616] border border-white/5 rounded-2xl overflow-hidden divide-y divide-white/5">
+            {members.map((m, i) => (
+              <div key={i} className="flex items-center gap-3 px-4 py-3">
+                <div className={cn("w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-black", MEMBER_COLORS[i % MEMBER_COLORS.length])}>
+                  {m.initials}
                 </div>
-                <div className="font-bold text-white text-sm">User {i+1}</div>
-                {i === 0 && <span className="ml-auto text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded">ADMIN</span>}
+                <div className="flex-1">
+                  <div className="text-sm font-bold text-white">
+                    {m.name}
+                    <span className="text-primary ml-1.5 text-xs">Lv {m.level}</span>
+                  </div>
+                </div>
+                {i === 0 && (
+                  <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                    ADMIN
+                  </span>
+                )}
               </div>
             ))}
-            <div className="p-3 text-center text-sm font-bold text-gray-400 hover:text-white cursor-pointer">
-              View all {circle.membersCount} members
-            </div>
+            {circle.membersCount > members.length && (
+              <div className="px-4 py-3 text-center text-xs font-bold text-gray-500 hover:text-gray-300 cursor-pointer transition-colors">
+                + {circle.membersCount - members.length} more members
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 }

@@ -1,15 +1,25 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useParams } from "wouter";
-import { ChevronLeft, Send } from "lucide-react";
+import { ChevronLeft, Send, Users, Info } from "lucide-react";
 import { useRallies, useMessages } from "@/hooks/useRallies";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const AVATAR_COLORS: Record<string, string> = {
+  "Marcus L.": "bg-orange-500",
+  "Priya S.": "bg-pink-500",
+  "Jordan K.": "bg-blue-500",
+  "Alex T.": "bg-purple-500",
+  "Sofia R.": "bg-green-500",
+  "Devon A.": "bg-amber-500",
+};
 
 export default function ChatDetail() {
   const { id } = useParams<{ id: string }>();
   const { rallies } = useRallies();
   const rally = rallies.find(r => r.id === id);
-  const { messages, sendMessage } = useMessages(id || "");
+  const { messages, sendMessage } = useMessages(id ?? "");
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +27,14 @@ export default function ChatDetail() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!rally) return <div className="p-8 text-white">Rally not found.</div>;
+  if (!rally) return (
+    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-white font-bold mb-2">Rally not found</p>
+        <Link href="/chat"><span className="text-primary text-sm">← Back to chats</span></Link>
+      </div>
+    </div>
+  );
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,51 +45,88 @@ export default function ChatDetail() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0d0d0d]">
-      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/90 backdrop-blur-md z-40 px-4 h-16 flex items-center border-b border-gray-800">
-        <Link href="/chat" className="mr-3">
-          <ChevronLeft className="w-6 h-6 text-white" />
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/95 backdrop-blur-xl z-40 px-4 h-14 flex items-center gap-3 border-b border-white/5">
+        <Link href="/chat" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5 shrink-0">
+          <ChevronLeft className="w-5 h-5 text-white" />
         </Link>
         <div className="flex-1 min-w-0">
-          <h1 className="text-base font-bold text-white truncate">{rally.title}</h1>
-          <p className="text-xs text-gray-400 truncate">{rally.going} going</p>
+          <h1 className="text-sm font-black text-white truncate leading-tight">{rally.title}</h1>
+          <p className="text-[11px] text-gray-500 flex items-center gap-1">
+            <Users className="w-3 h-3" /> {rally.going} going · {rally.time}
+          </p>
         </div>
+        <Link href={`/rally/${rally.id}`}>
+          <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5 shrink-0">
+            <Info className="w-4 h-4 text-gray-400" />
+          </button>
+        </Link>
       </header>
 
-      <div className="flex-1 overflow-y-auto pt-20 pb-20 px-4 space-y-4">
-        {messages.map((msg, idx) => {
-          const showName = !msg.isMe && (idx === 0 || messages[idx - 1].senderName !== msg.senderName);
-          
-          return (
-            <div key={msg.id} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`}>
-              {showName && <span className="text-xs text-gray-500 mb-1 ml-1">{msg.senderName}</span>}
-              <div 
-                className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                  msg.isMe 
-                    ? 'bg-primary text-black rounded-tr-sm' 
-                    : 'bg-[#1a1a1a] text-white border border-gray-800 rounded-tl-sm'
-                }`}
-              >
-                {msg.text}
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto pt-16 pb-20 px-4 space-y-3">
+        {/* Chat expiry notice */}
+        <div className="flex justify-center my-2">
+          <span className="text-[10px] text-gray-600 bg-white/3 border border-white/5 px-3 py-1.5 rounded-full">
+            🔒 Chat expires when the rally ends
+          </span>
+        </div>
+
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="text-3xl mb-3">👋</div>
+            <p className="text-sm font-bold text-white mb-1">Start the conversation</p>
+            <p className="text-xs text-gray-500">Let everyone know you're in!</p>
+          </div>
+        ) : (
+          messages.map((msg, idx) => {
+            const showName = !msg.isMe && (idx === 0 || messages[idx - 1]?.senderName !== msg.senderName);
+            const avatarColor = AVATAR_COLORS[msg.senderName] ?? "bg-gray-600";
+
+            return (
+              <div key={msg.id} className={cn("flex gap-2", msg.isMe ? "flex-row-reverse" : "flex-row")}>
+                {/* Avatar */}
+                {!msg.isMe && (
+                  <div className={cn("w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 mt-auto", avatarColor)}>
+                    {msg.senderName.charAt(0)}
+                  </div>
+                )}
+                <div className={cn("flex flex-col max-w-[75%]", msg.isMe ? "items-end" : "items-start")}>
+                  {showName && (
+                    <span className="text-[10px] text-gray-500 mb-1 mx-1">{msg.senderName}</span>
+                  )}
+                  <div className={cn(
+                    "rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                    msg.isMe
+                      ? "bg-primary text-black font-medium rounded-tr-sm"
+                      : "bg-[#1e1e1e] text-white border border-white/5 rounded-tl-sm"
+                  )}>
+                    {msg.text}
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
         <div ref={endRef} />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d] border-t border-gray-800 p-4 pb-safe">
-        <div className="text-center mb-2">
-          <span className="text-[10px] text-gray-600">This chat expires after the Rally ends.</span>
-        </div>
+      {/* Input */}
+      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/95 backdrop-blur-xl border-t border-white/5 p-3 pb-safe">
         <form onSubmit={handleSend} className="flex gap-2">
-          <Input 
+          <Input
             value={text}
             onChange={e => setText(e.target.value)}
-            placeholder="Message..." 
-            className="flex-1 bg-[#1a1a1a] border-gray-800 text-white rounded-full h-12"
+            placeholder="Message..."
+            className="flex-1 bg-[#1a1a1a] border-white/8 text-white rounded-full h-11 text-sm placeholder:text-gray-600 focus-visible:border-primary/40"
           />
-          <Button type="submit" size="icon" className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-black shrink-0">
-            <Send className="w-5 h-5" />
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!text.trim()}
+            className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-black shrink-0 disabled:opacity-40 shadow-[0_0_12px_rgba(250,204,21,0.25)]"
+          >
+            <Send className="w-4 h-4" />
           </Button>
         </form>
       </div>
