@@ -1,0 +1,240 @@
+Paste this into Replit Agent:
+
+Build a mobile-first web app prototype for a startup app called Rally.
+Rally is a social discovery app that helps people turn “anyone down?” moments into real-life plans. Users create or join nearby activities called “Rallies” for things like gym sessions, coffee runs, study groups, pickup sports, food spots, nightlife, concerts, errands, and outdoor hangs.
+This should be the actual app prototype, not a landing page.
+Build it as a React + Tailwind CSS app. Make it feel like a real iPhone app/PWA. Use mock data and localStorage for now instead of a real backend. The goal is to create a clickable MVP prototype that shows the core Rally experience.
+Brand/style direction:
+- Dark mode
+- Black/dark charcoal background
+- White text
+- Bold yellow accents
+- Modern, clean, premium, energetic
+- Slight checkered flag branding details
+- Rounded cards
+- Subtle glow effects
+- Smooth transitions
+- Mobile-first iPhone layout
+- Bottom navigation
+- Avoid broken dependencies. Use simple emojis, CSS shapes, or inline SVGs if icons are needed.
+Tagline:
+“Less scrolling. More doing.”
+Core concept:
+Rally helps users find things happening nearby, join people in real life, and keep their social life moving.
+Main screens needed:
+1. Onboarding / Welcome Screen
+Create a clean first screen with:
+- Rally logo/name
+- Small checkered flag mark
+- Headline: “Less scrolling. More doing.”
+- Subtext: “Find things to do and people to do them with — right now.”
+- Button: “Get Started”
+- Button: “I already have an account”
+After tapping Get Started, show an interests selection screen with chips:
+Fitness, Coffee, Food, Study, Sports, Nightlife, Outdoors, Concerts, Errands, Gaming, Creative, Networking.
+Then take user to the main app.
+2. Discover / Home Screen
+This is the main screen of the app.
+Top header:
+- “Rally”
+- Current location: “Chicago”
+- Notification bell
+- Small profile avatar
+Tabs:
+- Happening Now
+- Later Today
+- Friends
+Category filter row:
+All, Fitness, Food, Coffee, Study, Sports, Nightlife, Outdoors.
+Main section:
+Title: “Happening Now”
+Subtitle: “Live rallies near you”
+Show Rally cards using Chicago-themed mock data. Each card should include:
+- Rally title
+- Category
+- Distance
+- Time
+- Number of people going
+- Max spots
+- Host name/level
+- Vibe tags
+- Join or Request button
+Example cards:
+- “Leg Day at XSport” — Fitness — 0.8 mi — 6:00 PM — 3 going
+- “Sunday Coffee Run” — Coffee — 0.4 mi — Now — 4 going
+- “Pickup Basketball” — Sports — 1.2 mi — Now — 6 going
+- “Trivia Team Needed” — Nightlife — 2.1 mi — 7:30 PM — 2 going
+- “Trying a New Taco Spot” — Food — 1.6 mi — 8:00 PM — 5 going
+Include a special card for the FOMO feature:
+Title: “Live Nearby Rallies”
+Text: “Higher-level users can unlock active rallies happening around them right now.”
+Button: “Unlock at Level 5”
+3. Create Rally Screen
+A screen where users can create a Rally.
+Fields:
+- Rally title
+- Category dropdown/chips
+- Time options: Now, In 1 hour, Later today, Tomorrow, Pick time
+- Location input
+- Max attendees
+- Vibe tags:
+  Chill, Productive, Social, Hype, Quick Hang, First Timers Welcome
+- Toggle:
+  “Host approval required”
+- Button:
+  “Start Rally”
+After submitting, add the new Rally to localStorage and show it in the Discover feed.
+4. Rally Detail Screen
+When a user taps a Rally card, show a detail page with:
+- Rally title
+- Category
+- Host profile preview
+- Host level
+- Location
+- Time
+- Distance
+- Attendee count
+- Vibe tags
+- Description
+- Attendee avatars
+- Button: “Request to Join” or “Join Rally”
+- Button: “Ask Host”
+- Button: “Report Rally”
+If user joins, show confirmation and unlock the Rally chat.
+5. Rally Chat Screen
+Temporary group chat for each Rally.
+Include:
+- Rally title at top
+- Message bubbles
+- Mock messages like:
+  “I’m running 5 minutes late”
+  “Meet near the front entrance”
+  “Can I bring a friend?”
+- Text input
+- Send button
+- Small note:
+  “This chat expires after the Rally ends.”
+Store sent messages locally.
+6. Friends Screen
+A social screen for connections.
+Include:
+- Search by username
+- Suggested friends from recent rallies
+- Friend cards with:
+  profile photo placeholder
+  username
+  level
+  recent rally
+  Add Friend button
+Also include a section:
+“People you rallied with”
+7. Circles Screen
+This is how Rally stays relevant after users make friends.
+A Circle is a recurring activity group.
+Show example Circles:
+- “Sunday Coffee Circle”
+- “Chicago Gym Crew”
+- “Trivia Team”
+- “Concert People”
+- “Pickup Basketball Group”
+Each Circle card should show:
+- Name
+- Members
+- Next Rally
+- Public or Private
+- Button: “View Circle”
+Circle detail page should include:
+- Members
+- Upcoming recurring rallies
+- Button: “Create Circle Rally”
+8. Profile Screen
+User profile should include:
+- Profile photo placeholder
+- Username
+- Level badge
+- Bio
+- Rallies attended
+- Rallies hosted
+- Friends count
+- Badges:
+  Phone Verified, Reliable Host, Early Rallier
+- Progress bar to next level
+Level system:
+Users earn XP by attending and hosting Rallies.
+Example:
+Level 1: New Rallier
+Level 3: Social Starter
+Level 5: FOMO Access
+Level 7: Verified Host
+Level 10: Local Legend
+Show locked/unlocked perks:
+- Bigger rallies
+- Live nearby rallies
+- Priority visibility
+- Custom tags
+- Verified host status
+9. Safety Features
+Add safety/reporting UI throughout the app:
+- Report Rally
+- Report User
+- Something feels off
+- Fake rally/no one showed up
+- Harassment or creepy behavior
+- Spam/scam
+- Other
+This does not need real moderation yet, but the UI should exist and show a confirmation message after submitting.
+10. FOMO / Open Rally Nearby Feature
+Create a special feature section or modal called:
+“Open Rally Nearby”
+Description:
+Active Rally hosts can temporarily broadcast their meetup to nearby eligible users in real time. Higher-level users can request to join live rallies happening around them.
+Rules to show in UI:
+- Broadcast lasts 30–60 minutes
+- Host approves join requests
+- Higher-level users unlock access
+- Report and safety tools stay active
+Create a mock screen/card for:
+“Happening Right Now 🔥”
+Examples:
+- “Rooftop Vibes” — 0.6 mi — 9 here
+- “Coffee Meetup” — 0.3 mi — 4 here
+- “Pickup Basketball” — 0.9 mi — 8 here
+11. Bottom Navigation
+Persistent bottom nav:
+- Discover
+- Map
+- Create
+- Chat
+- Profile
+Make the Create button larger and centered with a yellow plus.
+12. Map Screen
+Create a simple mock map screen. It does not need a real map API yet. Use a stylized dark map-like background with floating Rally pins.
+Pins should show:
+- Fitness
+- Coffee
+- Food
+- Sports
+- Nightlife
+Tapping a pin opens a Rally preview card.
+Technical requirements:
+- React + Tailwind CSS
+- Mobile-first responsive design
+- Use localStorage for mock persistence
+- Use reusable components
+- Keep code organized
+- Include sample data
+- No real payment system
+- No real authentication required yet
+- Simulate login/profile
+- Make all main buttons clickable
+- Add empty states that still look polished
+- Make the app look polished enough to show potential users or a technical cofounder
+Important product philosophy:
+Rally is not a dating app.
+Rally is not just an events app.
+Rally is for spontaneous, low-pressure real-life activities and recurring social circles.
+The app should feel alive, social, safe, and action-oriented.
+Overall vibe:
+Snapchat energy + Strava progress + Meetup utility + modern black/yellow startup branding.
+
+I’d start with this as a clickable prototype, not the perfect final app. Once Replit gives you a first version, you can tell it smaller commands like: “make the Discover cards cleaner,” “add the FOMO modal,” or “make the profile page feel more premium.”
