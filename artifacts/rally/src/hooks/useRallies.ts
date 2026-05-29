@@ -1,42 +1,42 @@
 import { useState, useEffect } from "react";
 import {
-  defaultRallies, defaultUserProfile,
-  Rally, UserProfile,
-  defaultCircles, Circle,
+  defaultMoves, defaultUserProfile,
+  Move, UserProfile,
+  defaultCrews, Crew,
   ChatMessage, mockMessages,
-  RallyHistoryItem, mockRallyHistory, FeedbackLabel,
+  ActivityHistoryItem, mockActivityHistory, FeedbackLabel,
 } from "@/data/mockData";
 
-const RALLIES_KEY  = "rally_rallies";
-const USER_KEY     = "rally_user";
-const ONBOARDING_KEY = "rally_onboarding";
-const MESSAGES_KEY = "rally_messages";
-const HISTORY_KEY  = "rally_history";
+const MOVES_KEY    = "brio_moves";
+const USER_KEY     = "brio_user";
+const ONBOARDING_KEY = "brio_onboarding";
+const MESSAGES_KEY = "brio_messages";
+const HISTORY_KEY  = "brio_history";
 
 export function useRallies() {
-  const [rallies, setRallies] = useState<Rally[]>([]);
+  const [rallies, setRallies] = useState<Move[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(RALLIES_KEY);
+    const stored = localStorage.getItem(MOVES_KEY);
     if (stored) {
       setRallies(JSON.parse(stored));
     } else {
-      setRallies(defaultRallies);
-      localStorage.setItem(RALLIES_KEY, JSON.stringify(defaultRallies));
+      setRallies(defaultMoves);
+      localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
     }
   }, []);
 
-  const saveRallies = (newRallies: Rally[]) => {
-    setRallies(newRallies);
-    localStorage.setItem(RALLIES_KEY, JSON.stringify(newRallies));
+  const saveMoves = (newMoves: Move[]) => {
+    setRallies(newMoves);
+    localStorage.setItem(MOVES_KEY, JSON.stringify(newMoves));
   };
 
-  const addRally = (rally: Rally) => {
-    saveRallies([rally, ...rallies]);
+  const addRally = (move: Move) => {
+    saveMoves([move, ...rallies]);
   };
 
   const joinRally = (id: string) => {
-    saveRallies(
+    saveMoves(
       rallies.map((r) =>
         r.id === id ? { ...r, joined: true, going: r.going + 1 } : r
       )
@@ -84,10 +84,10 @@ export function useOnboarding() {
 }
 
 export function useCircles() {
-  return { circles: defaultCircles };
+  return { circles: defaultCrews };
 }
 
-export function useMessages(rallyId: string) {
+export function useMessages(moveId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
@@ -96,13 +96,13 @@ export function useMessages(rallyId: string) {
     if (!storedStr) {
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(mockMessages));
     }
-    setMessages(allMessages[rallyId] || []);
-  }, [rallyId]);
+    setMessages(allMessages[moveId] || []);
+  }, [moveId]);
 
   const sendMessage = (text: string) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
-      rallyId,
+      moveId,
       senderName: "You",
       text,
       isMe: true,
@@ -110,25 +110,25 @@ export function useMessages(rallyId: string) {
 
     const storedStr = localStorage.getItem(MESSAGES_KEY);
     const allMessages = storedStr ? JSON.parse(storedStr) : {};
-    const updatedRallyMessages = [...(allMessages[rallyId] || []), newMessage];
-    const updatedAll = { ...allMessages, [rallyId]: updatedRallyMessages };
+    const updatedMoveMessages = [...(allMessages[moveId] || []), newMessage];
+    const updatedAll = { ...allMessages, [moveId]: updatedMoveMessages };
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(updatedAll));
-    setMessages(updatedRallyMessages);
+    setMessages(updatedMoveMessages);
   };
 
   return { messages, sendMessage };
 }
 
-export function useRallyHistory() {
-  const [history, setHistory] = useState<RallyHistoryItem[]>([]);
+export function useActivityHistory() {
+  const [history, setHistory] = useState<ActivityHistoryItem[]>([]);
 
   useEffect(() => {
     const stored = localStorage.getItem(HISTORY_KEY);
     if (stored) {
       setHistory(JSON.parse(stored));
     } else {
-      setHistory(mockRallyHistory);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(mockRallyHistory));
+      setHistory(mockActivityHistory);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(mockActivityHistory));
     }
   }, []);
 
@@ -144,7 +144,7 @@ export function useRallyHistory() {
 
   const attendedCount = history.filter(h => h.role === "attended").length;
   const hostedCount   = history.filter(h => h.role === "hosted").length;
-  const crewCount     = history.filter(h => h.tags.includes("Crew Rally")).length;
+  const crewCount     = history.filter(h => h.tags.includes("Crew Move")).length;
 
   return { history, setFeedback, attendedCount, hostedCount, crewCount };
 }

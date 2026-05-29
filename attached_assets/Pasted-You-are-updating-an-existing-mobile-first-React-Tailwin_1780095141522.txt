@@ -1,0 +1,411 @@
+You are updating an existing **mobile-first React + Tailwind prototype** in Replit. The current app is called **Rally** and needs to be fully rebranded into **Brio**.
+
+This is a **product rebrand + UI copy system update + visual polish pass**, not a rebuild from scratch.
+
+## Objective
+
+Transform the existing prototype so it feels like **Brio** everywhere — in naming, copy, labels, navigation, empty states, visual tone, and interaction language.
+
+Do **not** just swap the word “Rally” for “Brio.”  
+This should feel like a real product identity shift from a generic meetup app into a **social lifestyle app for activity-based friendship**.
+
+## Brand
+
+### New name
+**Brio**
+
+### Brand meaning
+Brio means energy, life, spirit, enthusiasm, liveliness.
+
+### Product concept
+Brio helps people find **activity-based friendships** through:
+- one-time local activities
+- recurring groups
+- low-pressure social experiences
+
+### It is NOT
+- a dating app
+- a networking app
+- just an event listing app
+- just a nightlife app
+
+### Target audience
+Ages 18–35, starting with **Chicago**.
+
+## Positioning
+
+Primary positioning:
+**Find people to do things with — once, weekly, or whenever you’re down.**
+
+Main tagline:
+**Less scrolling. More doing.**
+
+Supporting copy direction:
+- Make a move.
+- See who’s in.
+- Find people who actually show up.
+- One move can become a crew.
+- Make moves. Find crews. Keep it going.
+- More life outside the screen.
+- Turn “anyone down?” into something real.
+- Your city’s already moving. Get in.
+
+## Naming system
+
+Apply this naming system consistently across the whole app:
+
+- **Brio** = app name
+- **Move / Moves** = one-time activities
+- **Make a Move** = create a new activity
+- **Join the Move** / **I’m In** = join an activity
+- **What’s the Move?** = core discovery/home framing
+- **Live Moves Nearby** = nearby real-time activity section
+- **Move Chat** = temporary chat for a specific activity
+- **After the Move?** = post-activity follow-up prompt
+- **Crews** = recurring activity groups
+- **Sessions** = structured activity formats like gym, study, coworking, gaming, creative, or skill-based meetups
+- **Movement** = broader brand philosophy only, not a user-created object
+
+## Critical copy rules
+
+### Required replacements
+Replace old Rally-era language with the new Brio system:
+
+- “Rally” app name → **Brio**
+- “Rallies” → **Moves** where referring to one-time activities
+- “Start a Plan” / “Create Plan” / “Start Plan” → **Make a Move**
+- “Rally Chat” → **Move Chat**
+- “After Rally?” / “After Plan?” → **After the Move?**
+- “Rally History” → **Activity History**
+
+### Important
+Do **not** use **“Start a Plan.”**  
+That language is too formal, too old, and off-brand.
+
+The main identity phrase must be:
+**Make a Move**
+
+## Product structure to preserve
+
+Keep the existing prototype structure and screens, but update them to the Brio system.
+
+Core screens/features:
+1. Onboarding
+2. Interest selection
+3. Discover/home feed
+4. What’s the Move? section
+5. Live Moves Nearby
+6. Recurring Near You
+7. Create / Make a Move screen
+8. Move detail screen
+9. Move Chat
+10. Map screen
+11. Profile screen
+12. Activity History
+13. Crews
+14. Crew detail page
+15. Safety/reporting UI
+16. Theme settings with Auto / Light / Dark mode
+
+## Features to keep exactly in scope
+
+Preserve these features:
+- Host approval
+- Temporary chats
+- Report user
+- Report Move
+- Something feels off
+- Fake/no-show reporting
+- Harassment/creepy behavior reporting
+- User profiles
+- Attendance history
+- Level/trust badges
+- Vibe tags
+- LocalStorage/mock data only
+
+## Do NOT add
+
+Do not add or scaffold:
+- backend
+- database
+- WebSockets
+- push notifications
+- payments
+- real authentication
+
+This remains a **front-end prototype only** using mock/local data.
+
+## Vibe tags
+
+Keep and use these vibe tags consistently:
+- First timers welcome
+- Beginner friendly
+- Recurring
+- Low pressure
+- Chill
+- Social
+- Activity-focused
+- Weekly
+- Open to new people
+
+## Example Moves
+
+Use these as seed/mock examples where useful:
+- Sunday coffee run
+- Leg day at XSport
+- Trivia team needed
+- Pickup basketball
+- Trying a new taco spot
+- Concert meetup
+- Beginner-friendly walk
+- Study session
+- Food spot run
+- Night out with room for 2 more
+
+## Example Crews
+
+Use these as seed/mock recurring groups:
+- Sunday Coffee Crew
+- Chicago Gym Crew
+- Trivia Crew
+- Concert Crew
+- Pickup Basketball Crew
+- Foodie Crew
+- Study Crew
+- Walking Crew
+
+## Brand/UI direction
+
+The app should feel:
+- energetic
+- polished
+- warm
+- modern
+- alive
+- city-social
+- active in the real world
+
+### Visual direction
+- Keep **yellow** as the core energy/action accent
+- Support both **light mode** and **dark mode**
+- Dark mode: black / dark charcoal base with yellow accents
+- Light mode: warm white / soft off-white base with yellow accents
+- Reduce or remove old **racing/checkered flag** visuals from Rally
+- Replace them with more subtle cues of:
+  - energy
+  - spark
+  - movement
+  - city glow
+  - social momentum
+
+### Product feel
+The app should feel less like:
+- Eventbrite
+- Meetup
+- generic events directory
+
+And more like:
+- a real-world social lifestyle app
+- a product that helps people get off their phones and do things together
+
+## Execution tasks
+
+Perform a thorough pass through the entire app and update all relevant UI copy and structure.
+
+### 1. Full rebrand
+Rebrand the entire existing prototype from **Rally** to **Brio** across:
+- app title
+- headers
+- onboarding
+- nav labels
+- screen titles
+- modals
+- empty states
+- toasts
+- helper text
+- placeholder text
+- buttons
+- cards
+- profile copy
+- settings
+- safety/reporting flows
+- metadata labels
+- mock seed data
+
+### 2. Rename activity objects
+Where the old prototype refers to the main one-time activity object, rename it from Rally/Plan/etc. to:
+- **Move**
+- **Moves**
+- **Make a Move**
+- **Join the Move**
+- **I’m In**
+
+Use judgment so the language sounds natural and product-quality.
+
+### 3. Update home/discovery experience
+Refocus the discover/home screen so it clearly centers around:
+**What’s the Move?**
+
+The home experience should feel dynamic and social, with sections such as:
+- What’s the Move?
+- Live Moves Nearby
+- Recurring Near You
+- Suggested Crews
+- Sessions / activity types
+- Friends-of-friends / trust-oriented cues if already implied in mock UI
+
+The page should feel alive, local, and action-oriented.
+
+### 4. Update create flow
+Rename and rewrite the create screen so it is firmly based on:
+**Make a Move**
+
+This screen should feel inviting and low-pressure, not formal or event-manager-like.
+
+Use copy that suggests:
+- spontaneous plans
+- simple local hangs
+- low-stakes activity invites
+- social momentum
+
+Avoid corporate/event-platform language.
+
+### 5. Update detail + chat flows
+Rename and adjust:
+- Move detail screen
+- Move Chat
+- attendance/join states
+- after-activity prompts
+
+Use:
+- **Move Chat**
+- **See who’s in**
+- **I’m In**
+- **After the Move?**
+
+### 6. Preserve Crews
+Keep **Crews** as recurring activity groups.
+
+Ensure the relationship between objects is clear:
+- a **Move** can be one-time
+- a recurring social pattern can become a **Crew**
+- some structured recurring formats can be framed as **Sessions**
+
+### 7. Update history/profile language
+Rename “Rally History” to:
+**Activity History**
+
+Keep attendance/trust/history concepts, but polish the language so it sounds social and credible rather than gamified in a cheesy way.
+
+### 8. Safety/reporting copy refresh
+Keep all current safety/reporting features, but rewrite the copy to feel calmer, clearer, and more trustworthy.
+
+Preserve:
+- Report user
+- Report Move
+- Something feels off
+- Fake/no-show
+- Harassment/creepy behavior
+
+The tone should be:
+- direct
+- modern
+- supportive
+- non-alarmist
+- easy to understand
+
+### 9. Theme polish
+Keep Auto / Light / Dark theme settings.
+
+Polish visual tokens so Brio has:
+- stronger identity
+- warm energetic yellow accents
+- refined dark surfaces
+- cleaner light surfaces
+- more premium spacing/typography/card treatment
+
+### 10. Consistency pass
+Do a final consistency pass so all screens use the same product language.
+
+Specifically ensure there are no leftover phrases like:
+- Rally
+- Rallies
+- Rally Chat
+- Start a Plan
+- Create Plan
+- Plan details
+- After Rally
+- Rally History
+
+Unless a rare internal implementation reference is harmless and not user-facing.
+
+## Product tone
+
+Copy should feel:
+- youthful but not cringey
+- social but not nightlife-only
+- active but not aggressive
+- modern but not startup-cliche
+- warm and human
+- Chicago-first, local, real-world
+
+It should sound like a product for:
+“finding people to actually do things with”
+
+Not like:
+- a dating app
+- an event management tool
+- a networking app
+- a professional community app
+
+## UX/copy goals
+
+Prioritize:
+1. naming clarity
+2. UI consistency
+3. branded product language
+4. polished mobile-first presentation
+5. stronger identity
+6. better empty states and CTA copy
+7. clearer distinction between Moves, Crews, and Sessions
+
+## Technical constraints
+
+Keep the current stack and prototype assumptions:
+- React
+- Tailwind
+- mobile-first
+- localStorage/mock data only
+- existing prototype architecture where possible
+
+Do not rebuild into a different framework.
+
+Do not introduce:
+- backend APIs
+- auth providers
+- real-time systems
+- server logic
+- payments infrastructure
+
+## Deliverables
+
+Update the existing prototype code directly and make the app feel like **Brio** throughout.
+
+### Expected output
+- fully rebranded UI
+- consistent terminology
+- improved copy across all screens
+- polished theme/visual identity
+- preserved prototype functionality
+- no backend additions
+
+### Final quality bar
+When finished, the app should feel like:
+**Brio — a social lifestyle app for making real-world moves with people nearby**
+
+Not:
+**Rally with a superficial rename**
+
+Before finishing, do a full user-facing text audit and remove all inconsistent legacy naming.
+
+Sources

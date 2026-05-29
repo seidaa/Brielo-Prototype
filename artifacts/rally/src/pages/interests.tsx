@@ -37,7 +37,6 @@ export default function Interests() {
 
   return (
     <div className="flex flex-col min-h-screen p-5 bg-[#0d0d0d] pt-14 pb-28">
-      {/* Progress */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-5">
           <div className="h-1 flex-1 bg-primary rounded-full" />
@@ -45,10 +44,9 @@ export default function Interests() {
         </div>
         <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Step 2 of 2</p>
         <h1 className="text-3xl font-black text-white leading-tight mb-1">What are you into?</h1>
-        <p className="text-sm text-gray-400">Pick your interests — we'll show you the right rallies.</p>
+        <p className="text-sm text-gray-400">Pick your vibe — we'll show you the right moves.</p>
       </div>
 
-      {/* Interest grid */}
       <div className="flex flex-wrap gap-2.5 mb-auto">
         {INTERESTS.map(({ label, emoji }) => {
           const isSelected = selected.includes(label);
@@ -70,7 +68,6 @@ export default function Interests() {
         })}
       </div>
 
-      {/* CTA */}
       <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto p-5 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/95 to-transparent">
         {selected.length > 0 && (
           <p className="text-center text-xs text-gray-500 mb-3">

@@ -1,11 +1,11 @@
-import { Rally, CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
+import { Move, CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
 import { Link } from "wouter";
-import { MapPin, Clock, MessageCircle, Users, CheckCircle2, Shield } from "lucide-react";
+import { MapPin, Clock, MessageCircle, CheckCircle2, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface RallyCardProps {
-  rally: Rally;
+  rally: Move;
   onJoin?: () => void;
 }
 
@@ -94,7 +94,6 @@ export function RallyCard({ rally, onJoin }: RallyCardProps) {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              {/* Overlap avatars */}
               <div className="flex -space-x-1.5">
                 {Array.from({ length: Math.min(rally.going, 5) }).map((_, i) => (
                   <div
@@ -111,7 +110,7 @@ export function RallyCard({ rally, onJoin }: RallyCardProps) {
                 )}
               </div>
               <span className="text-[11px] font-bold text-gray-300">
-                <span className="text-white">{rally.going}</span> going
+                <span className="text-white">{rally.going}</span> in
               </span>
             </div>
             <span className={cn("text-[11px] font-bold", isFull ? "text-red-400" : almostFull ? "text-amber-400" : "text-gray-500")}>
@@ -134,7 +133,7 @@ export function RallyCard({ rally, onJoin }: RallyCardProps) {
           <div className="flex items-center gap-2">
             <div className="flex-1 flex items-center gap-2 bg-white/5 border border-white/8 rounded-xl px-4 py-2.5">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span className="text-sm font-bold text-white">Joined</span>
+              <span className="text-sm font-bold text-white">You're In</span>
             </div>
             <Link href={`/chat/${rally.id}`}>
               <Button className="bg-primary hover:bg-primary/90 text-black rounded-xl w-11 h-10 p-0 shadow-[0_0_12px_rgba(250,204,21,0.25)]">
@@ -153,7 +152,7 @@ export function RallyCard({ rally, onJoin }: RallyCardProps) {
                 : "bg-primary hover:bg-primary/90 text-black shadow-[0_0_12px_rgba(250,204,21,0.2)]"
             )}
           >
-            {isFull ? "Rally is Full" : rally.requiresApproval ? "Request to Join" : "Join Rally"}
+            {isFull ? "Move is Full" : rally.requiresApproval ? "Request to Join" : "I'm In"}
           </Button>
         )}
       </div>

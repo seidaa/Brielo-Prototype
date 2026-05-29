@@ -12,9 +12,9 @@ import { CAT_CONFIG } from "@/data/mockData";
 
 const CATEGORIES = ["Fitness", "Coffee", "Food", "Study", "Sports", "Nightlife", "Outdoors", "Concerts", "Gaming", "Creative", "Networking", "Errands"];
 const TIMES = ["Now", "In 30 min", "In 1 hour", "Later today", "Tomorrow"];
-const VIBES = ["Chill", "Productive", "Social", "Hype", "Quick Hang", "First Timers Welcome"];
+const VIBES = ["Chill", "Productive", "Social", "Hype", "Quick Hang", "First Timers Welcome", "Low Pressure", "Beginner Friendly", "Open to New People"];
 
-export default function CreateRally() {
+export default function CreateMove() {
   const [, setLoc] = useLocation();
   const { addRally } = useRallies();
   const { user } = useUser();
@@ -31,11 +31,11 @@ export default function CreateRally() {
 
   const handleCreate = () => {
     if (!title.trim() || !location.trim()) {
-      toast({ title: "Fill in the title and location", variant: "destructive" });
+      toast({ title: "Add a title and location to continue", variant: "destructive" });
       return;
     }
 
-    const newRally = {
+    const newMove = {
       id: "r" + Date.now(),
       title: title.trim(),
       category,
@@ -47,13 +47,13 @@ export default function CreateRally() {
       hostName: user.username,
       hostLevel: user.level,
       vibeTags: selectedVibes,
-      description: description.trim() || "Come join my rally!",
+      description: description.trim() || "Come join the move!",
       requiresApproval,
       joined: true,
     };
 
-    addRally(newRally);
-    toast({ title: "🚀 Rally started!", description: "You're now hosting. Check your chat." });
+    addRally(newMove);
+    toast({ title: "⚡ Move is live!", description: "You're hosting. Move Chat is open." });
     setLoc("/discover");
   };
 
@@ -63,8 +63,6 @@ export default function CreateRally() {
     );
   };
 
-  const catCfg = CAT_CONFIG[category];
-
   return (
     <div className="min-h-screen bg-[#0d0d0d] pb-32">
       {/* Header */}
@@ -72,13 +70,16 @@ export default function CreateRally() {
         <Link href="/discover" className="mr-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
           <ChevronLeft className="w-5 h-5 text-white" />
         </Link>
-        <h1 className="text-lg font-black text-white">Host a Rally</h1>
+        <div>
+          <h1 className="text-base font-black text-white leading-tight">Make a Move</h1>
+          <p className="text-[10px] text-gray-500">What are you doing?</p>
+        </div>
       </header>
 
       <div className="p-4 space-y-5">
         {/* Title */}
         <div className="space-y-2">
-          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">What are you doing?</label>
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">What's the move?</label>
           <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
@@ -136,7 +137,7 @@ export default function CreateRally() {
         {/* Location */}
         <div className="space-y-2">
           <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5" /> Location
+            <MapPin className="w-3.5 h-3.5" /> Where
           </label>
           <Input
             value={location}
@@ -152,7 +153,7 @@ export default function CreateRally() {
           <textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
-            placeholder="Tell people what to expect, what to bring, etc."
+            placeholder="What should people expect? What to bring?"
             rows={3}
             className="w-full bg-[#1a1a1a] border border-white/8 text-white rounded-xl px-3 py-3 text-sm placeholder:text-gray-600 focus:outline-none focus:border-primary/50 resize-none"
           />
@@ -163,7 +164,7 @@ export default function CreateRally() {
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-primary" />
             <div>
-              <div className="text-sm font-bold text-white">Max Attendees</div>
+              <div className="text-sm font-bold text-white">Spots Available</div>
               <div className="text-xs text-gray-500">Including you</div>
             </div>
           </div>
@@ -221,7 +222,7 @@ export default function CreateRally() {
           onClick={handleCreate}
           className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)]"
         >
-          🚀 Start Rally
+          ⚡ Make a Move
         </Button>
       </div>
     </div>

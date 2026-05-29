@@ -7,12 +7,12 @@ import { BottomNav } from "@/components/BottomNav";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
-  { id: "s1", name: "Marcus L.",  level: 7, rally: "Leg Day at XSport",    initials: "ML", color: "bg-orange-500" },
-  { id: "s2", name: "Priya S.",   level: 3, rally: "Sunday Coffee Run",    initials: "PS", color: "bg-pink-500" },
-  { id: "s3", name: "Jordan K.",  level: 5, rally: "Pickup Basketball",    initials: "JK", color: "bg-blue-500" },
-  { id: "s4", name: "Alex T.",    level: 4, rally: "Trivia Night",         initials: "AT", color: "bg-purple-500" },
-  { id: "s5", name: "Sofia R.",   level: 6, rally: "Taco Spot in Pilsen",  initials: "SR", color: "bg-green-500" },
-  { id: "s6", name: "Devon A.",   level: 8, rally: "Jazz at Green Mill",   initials: "DA", color: "bg-amber-500" },
+  { id: "s1", name: "Marcus L.",  level: 7, move: "Leg Day at XSport",    initials: "ML", color: "bg-orange-500" },
+  { id: "s2", name: "Priya S.",   level: 3, move: "Sunday Coffee Run",    initials: "PS", color: "bg-pink-500" },
+  { id: "s3", name: "Jordan K.",  level: 5, move: "Pickup Basketball",    initials: "JK", color: "bg-blue-500" },
+  { id: "s4", name: "Alex T.",    level: 4, move: "Trivia Night",         initials: "AT", color: "bg-purple-500" },
+  { id: "s5", name: "Sofia R.",   level: 6, move: "Taco Spot in Pilsen",  initials: "SR", color: "bg-green-500" },
+  { id: "s6", name: "Devon A.",   level: 8, move: "Jazz at Green Mill",   initials: "DA", color: "bg-amber-500" },
 ];
 
 const YOUR_FRIENDS = [
@@ -31,7 +31,7 @@ export default function Friends() {
 
   const filtered = SUGGESTIONS.filter(u =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.rally.toLowerCase().includes(search.toLowerCase())
+    u.move.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -54,7 +54,7 @@ export default function Friends() {
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search by name or rally..."
+            placeholder="Search by name or move..."
             className="w-full bg-[#1a1a1a] border-white/8 text-white rounded-xl h-11 pl-10 placeholder:text-gray-600 focus-visible:border-primary/40"
           />
         </div>
@@ -88,7 +88,7 @@ export default function Friends() {
         {/* Suggestions */}
         <div>
           <h2 className="text-[11px] font-black text-gray-500 mb-3 uppercase tracking-widest">
-            {search ? "Search Results" : "Met at Recent Rallies"}
+            {search ? "Search Results" : "Met at Recent Moves"}
           </h2>
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
@@ -110,7 +110,7 @@ export default function Friends() {
                         <span className="text-primary ml-1.5 text-xs font-bold">Lv {user.level}</span>
                       </div>
                       <div className="text-[11px] text-gray-500 truncate max-w-[140px]">
-                        met at {user.rally}
+                        met at {user.move}
                       </div>
                     </div>
                   </div>

@@ -18,7 +18,7 @@ const AVATAR_COLORS: Record<string, string> = {
 export default function ChatDetail() {
   const { id } = useParams<{ id: string }>();
   const { rallies } = useRallies();
-  const rally = rallies.find(r => r.id === id);
+  const move = rallies.find(r => r.id === id);
   const { messages, sendMessage } = useMessages(id ?? "");
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
@@ -27,10 +27,10 @@ export default function ChatDetail() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!rally) return (
+  if (!move) return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
       <div className="text-center">
-        <p className="text-white font-bold mb-2">Rally not found</p>
+        <p className="text-white font-bold mb-2">Move not found</p>
         <Link href="/chat"><span className="text-primary text-sm">← Back to chats</span></Link>
       </div>
     </div>
@@ -51,12 +51,12 @@ export default function ChatDetail() {
           <ChevronLeft className="w-5 h-5 text-white" />
         </Link>
         <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-black text-white truncate leading-tight">{rally.title}</h1>
+          <h1 className="text-sm font-black text-white truncate leading-tight">{move.title}</h1>
           <p className="text-[11px] text-gray-500 flex items-center gap-1">
-            <Users className="w-3 h-3" /> {rally.going} going · {rally.time}
+            <Users className="w-3 h-3" /> {move.going} in · {move.time}
           </p>
         </div>
-        <Link href={`/rally/${rally.id}`}>
+        <Link href={`/rally/${move.id}`}>
           <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5 shrink-0">
             <Info className="w-4 h-4 text-gray-400" />
           </button>
@@ -65,10 +65,9 @@ export default function ChatDetail() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto pt-16 pb-20 px-4 space-y-3">
-        {/* Chat expiry notice */}
         <div className="flex justify-center my-2">
           <span className="text-[10px] text-gray-600 bg-white/3 border border-white/5 px-3 py-1.5 rounded-full">
-            🔒 Chat expires when the rally ends
+            🔒 Move Chat expires when the move ends
           </span>
         </div>
 
@@ -85,7 +84,6 @@ export default function ChatDetail() {
 
             return (
               <div key={msg.id} className={cn("flex gap-2", msg.isMe ? "flex-row-reverse" : "flex-row")}>
-                {/* Avatar */}
                 {!msg.isMe && (
                   <div className={cn("w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0 mt-auto", avatarColor)}>
                     {msg.senderName.charAt(0)}
@@ -117,7 +115,7 @@ export default function ChatDetail() {
           <Input
             value={text}
             onChange={e => setText(e.target.value)}
-            placeholder="Message..."
+            placeholder="Message the group..."
             className="flex-1 bg-[#1a1a1a] border-white/8 text-white rounded-full h-11 text-sm placeholder:text-gray-600 focus-visible:border-primary/40"
           />
           <Button

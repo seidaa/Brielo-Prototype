@@ -1,4 +1,4 @@
-export type Rally = {
+export type Move = {
   id: string;
   title: string;
   category: string;
@@ -32,7 +32,7 @@ export const CAT_CONFIG: Record<string, { emoji: string; color: string; border: 
 
 export const defaultCatConfig = { emoji: "📍", color: "bg-primary/15", border: "border-primary/30", text: "text-primary", dot: "bg-primary" };
 
-export const defaultRallies: Rally[] = [
+export const defaultMoves: Move[] = [
   {
     id: "r1",
     title: "Leg Day at XSport",
@@ -123,7 +123,7 @@ export const defaultRallies: Rally[] = [
     maxSpots: 12,
     hostName: "Camille D.",
     hostLevel: 5,
-    vibeTags: ["Productive", "Chill"],
+    vibeTags: ["Productive", "Low Pressure"],
     description: "Easy 4-mile run along the lakefront path at sunset. All paces welcome. We'll finish near Navy Pier.",
     location: "Lakefront Trail, Chicago",
     requiresApproval: false,
@@ -148,9 +148,9 @@ export const defaultRallies: Rally[] = [
 ];
 
 export const friendsActivity = [
-  { name: "Marcus L.", action: "joined", rallyTitle: "Leg Day at XSport", rallyId: "r1", time: "2m ago" },
-  { name: "Priya S.", action: "hosting", rallyTitle: "Sunday Coffee Run", rallyId: "r2", time: "5m ago" },
-  { name: "Jordan K.", action: "joined", rallyTitle: "Pickup Basketball", rallyId: "r3", time: "12m ago" },
+  { name: "Marcus L.", action: "joined", moveTitle: "Leg Day at XSport", moveId: "r1", time: "2m ago" },
+  { name: "Priya S.", action: "hosting", moveTitle: "Sunday Coffee Run", moveId: "r2", time: "5m ago" },
+  { name: "Jordan K.", action: "joined", moveTitle: "Pickup Basketball", moveId: "r3", time: "12m ago" },
 ];
 
 export type UserProfile = {
@@ -167,7 +167,7 @@ export type UserProfile = {
 };
 
 export const defaultUserProfile: UserProfile = {
-  username: "you_rallier",
+  username: "you_brio",
   level: 3,
   xp: 340,
   xpToNext: 500,
@@ -175,30 +175,30 @@ export const defaultUserProfile: UserProfile = {
   rallyCount: 8,
   hostedCount: 2,
   friendsCount: 14,
-  badges: ["Phone Verified", "Early Rallier"],
+  badges: ["Phone Verified", "Early Mover"],
   interests: []
 };
 
-export type Circle = {
+export type Crew = {
   id: string;
   name: string;
   membersCount: number;
-  nextRallyTime: string;
+  nextMoveTime: string;
   isPublic: boolean;
   emoji: string;
 };
 
-export const defaultCircles: Circle[] = [
-  { id: "c1", name: "Sunday Coffee Circle", membersCount: 8,  nextRallyTime: "Sunday 9:00 AM",   isPublic: true,  emoji: "☕" },
-  { id: "c2", name: "Chicago Gym Crew",     membersCount: 12, nextRallyTime: "Monday 6:30 PM",   isPublic: false, emoji: "💪" },
-  { id: "c3", name: "Trivia Team",          membersCount: 4,  nextRallyTime: "Thursday 7:30 PM", isPublic: false, emoji: "🧠" },
-  { id: "c4", name: "Concert People",       membersCount: 21, nextRallyTime: "TBD",              isPublic: true,  emoji: "🎵" },
-  { id: "c5", name: "Pickup Basketball",    membersCount: 15, nextRallyTime: "Saturday 10:00 AM",isPublic: true,  emoji: "🏀" },
+export const defaultCrews: Crew[] = [
+  { id: "c1", name: "Sunday Coffee Crew",      membersCount: 8,  nextMoveTime: "Sunday 9:00 AM",   isPublic: true,  emoji: "☕" },
+  { id: "c2", name: "Chicago Gym Crew",         membersCount: 12, nextMoveTime: "Monday 6:30 PM",   isPublic: false, emoji: "💪" },
+  { id: "c3", name: "Trivia Crew",              membersCount: 4,  nextMoveTime: "Thursday 7:30 PM", isPublic: false, emoji: "🧠" },
+  { id: "c4", name: "Concert Crew",             membersCount: 21, nextMoveTime: "TBD",              isPublic: true,  emoji: "🎵" },
+  { id: "c5", name: "Pickup Basketball Crew",   membersCount: 15, nextMoveTime: "Saturday 10:00 AM",isPublic: true,  emoji: "🏀" },
 ];
 
 export type ChatMessage = {
   id: string;
-  rallyId: string;
+  moveId: string;
   senderName: string;
   text: string;
   isMe: boolean;
@@ -206,36 +206,36 @@ export type ChatMessage = {
 
 export const mockMessages: Record<string, ChatMessage[]> = {
   "r1": [
-    { id: "m1", rallyId: "r1", senderName: "Marcus L.", text: "I'm running 5 minutes late", isMe: false },
-    { id: "m2", rallyId: "r1", senderName: "Jordan K.", text: "All good, we're warming up", isMe: false },
-    { id: "m3", rallyId: "r1", senderName: "Marcus L.", text: "Which entrance are you at?", isMe: false },
+    { id: "m1", moveId: "r1", senderName: "Marcus L.", text: "I'm running 5 minutes late", isMe: false },
+    { id: "m2", moveId: "r1", senderName: "Jordan K.", text: "All good, we're warming up", isMe: false },
+    { id: "m3", moveId: "r1", senderName: "Marcus L.", text: "Which entrance are you at?", isMe: false },
   ],
   "r2": [
-    { id: "m4", rallyId: "r2", senderName: "Priya S.", text: "Meet near the front entrance", isMe: false },
-    { id: "m5", rallyId: "r2", senderName: "Priya S.", text: "I grabbed the corner table 🙌", isMe: false },
+    { id: "m4", moveId: "r2", senderName: "Priya S.", text: "Meet near the front entrance", isMe: false },
+    { id: "m5", moveId: "r2", senderName: "Priya S.", text: "I grabbed the corner table 🙌", isMe: false },
   ],
   "r3": [
-    { id: "m6", rallyId: "r3", senderName: "Jordan K.", text: "Can I bring a friend?", isMe: false },
-    { id: "m7", rallyId: "r3", senderName: "Marcus L.", text: "Yeah we need 1 more anyway", isMe: false },
+    { id: "m6", moveId: "r3", senderName: "Jordan K.", text: "Can I bring a friend?", isMe: false },
+    { id: "m7", moveId: "r3", senderName: "Marcus L.", text: "Yeah we need 1 more anyway", isMe: false },
   ]
 };
 
-// ─── Rally History ────────────────────────────────────────────────────────────
+// ─── Activity History ──────────────────────────────────────────────────────────
 
-export type FeedbackLabel = "Good vibes" | "Would Rally again" | "No-show" | "Felt off";
+export type FeedbackLabel = "Good vibes" | "Would do again" | "No-show" | "Felt off";
 
-export type RallyHistoryItem = {
+export type ActivityHistoryItem = {
   id: string;
   title: string;
   category: string;
   date: string;
   role: "hosted" | "attended";
   attendeeCount: number;
-  tags: ("Recurring" | "Crew Rally")[];
+  tags: ("Recurring" | "Crew Move")[];
   feedback?: FeedbackLabel;
 };
 
-export const mockRallyHistory: RallyHistoryItem[] = [
+export const mockActivityHistory: ActivityHistoryItem[] = [
   {
     id: "h1",
     title: "Sunday Coffee Run",
@@ -248,22 +248,22 @@ export const mockRallyHistory: RallyHistoryItem[] = [
   },
   {
     id: "h2",
-    title: "Tuesday Trivia Team",
+    title: "Tuesday Trivia Crew",
     category: "Nightlife",
     date: "May 13",
     role: "attended",
     attendeeCount: 6,
     tags: [],
-    feedback: "Would Rally again",
+    feedback: "Would do again",
   },
   {
     id: "h3",
-    title: "Weekly Gym Crew",
+    title: "Weekly Gym Session",
     category: "Fitness",
     date: "May 12",
     role: "attended",
     attendeeCount: 3,
-    tags: ["Crew Rally"],
+    tags: ["Crew Move"],
     feedback: "Good vibes",
   },
   {
@@ -274,7 +274,7 @@ export const mockRallyHistory: RallyHistoryItem[] = [
     role: "hosted",
     attendeeCount: 8,
     tags: [],
-    feedback: "Would Rally again",
+    feedback: "Would do again",
   },
   {
     id: "h5",
@@ -302,7 +302,7 @@ export const mockRallyHistory: RallyHistoryItem[] = [
     date: "Apr 22",
     role: "hosted",
     attendeeCount: 5,
-    tags: ["Crew Rally"],
-    feedback: "Would Rally again",
+    tags: ["Crew Move"],
+    feedback: "Would do again",
   },
 ];
