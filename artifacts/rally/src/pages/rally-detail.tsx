@@ -1,5 +1,5 @@
 import { Link, useParams } from "wouter";
-import { ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2, Users, Star, Zap } from "lucide-react";
+import { ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2, Users, Zap, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRallies } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
@@ -25,18 +25,11 @@ const HOST_AVATAR_COLORS: Record<string, string> = {
   "Jamie K.":   "bg-rose-500",
 };
 
-const AFTER_MOVE_PROMPTS = [
-  "How was it? Rate the vibe.",
-  "Would you make this move again?",
-  "Nice one — let people know how it went.",
-];
-
 export default function MoveDetail() {
   const { id } = useParams<{ id: string }>();
   const { rallies, joinRally } = useRallies();
   const { toast } = useToast();
   const [reportOpen, setReportOpen] = useState(false);
-  const [afterMoveRating, setAfterMoveRating] = useState<number | null>(null);
 
   const move = rallies.find(r => r.id === id);
 
@@ -67,9 +60,7 @@ export default function MoveDetail() {
       {/* Hero banner */}
       <div className={cn("h-52 w-full relative overflow-hidden flex items-center justify-center", cat.color)}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(255,255,255,0.04),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.02)_0%,transparent_50%)]" />
         <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0d0d0d] to-transparent" />
-
         <div className="relative flex flex-col items-center gap-3 z-10">
           <div className="text-6xl drop-shadow-lg">{cat.emoji}</div>
           {isLive && (
@@ -84,7 +75,7 @@ export default function MoveDetail() {
         </div>
       </div>
 
-      {/* Back + Share overlay */}
+      {/* Back + Share */}
       <div className="absolute top-0 left-0 right-0 max-w-sm mx-auto px-4 pt-12 z-40 flex items-center justify-between">
         <Link href="/discover">
           <div className="w-9 h-9 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center">
@@ -107,9 +98,14 @@ export default function MoveDetail() {
             <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold", cat.color, cat.text)}>
               {cat.emoji} {move.category}
             </span>
-            <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
-              <MapPin className="w-3 h-3 text-primary" /> {move.distance}
-            </span>
+            <div className="flex items-center gap-2">
+              {move.isCircleMove && (
+                <span className="text-[10px] font-black bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full">Circle Move</span>
+              )}
+              <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
+                <MapPin className="w-3 h-3 text-primary" /> {move.distance}
+              </span>
+            </div>
           </div>
 
           <h1 className="text-2xl font-black text-white leading-tight mb-4">{move.title}</h1>
@@ -198,40 +194,21 @@ export default function MoveDetail() {
           </div>
         </div>
 
-        {/* After the Move? — shown when joined */}
+        {/* After the Move? — only when joined */}
         {move.joined && (
-          <div className="bg-[#161616] rounded-2xl border border-white/5 overflow-hidden">
-            <div className="px-4 pt-4 pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Zap className="w-4 h-4 text-primary fill-primary/30" />
-                <h3 className="text-sm font-black text-white">After the Move?</h3>
+          <Link href={`/post-move/${move.id}`}>
+            <div className="bg-[#161616] rounded-2xl border border-white/5 p-4 flex items-center gap-3 active:scale-[0.99] transition-transform cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-xl shrink-0">🫶</div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <Zap className="w-3.5 h-3.5 text-primary fill-primary/30" />
+                  <span className="text-sm font-black text-white">After the Move?</span>
+                </div>
+                <p className="text-[11px] text-gray-500">React, add people to your Circle, keep it going.</p>
               </div>
-              <p className="text-[11px] text-gray-500 mb-3">
-                {AFTER_MOVE_PROMPTS[parseInt(id?.replace("r", "") ?? "0") % AFTER_MOVE_PROMPTS.length]}
-              </p>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map(star => (
-                  <button
-                    key={star}
-                    onClick={() => setAfterMoveRating(star)}
-                    className={cn(
-                      "flex-1 h-9 rounded-xl border text-base transition-all",
-                      afterMoveRating !== null && star <= afterMoveRating
-                        ? "bg-primary/20 border-primary/40 text-primary scale-105"
-                        : "bg-white/5 border-white/8 text-gray-600 hover:text-gray-300"
-                    )}
-                  >
-                    <Star className={cn("w-4 h-4 mx-auto", afterMoveRating !== null && star <= afterMoveRating ? "fill-primary text-primary" : "")} />
-                  </button>
-                ))}
-              </div>
-              {afterMoveRating !== null && (
-                <p className="text-[11px] text-primary font-bold mt-2 text-center">
-                  {afterMoveRating >= 4 ? "Nice one! Would you host again?" : afterMoveRating >= 3 ? "Good to know. See you at the next one." : "Thanks for the feedback."}
-                </p>
-              )}
+              <ChevronRight className="w-4 h-4 text-gray-600 shrink-0" />
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Report */}

@@ -10,6 +10,7 @@ import Interests from "@/pages/interests";
 import Discover from "@/pages/discover";
 import CreateMove from "@/pages/create";
 import MoveDetail from "@/pages/rally-detail";
+import PostMove from "@/pages/post-move";
 import ChatList from "@/pages/chat";
 import ChatDetail from "@/pages/chat-detail";
 import Friends from "@/pages/friends";
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/discover"      component={Discover}    />
       <Route path="/create"        component={CreateMove}  />
       <Route path="/rally/:id"     component={MoveDetail}  />
+      <Route path="/post-move/:id" component={PostMove}    />
       <Route path="/chat"          component={ChatList}    />
       <Route path="/chat/:id"      component={ChatDetail}  />
       <Route path="/friends"       component={Friends}     />

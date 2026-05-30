@@ -1,0 +1,172 @@
+Update the Brio prototype’s Circle concept and post-Move flow.
+
+This is a product logic and UI copy update, not a full rebuild.
+
+Important change:
+Brio Circles should NOT be treated primarily as themed recurring group meetups.
+
+Instead, Circles should work more like a lightweight social connection layer.
+
+A Circle is made up of people a user has met through Moves, added after Moves, or would want to move with again.
+
+Think of Circles as:
+
+* people you’ve moved with
+* people you’d move with again
+* people you trust enough to see or join future Moves
+* a simple friend/social graph layer inside Brio
+
+Do not require every Circle to have a centralized theme like “Coffee Circle” or “Gym Circle.”
+Those can exist later, but they should not be the default.
+
+Update product language:
+
+* Circles = your trusted Brio people / social circle
+* Add to Circle = add someone after a Move
+* Circle Moves = Moves visible to people in your Circle
+* Public Moves = open to nearby users
+* Private Moves = visible only to your Circle
+
+Update the app so Circles feel as simple as adding friends.
+
+POST-MOVE FLOW
+
+After a Move ends, show a prompt:
+
+Title:
+“How was the move?”
+
+Subtitle:
+“Help Brio keep the right people moving together.”
+
+Step 1: Reaction to the Move
+Let the user choose one or more reactions:
+
+* Good vibes
+* Would do again
+* Easy to show up
+* Felt off
+* No-show issue
+* Great host
+* Low pressure
+* New favorite
+
+Step 2: Attendee feedback
+Show attendees from the Move with lightweight feedback options.
+
+For each attendee, allow:
+
+* Add to Circle
+* Would move again
+* Good vibes
+* Didn’t show
+* Felt off
+* Report
+
+Avoid harsh public star ratings.
+Keep feedback private and trust/safety oriented.
+
+Step 3: Keep it going
+Ask:
+“Move again?”
+
+Options:
+
+* Make another Move
+* Invite them to a Move
+* Add people to Circle
+* Skip for now
+
+Update buttons:
+
+* “Add to Circle”
+* “Would Move Again”
+* “Make Another Move”
+* “Invite to a Move”
+
+PROFILE / CIRCLES SCREEN UPDATE
+
+Change the Circles screen so it feels like a social connection page, not just recurring groups.
+
+Sections:
+
+1. My Circle
+    People the user has added after Moves.
+2. People I’d Move With Again
+    Attendees the user marked positively after Moves.
+3. Recent Move Connections
+    People from recent Moves the user can add.
+
+Each person card should show:
+
+* avatar
+* name/username
+* level/trust badge
+* last Move together
+* mutual Moves if available
+* button: Add to Circle / In Your Circle
+
+Keep optional group Circles as a later feature, but make the MVP Circle concept person-based and simple.
+
+DISCOVER UPDATE
+
+Add filters or labels:
+
+* Public Moves
+* Circle Moves
+* Moves from people in your Circle
+
+Example copy:
+“Moves from your Circle”
+“People you’ve moved with before”
+“Make a Move for your Circle”
+
+SAFETY/TRUST
+
+Post-Move feedback should support trust and safety.
+If a user selects:
+
+* Felt off
+* Didn’t show
+* Report
+
+Show a simple follow-up modal:
+“Tell us what happened.”
+
+Options:
+
+* No-show
+* Creepy behavior
+* Harassment
+* Fake Move
+* Spam/scam
+* Other
+
+After submission:
+“Thanks. We’ll review this.”
+
+Do not make negative feedback public.
+Do not show public star ratings.
+Use feedback internally for trust, reputation, and future safety logic.
+
+Keep:
+
+* React + Tailwind
+* localStorage/mock data
+* existing clickable prototype
+* Brio branding
+* Moves language
+* “Make a Move”
+* “Live More” tagline
+* dark/light/auto theme
+* no backend
+* no WebSockets
+* no push notifications
+* no payments
+* no real auth
+
+Final goal:
+Circles should feel like a natural next step after a good Move.
+
+User flow should be:
+Make or join a Move → meet people → react after the Move → add good people to your Circle → see or invite them to future Moves.

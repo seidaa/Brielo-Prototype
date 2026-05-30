@@ -5,6 +5,8 @@ import {
   defaultCircles, Circle,
   ChatMessage, mockMessages,
   ActivityHistoryItem, mockActivityHistory, FeedbackLabel,
+  CirclePerson,
+  defaultMyCircle, defaultWouldMoveAgain, defaultRecentConnections,
 } from "@/data/mockData";
 
 const MOVES_KEY      = "brio_moves";
@@ -12,6 +14,7 @@ const USER_KEY       = "brio_user";
 const ONBOARDING_KEY = "brio_onboarding";
 const MESSAGES_KEY   = "brio_messages";
 const HISTORY_KEY    = "brio_history";
+const CIRCLE_KEY     = "brio_circle_persons";
 
 export function useRallies() {
   const [rallies, setRallies] = useState<Move[]>([]);
@@ -55,6 +58,72 @@ export function useOnboarding() {
 
 export function useCircles() {
   return { circles: defaultCircles };
+}
+
+export function useCirclePersons() {
+  type CircleState = {
+    myCircle: CirclePerson[];
+    wouldMoveAgain: CirclePerson[];
+    recentConnections: CirclePerson[];
+  };
+
+  const getDefault = (): CircleState => ({
+    myCircle: defaultMyCircle,
+    wouldMoveAgain: defaultWouldMoveAgain,
+    recentConnections: defaultRecentConnections,
+  });
+
+  const [state, setState] = useState<CircleState>(() => {
+    const stored = localStorage.getItem(CIRCLE_KEY);
+    return stored ? JSON.parse(stored) : getDefault();
+  });
+
+  const save = (s: CircleState) => {
+    setState(s);
+    localStorage.setItem(CIRCLE_KEY, JSON.stringify(s));
+  };
+
+  const addToCircle = (personId: string) => {
+    const updatePerson = (p: CirclePerson) =>
+      p.id === personId ? { ...p, inCircle: true } : p;
+
+    const moved: CirclePerson[] = [];
+    const newWould  = state.wouldMoveAgain.filter(p => {
+      if (p.id === personId) { moved.push({ ...p, inCircle: true }); return false; }
+      return true;
+    });
+    const newRecent = state.recentConnections.filter(p => {
+      if (p.id === personId) { moved.push({ ...p, inCircle: true }); return false; }
+      return true;
+    });
+
+    save({
+      myCircle: [
+        ...state.myCircle.map(updatePerson),
+        ...moved.filter(m => !state.myCircle.find(c => c.id === m.id)),
+      ],
+      wouldMoveAgain: newWould,
+      recentConnections: newRecent,
+    });
+  };
+
+  const markWouldMoveAgain = (personId: string) => {
+    const target = state.recentConnections.find(p => p.id === personId);
+    if (!target) return;
+    save({
+      ...state,
+      wouldMoveAgain: [...state.wouldMoveAgain, { ...target, wouldMoveAgain: true }],
+      recentConnections: state.recentConnections.filter(p => p.id !== personId),
+    });
+  };
+
+  return {
+    myCircle: state.myCircle,
+    wouldMoveAgain: state.wouldMoveAgain,
+    recentConnections: state.recentConnections,
+    addToCircle,
+    markWouldMoveAgain,
+  };
 }
 
 export function useMessages(moveId: string) {
