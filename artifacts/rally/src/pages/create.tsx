@@ -208,7 +208,7 @@ export default function CreateMove() {
           onClick={handleCreate}
           className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)]"
         >
-          <Zap className="w-5 h-5 mr-2 fill-black/30" /> Make It Live
+          <Zap className="w-5 h-5 mr-2 fill-black/30" /> Post Move
         </Button>
       </div>
     </div>
