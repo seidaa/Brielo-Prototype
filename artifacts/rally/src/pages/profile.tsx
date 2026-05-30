@@ -7,11 +7,11 @@ import { CAT_CONFIG, FeedbackLabel } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
 const PERKS = [
-  { level: 1,  title: "Early Brio User",    desc: "You were here from the start",            unlocked: true  },
+  { level: 1,  title: "Early Mover",        desc: "You were here from the start",            unlocked: true  },
   { level: 2,  title: "Shows Up",           desc: "Attended 3+ moves",                        unlocked: true  },
   { level: 3,  title: "Reliable Host",      desc: "Host up to 8 people per move",             unlocked: true  },
   { level: 5,  title: "Live Nearby Access", desc: "See private moves near you",               unlocked: false },
-  { level: 7,  title: "Circle Starter",     desc: "Create unlimited circles",                 unlocked: false },
+  { level: 7,  title: "Local Mover",        desc: "Create unlimited circles",                 unlocked: false },
   { level: 10, title: "City Legend",        desc: "Custom profile badge + city features",     unlocked: false },
 ];
 
@@ -95,7 +95,7 @@ export default function Profile() {
           <span className="px-2 py-0.5 bg-primary/15 text-primary rounded-full text-[11px] font-black uppercase tracking-wider border border-primary/20">
             Level {user.level}
           </span>
-          <span className="text-sm font-bold text-gray-500">Social Starter</span>
+          <span className="text-sm font-bold text-gray-500">Making Moves</span>
         </div>
         <p className="text-sm text-gray-400 mb-4 leading-relaxed">{user.bio}</p>
 
@@ -103,7 +103,7 @@ export default function Profile() {
           {[
             { label: "Moves",   value: user.rallyCount  },
             { label: "Hosted",  value: user.hostedCount },
-            { label: "Friends", value: user.friendsCount, href: "/friends" },
+            { label: "Circle",  value: user.friendsCount, href: "/circles" },
           ].map(stat => (
             stat.href
               ? <Link key={stat.label} href={stat.href} className="text-center group">

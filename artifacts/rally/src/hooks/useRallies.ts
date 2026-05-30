@@ -38,8 +38,17 @@ export function useUser() {
 
   useEffect(() => {
     const stored = localStorage.getItem(USER_KEY);
-    if (stored) setUser(JSON.parse(stored));
-    else localStorage.setItem(USER_KEY, JSON.stringify(defaultUserProfile));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Migrate stale badge name
+      if (parsed.badges?.includes("Early Brio User")) {
+        parsed.badges = parsed.badges.map((b: string) => b === "Early Brio User" ? "Early Mover" : b);
+        localStorage.setItem(USER_KEY, JSON.stringify(parsed));
+      }
+      setUser(parsed);
+    } else {
+      localStorage.setItem(USER_KEY, JSON.stringify(defaultUserProfile));
+    }
   }, []);
 
   const saveUser = (u: UserProfile) => { setUser(u); localStorage.setItem(USER_KEY, JSON.stringify(u)); };

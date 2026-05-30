@@ -140,7 +140,7 @@ export default function MoveDetail() {
             </div>
             <Link href={`/chat/${move.id}`}>
               <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 bg-transparent text-gray-300 hover:bg-white/5 text-xs font-bold gap-1">
-                <MessageCircle className="w-3 h-3" /> Ask
+                <MessageCircle className="w-3 h-3" /> Message Host
               </Button>
             </Link>
           </div>

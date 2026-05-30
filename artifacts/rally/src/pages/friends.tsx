@@ -138,8 +138,8 @@ export default function Friends() {
                     )}
                   >
                     {added[person.id]
-                      ? <><Check className="w-3 h-3 mr-1" /> Pending</>
-                      : <><UserPlus className="w-3 h-3 mr-1" /> Add</>
+                      ? <><Check className="w-3 h-3 mr-1" /> Added</>
+                      : <><UserPlus className="w-3 h-3 mr-1" /> Add to Circle</>
                     }
                   </Button>
                 </div>

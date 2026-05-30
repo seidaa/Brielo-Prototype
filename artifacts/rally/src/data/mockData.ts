@@ -119,7 +119,7 @@ export const defaultUserProfile: UserProfile = {
   rallyCount: 8,
   hostedCount: 2,
   friendsCount: 14,
-  badges: ["Early Brio User", "Shows Up"],
+  badges: ["Early Mover", "Shows Up"],
   interests: [],
 };
 
