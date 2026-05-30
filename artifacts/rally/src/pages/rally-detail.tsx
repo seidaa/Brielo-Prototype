@@ -1,5 +1,5 @@
 import { Link, useParams } from "wouter";
-import { ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2 } from "lucide-react";
+import { ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2, Users, Star, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRallies } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
@@ -10,24 +10,33 @@ import { cn } from "@/lib/utils";
 
 const AVATAR_COLORS = [
   "bg-orange-500", "bg-blue-500", "bg-emerald-500",
-  "bg-purple-500", "bg-pink-500", "bg-amber-500", "bg-cyan-500"
+  "bg-purple-500", "bg-pink-500", "bg-amber-500", "bg-cyan-500",
 ];
 
 const HOST_AVATAR_COLORS: Record<string, string> = {
-  "Marcus L.": "bg-orange-500",
-  "Priya S.": "bg-pink-500",
-  "Jordan K.": "bg-blue-500",
-  "Alex T.": "bg-purple-500",
-  "Sofia R.": "bg-green-500",
-  "Devon A.": "bg-amber-500",
+  "Marcus L.":  "bg-orange-500",
+  "Priya S.":   "bg-pink-500",
+  "Jordan K.":  "bg-blue-500",
+  "Alex T.":    "bg-purple-500",
+  "Sofia R.":   "bg-green-500",
+  "Devon A.":   "bg-amber-500",
   "Camille D.": "bg-cyan-500",
+  "Riley S.":   "bg-emerald-500",
+  "Jamie K.":   "bg-rose-500",
 };
+
+const AFTER_MOVE_PROMPTS = [
+  "How was it? Rate the vibe.",
+  "Would you make this move again?",
+  "Nice one — let people know how it went.",
+];
 
 export default function MoveDetail() {
   const { id } = useParams<{ id: string }>();
   const { rallies, joinRally } = useRallies();
   const { toast } = useToast();
   const [reportOpen, setReportOpen] = useState(false);
+  const [afterMoveRating, setAfterMoveRating] = useState<number | null>(null);
 
   const move = rallies.find(r => r.id === id);
 
@@ -54,13 +63,15 @@ export default function MoveDetail() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] pb-32 relative">
-      {/* Map banner */}
+
+      {/* Hero banner */}
       <div className={cn("h-52 w-full relative overflow-hidden flex items-center justify-center", cat.color)}>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1a22_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1a22_1px,transparent_1px)] bg-[size:2.5rem_2.5rem] opacity-40" />
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0d0d0d] to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(255,255,255,0.04),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.02)_0%,transparent_50%)]" />
+        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0d0d0d] to-transparent" />
 
         <div className="relative flex flex-col items-center gap-3 z-10">
-          <div className="text-5xl drop-shadow-lg">{cat.emoji}</div>
+          <div className="text-6xl drop-shadow-lg">{cat.emoji}</div>
           {isLive && (
             <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur px-3 py-1.5 rounded-full border border-white/10">
               <span className="relative flex h-2 w-2">
@@ -73,7 +84,7 @@ export default function MoveDetail() {
         </div>
       </div>
 
-      {/* Header overlay */}
+      {/* Back + Share overlay */}
       <div className="absolute top-0 left-0 right-0 max-w-sm mx-auto px-4 pt-12 z-40 flex items-center justify-between">
         <Link href="/discover">
           <div className="w-9 h-9 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center">
@@ -85,9 +96,12 @@ export default function MoveDetail() {
         </button>
       </div>
 
-      {/* Main content */}
+      {/* Content */}
       <div className="px-4 -mt-6 relative z-10 space-y-3">
+
+        {/* Main card */}
         <div className="bg-[#161616] rounded-2xl p-5 border border-white/8 shadow-2xl">
+
           {/* Category + distance */}
           <div className="flex items-center justify-between mb-3">
             <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold", cat.color, cat.text)}>
@@ -101,7 +115,7 @@ export default function MoveDetail() {
           <h1 className="text-2xl font-black text-white leading-tight mb-4">{move.title}</h1>
 
           {/* Time + Location */}
-          <div className="space-y-2.5 mb-5">
+          <div className="space-y-2 mb-5">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                 <Clock className="w-4 h-4 text-primary" />
@@ -126,11 +140,13 @@ export default function MoveDetail() {
                 {move.hostName}
                 <span className="text-primary ml-2 text-xs">Lv {move.hostLevel}</span>
               </div>
-              <div className="text-[11px] text-gray-500">Host</div>
+              <div className="text-[11px] text-gray-500">Hosting this Move</div>
             </div>
-            <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 bg-transparent text-gray-300 hover:bg-white/5 text-xs">
-              Ask
-            </Button>
+            <Link href={`/chat/${move.id}`}>
+              <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 bg-transparent text-gray-300 hover:bg-white/5 text-xs font-bold gap-1">
+                <MessageCircle className="w-3 h-3" /> Ask
+              </Button>
+            </Link>
           </div>
 
           {/* Vibe tags */}
@@ -149,42 +165,31 @@ export default function MoveDetail() {
 
           {/* Description */}
           <div className="mb-5">
-            <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2">Details</h3>
+            <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2">About this Move</h3>
             <p className="text-sm text-gray-300 leading-relaxed">{move.description}</p>
           </div>
 
           {/* Who's In */}
           <div>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Who's In</h3>
+              <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5" /> Who's In
+              </h3>
               <span className="text-xs font-bold text-primary">{move.going} / {move.maxSpots}</span>
             </div>
-
             <div className="flex -space-x-2 mb-3">
               {Array.from({ length: Math.min(move.going, 7) }).map((_, i) => (
-                <div
-                  key={i}
-                  className={cn("w-9 h-9 rounded-full border-2 border-[#161616] flex items-center justify-center text-[11px] font-black text-white", AVATAR_COLORS[i % AVATAR_COLORS.length])}
-                >
+                <div key={i} className={cn("w-9 h-9 rounded-full border-2 border-[#161616] flex items-center justify-center text-[11px] font-black text-white", AVATAR_COLORS[i % AVATAR_COLORS.length])}>
                   {String.fromCharCode(65 + i)}
                 </div>
               ))}
               {Array.from({ length: Math.max(0, Math.min(move.maxSpots - move.going, 4)) }).map((_, i) => (
-                <div
-                  key={`empty-${i}`}
-                  className="w-9 h-9 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-gray-700 text-xs"
-                >
-                  ?
-                </div>
+                <div key={`e${i}`} className="w-9 h-9 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-gray-700 text-xs">?</div>
               ))}
             </div>
-
             <div className="space-y-1">
               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                <div
-                  className={cn("h-full rounded-full transition-all", spotsLeft <= 2 ? "bg-amber-500" : "bg-primary")}
-                  style={{ width: `${fillPct}%` }}
-                />
+                <div className={cn("h-full rounded-full transition-all", spotsLeft <= 2 ? "bg-amber-500" : "bg-primary")} style={{ width: `${fillPct}%` }} />
               </div>
               <p className="text-[11px] text-gray-600">
                 {spotsLeft <= 0 ? "Move is full" : `${spotsLeft} spot${spotsLeft === 1 ? "" : "s"} remaining`}
@@ -192,14 +197,55 @@ export default function MoveDetail() {
             </div>
           </div>
         </div>
+
+        {/* After the Move? — shown when joined */}
+        {move.joined && (
+          <div className="bg-[#161616] rounded-2xl border border-white/5 overflow-hidden">
+            <div className="px-4 pt-4 pb-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-4 h-4 text-primary fill-primary/30" />
+                <h3 className="text-sm font-black text-white">After the Move?</h3>
+              </div>
+              <p className="text-[11px] text-gray-500 mb-3">
+                {AFTER_MOVE_PROMPTS[parseInt(id?.replace("r", "") ?? "0") % AFTER_MOVE_PROMPTS.length]}
+              </p>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <button
+                    key={star}
+                    onClick={() => setAfterMoveRating(star)}
+                    className={cn(
+                      "flex-1 h-9 rounded-xl border text-base transition-all",
+                      afterMoveRating !== null && star <= afterMoveRating
+                        ? "bg-primary/20 border-primary/40 text-primary scale-105"
+                        : "bg-white/5 border-white/8 text-gray-600 hover:text-gray-300"
+                    )}
+                  >
+                    <Star className={cn("w-4 h-4 mx-auto", afterMoveRating !== null && star <= afterMoveRating ? "fill-primary text-primary" : "")} />
+                  </button>
+                ))}
+              </div>
+              {afterMoveRating !== null && (
+                <p className="text-[11px] text-primary font-bold mt-2 text-center">
+                  {afterMoveRating >= 4 ? "Nice one! Would you host again?" : afterMoveRating >= 3 ? "Good to know. See you at the next one." : "Thanks for the feedback."}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Report */}
+        <button onClick={() => setReportOpen(true)} className="w-full flex items-center justify-center gap-1.5 py-2 text-[11px] text-gray-700 hover:text-gray-500 transition-colors">
+          <AlertTriangle className="w-3 h-3" /> Report this Move
+        </button>
       </div>
 
       {/* Fixed CTA */}
       <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto px-4 pb-8 pt-4 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/95 to-transparent z-50">
         {move.joined ? (
           <Link href={`/chat/${move.id}`}>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)]">
-              <MessageCircle className="w-5 h-5 mr-2" /> Open Move Chat
+            <Button className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)] flex items-center justify-center gap-2">
+              <MessageCircle className="w-5 h-5" /> Open Move Chat
             </Button>
           </Link>
         ) : (
@@ -216,13 +262,6 @@ export default function MoveDetail() {
             {spotsLeft <= 0 ? "Move is Full" : move.requiresApproval ? "Request to Join" : "I'm In"}
           </Button>
         )}
-
-        <button
-          onClick={() => setReportOpen(true)}
-          className="w-full mt-3 flex items-center justify-center gap-1.5 text-[11px] text-gray-600 hover:text-gray-400 transition-colors"
-        >
-          <AlertTriangle className="w-3 h-3" /> Report this move
-        </button>
       </div>
 
       <ReportModal open={reportOpen} onOpenChange={setReportOpen} />

@@ -8,8 +8,8 @@ import NotFound from "@/pages/not-found";
 import Onboarding from "@/pages/onboarding";
 import Interests from "@/pages/interests";
 import Discover from "@/pages/discover";
-import CreateRally from "@/pages/create";
-import RallyDetail from "@/pages/rally-detail";
+import CreateMove from "@/pages/create";
+import MoveDetail from "@/pages/rally-detail";
 import ChatList from "@/pages/chat";
 import ChatDetail from "@/pages/chat-detail";
 import Friends from "@/pages/friends";
@@ -23,18 +23,18 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Onboarding} />
-      <Route path="/interests" component={Interests} />
-      <Route path="/discover" component={Discover} />
-      <Route path="/create" component={CreateRally} />
-      <Route path="/rally/:id" component={RallyDetail} />
-      <Route path="/chat" component={ChatList} />
-      <Route path="/chat/:id" component={ChatDetail} />
-      <Route path="/friends" component={Friends} />
-      <Route path="/circles" component={Circles} />
-      <Route path="/circles/:id" component={CircleDetail} />
-      <Route path="/profile" component={Profile} />
-      <Route path="/map" component={Map} />
+      <Route path="/"              component={Onboarding}  />
+      <Route path="/interests"     component={Interests}   />
+      <Route path="/discover"      component={Discover}    />
+      <Route path="/create"        component={CreateMove}  />
+      <Route path="/rally/:id"     component={MoveDetail}  />
+      <Route path="/chat"          component={ChatList}    />
+      <Route path="/chat/:id"      component={ChatDetail}  />
+      <Route path="/friends"       component={Friends}     />
+      <Route path="/circles"       component={Circles}     />
+      <Route path="/circles/:id"   component={CircleDetail}/>
+      <Route path="/profile"       component={Profile}     />
+      <Route path="/map"           component={Map}         />
       <Route component={NotFound} />
     </Switch>
   );
