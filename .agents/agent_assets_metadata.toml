@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "6rWiNYrVRYYjhfnp3EoGQ"
+uri = "file://brio-brand-brief.md"
+type = "text"
+title = "Brio Brand Brief"
