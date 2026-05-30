@@ -18,8 +18,9 @@ export default function Onboarding() {
         </div>
 
         <div>
-          <h1 className="text-5xl font-black text-white tracking-tight mb-1.5">Brio</h1>
-          <p className="text-lg font-black text-primary">Less scrolling. More doing.</p>
+          <h1 className="text-5xl font-black text-white tracking-tight mb-1">Brio</h1>
+          <p className="text-2xl font-black text-primary mb-1">Live More</p>
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-widest">Less scrolling. More doing.</p>
         </div>
 
         <p className="text-sm text-gray-500 max-w-[260px] leading-relaxed">
