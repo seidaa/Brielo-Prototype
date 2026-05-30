@@ -1,28 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
-import { MapPin, Bell, Lock, ChevronRight, Search, Zap } from "lucide-react";
-import { useRallies, useUser } from "@/hooks/useRallies";
-import { RallyCard } from "@/components/RallyCard";
+import { MapPin, Bell, Zap, ChevronRight, Lock, Users, Calendar, ArrowRight } from "lucide-react";
+import { useRallies, useUser, useCircles } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
-import { CAT_CONFIG, friendsActivity } from "@/data/mockData";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { CAT_CONFIG, defaultCatConfig, friendsActivity } from "@/data/mockData";
 import { cn } from "@/lib/utils";
-
-const CATEGORIES = [
-  { label: "All", emoji: "✨" },
-  { label: "Fitness",   emoji: CAT_CONFIG.Fitness.emoji },
-  { label: "Coffee",    emoji: CAT_CONFIG.Coffee.emoji },
-  { label: "Food",      emoji: CAT_CONFIG.Food.emoji },
-  { label: "Sports",    emoji: CAT_CONFIG.Sports.emoji },
-  { label: "Nightlife", emoji: CAT_CONFIG.Nightlife.emoji },
-  { label: "Outdoors",  emoji: CAT_CONFIG.Outdoors.emoji },
-  { label: "Concerts",  emoji: CAT_CONFIG.Concerts.emoji },
-  { label: "Study",     emoji: CAT_CONFIG.Study.emoji },
-];
-
-const TABS = ["Live Now", "Coming Up", "Friends"] as const;
-type Tab = typeof TABS[number];
 
 const TICKER = [
   "Priya S. just joined Sunday Coffee Run",
@@ -32,160 +15,263 @@ const TICKER = [
   "Alex T. needs 2 more for Trivia Night",
 ];
 
+const LOW_PRESSURE_TAGS = ["Low Pressure", "First Timers Welcome", "Beginner Friendly", "Open to New People"];
+
 export default function Discover() {
   const { rallies, joinRally } = useRallies();
   const { user } = useUser();
-  const [activeTab, setActiveTab] = useState<Tab>("Live Now");
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [showFomoModal, setShowFomoModal] = useState(false);
+  const { circles } = useCircles();
+
   const [tickerIdx, setTickerIdx] = useState(0);
   const [tickerVisible, setTickerVisible] = useState(true);
+  const [joinedId, setJoinedId] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTickerVisible(false);
-      setTimeout(() => {
-        setTickerIdx(i => (i + 1) % TICKER.length);
-        setTickerVisible(true);
-      }, 300);
+      setTimeout(() => { setTickerIdx(i => (i + 1) % TICKER.length); setTickerVisible(true); }, 300);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const nowMoves = rallies.filter(r => r.time === "Now");
-  const laterMoves = rallies.filter(r => r.time !== "Now");
-
-  const tabMoves = activeTab === "Live Now" ? nowMoves
-    : activeTab === "Coming Up" ? laterMoves
-    : rallies;
-
-  const filteredMoves = tabMoves.filter(r =>
-    activeCategory === "All" || r.category === activeCategory
+  const nowMoves  = rallies.filter(r => r.time === "Now");
+  const forYou    = rallies.filter(r =>
+    user.interests.length === 0 || user.interests.includes(r.category)
+  );
+  const lowPressure = rallies.filter(r =>
+    r.vibeTags.some(t => LOW_PRESSURE_TAGS.includes(t))
   );
 
-  const friendsMoves = activeTab === "Friends"
-    ? rallies.filter(r => friendsActivity.some(fa => fa.moveId === r.id))
-    : [];
-
-  const displayMoves = activeTab === "Friends" ? friendsMoves : filteredMoves;
+  const handleJoin = (id: string) => {
+    joinRally(id);
+    setJoinedId(id);
+    setTimeout(() => setJoinedId(null), 2000);
+  };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-24">
-      {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/95 backdrop-blur-xl z-40 border-b border-white/5">
+    <div className="min-h-screen bg-[#0d0d0d] pb-28">
+
+      {/* ── Fixed Header ─────────────────────────────────────────── */}
+      <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/96 backdrop-blur-xl z-40 border-b border-white/5">
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <h1 className="text-2xl font-black text-primary tracking-tight">Brio</h1>
-            <button className="flex items-center text-[11px] font-bold text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 gap-1">
+            <button className="flex items-center text-[11px] font-bold text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 gap-1 active:scale-95 transition-transform">
               <MapPin className="w-3 h-3 text-primary" /> Chicago
             </button>
           </div>
           <div className="flex items-center gap-2.5">
             <button className="relative w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
               <Bell className="w-4 h-4 text-gray-300" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-[#0d0d0d]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0d0d0d]" />
             </button>
             <Link href="/profile">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-orange-500 p-[2px]">
-                <div className="w-full h-full rounded-full bg-[#1a1a1a] flex items-center justify-center text-[11px] font-black text-white">
-                  YB
-                </div>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-orange-500 p-[2px] cursor-pointer">
+                <div className="w-full h-full rounded-full bg-[#1a1a1a] flex items-center justify-center text-[11px] font-black text-white">YB</div>
               </div>
             </Link>
           </div>
         </div>
 
-        {/* Live activity ticker */}
-        <div className="px-4 py-1.5 flex items-center gap-2 border-t border-white/5">
+        {/* Live ticker */}
+        <div className="px-4 py-1.5 flex items-center gap-2 border-t border-white/5 bg-black/10">
           <span className="flex items-center gap-1 text-[10px] font-black text-primary shrink-0 uppercase tracking-wider">
             <Zap className="w-3 h-3 fill-primary" /> Live
           </span>
-          <p className={cn(
-            "text-[11px] text-gray-400 truncate transition-opacity duration-300",
-            tickerVisible ? "opacity-100" : "opacity-0"
-          )}>
+          <p className={cn("text-[11px] text-gray-400 truncate transition-opacity duration-300", tickerVisible ? "opacity-100" : "opacity-0")}>
             {TICKER[tickerIdx]}
           </p>
         </div>
-
-        {/* Tabs */}
-        <div className="flex gap-1 px-4 pt-1 pb-0">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "flex-1 text-[12px] font-bold py-2 rounded-t-lg transition-all border-b-2",
-                activeTab === tab
-                  ? "text-white border-primary"
-                  : "text-gray-500 border-transparent hover:text-gray-300"
-              )}
-            >
-              {tab}
-              {tab === "Live Now" && nowMoves.length > 0 && (
-                <span className="ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
-                  {nowMoves.length}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
       </header>
 
-      {/* Scrollable content */}
-      <div className="pt-[118px]">
-        {/* Category filter */}
-        {activeTab !== "Friends" && (
-          <div className="flex overflow-x-auto px-4 gap-2 py-3 no-scrollbar">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.label}
-                onClick={() => setActiveCategory(cat.label)}
-                className={cn(
-                  "whitespace-nowrap flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all shrink-0",
-                  activeCategory === cat.label
-                    ? "bg-white text-black border-white"
-                    : "bg-white/5 text-gray-400 border-white/5 hover:border-white/15"
-                )}
-              >
-                <span>{cat.emoji}</span> {cat.label}
-              </button>
-            ))}
-          </div>
-        )}
+      {/* ── Scrollable Content ────────────────────────────────────── */}
+      <div className="pt-[86px]">
 
-        {/* Section header */}
-        <div className="px-4 mb-3">
-          {activeTab === "Friends" ? (
-            <div>
-              <h2 className="text-lg font-black text-white">Friends Activity</h2>
-              <p className="text-xs text-gray-500">See what your people are up to</p>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-black text-white">
-                  {activeTab === "Live Now" ? "Live Moves Nearby" : "Coming Up"}
-                </h2>
-                <p className="text-xs text-gray-500">
-                  {displayMoves.length > 0
-                    ? `${displayMoves.length} ${displayMoves.length === 1 ? "move" : "moves"} ${activeTab === "Live Now" ? "happening right now" : "later today"}`
-                    : "Nothing in this category right now"}
-                </p>
+        {/* ── Greeting + Make a Move CTA ───────────────────────────── */}
+        <div className="px-4 pt-5 pb-4">
+          <p className="text-sm text-gray-500 mb-0.5">Good afternoon ☀️</p>
+          <h2 className="text-2xl font-black text-white mb-4">What's the move?</h2>
+
+          <Link href="/create">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-amber-500/10 to-orange-500/5 border border-primary/25 p-4 active:scale-[0.98] transition-transform cursor-pointer">
+              {/* Glow orb */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Zap className="w-4 h-4 text-primary fill-primary/30" />
+                    <span className="text-xs font-black text-primary uppercase tracking-wider">Make a Move</span>
+                  </div>
+                  <p className="text-white font-bold text-sm leading-snug mb-3">
+                    Post something you're down to do — see who's in.
+                  </p>
+                  <div className="inline-flex items-center gap-1.5 bg-primary text-black font-black text-sm px-4 py-2 rounded-xl shadow-[0_0_16px_rgba(250,204,21,0.4)]">
+                    Make It Live <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
               </div>
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
-                <Search className="w-4 h-4 text-gray-400" />
-              </button>
             </div>
-          )}
+          </Link>
         </div>
 
-        {/* Friends activity feed */}
-        {activeTab === "Friends" && (
-          <div className="px-4 mb-4 space-y-2">
+        {/* ── A: Live Moves Nearby ─────────────────────────────────── */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between px-4 mb-3">
+            <div>
+              <h3 className="text-base font-black text-white flex items-center gap-2">
+                Live Moves Nearby
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative rounded-full h-2 w-2 bg-red-500" />
+                </span>
+              </h3>
+              <p className="text-[11px] text-gray-500">{nowMoves.length} happening right now</p>
+            </div>
+            <Link href="/map">
+              <span className="text-[11px] font-bold text-primary flex items-center gap-1">Map <ChevronRight className="w-3 h-3" /></span>
+            </Link>
+          </div>
+
+          {nowMoves.length === 0 ? (
+            <div className="mx-4 bg-[#161616] border border-white/5 rounded-2xl p-5 text-center">
+              <p className="text-sm text-gray-500">Nothing live right now.</p>
+              <Link href="/create"><span className="text-xs font-bold text-primary mt-1 block">Be the first →</span></Link>
+            </div>
+          ) : (
+            <div className="flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar">
+              {nowMoves.map(move => {
+                const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
+                const spotsLeft = move.maxSpots - move.going;
+                return (
+                  <Link key={move.id} href={`/rally/${move.id}`}>
+                    <div className="shrink-0 w-44 bg-[#181818] border border-white/8 rounded-2xl p-3.5 active:scale-[0.97] transition-transform cursor-pointer">
+                      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-lg mb-2.5", cat.color)}>
+                        {cat.emoji}
+                      </div>
+                      <p className="text-sm font-bold text-white leading-snug line-clamp-2 mb-2">{move.title}</p>
+                      <div className="flex items-center justify-between text-[11px] text-gray-500 mb-2.5">
+                        <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" /> {move.distance}</span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" /> {move.going}
+                        </span>
+                      </div>
+                      <button
+                        onClick={e => { e.preventDefault(); handleJoin(move.id); }}
+                        className={cn(
+                          "w-full text-[11px] font-black rounded-lg py-1.5 transition-all",
+                          move.joined || joinedId === move.id
+                            ? "bg-white/8 text-gray-400 border border-white/8"
+                            : spotsLeft <= 0
+                            ? "bg-white/5 text-gray-600"
+                            : "bg-primary text-black shadow-[0_0_8px_rgba(250,204,21,0.3)]"
+                        )}
+                      >
+                        {move.joined || joinedId === move.id ? "You're In ✓" : spotsLeft <= 0 ? "Full" : "I'm In"}
+                      </button>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ── B: Moves For You ─────────────────────────────────────── */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between px-4 mb-3">
+            <h3 className="text-base font-black text-white">Moves For You</h3>
+            <span className="text-[11px] text-gray-600">{forYou.length} picks</span>
+          </div>
+          <div className="px-4 space-y-2.5">
+            {forYou.slice(0, 5).map(move => (
+              <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
+            ))}
+          </div>
+        </section>
+
+        {/* ── C: Circles Near You ──────────────────────────────────── */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between px-4 mb-3">
+            <div>
+              <h3 className="text-base font-black text-white">Circles Near You</h3>
+              <p className="text-[11px] text-gray-500">Recurring groups that meet regularly</p>
+            </div>
+            <Link href="/circles">
+              <span className="text-[11px] font-bold text-primary flex items-center gap-1">All <ChevronRight className="w-3 h-3" /></span>
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar">
+            {circles.slice(0, 6).map(circle => {
+              const cat = CAT_CONFIG[circle.category] ?? defaultCatConfig;
+              return (
+                <Link key={circle.id} href={`/circles/${circle.id}`}>
+                  <div className="shrink-0 w-36 bg-[#161616] border border-white/5 rounded-2xl p-3 active:scale-[0.97] transition-transform cursor-pointer">
+                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-2", cat.color)}>
+                      {circle.emoji}
+                    </div>
+                    <p className="text-xs font-bold text-white leading-snug mb-1 line-clamp-2">{circle.name}</p>
+                    <p className="text-[10px] text-gray-600 flex items-center gap-1 mb-2">
+                      <Users className="w-3 h-3" /> {circle.membersCount}
+                    </p>
+                    <p className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full text-center", cat.color, cat.text)}>
+                      {circle.schedule.split(" ").slice(0, 2).join(" ")}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+            <Link href="/circles">
+              <div className="shrink-0 w-36 border border-dashed border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center gap-2 active:scale-[0.97] transition-transform cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-xl">🫂</div>
+                <p className="text-[11px] font-bold text-gray-400 text-center">View all circles</p>
+              </div>
+            </Link>
+          </div>
+        </section>
+
+        {/* ── D: Low-Pressure Picks ────────────────────────────────── */}
+        {lowPressure.length > 0 && (
+          <section className="mb-6">
+            <div className="px-4 mb-3">
+              <h3 className="text-base font-black text-white">Low-Pressure Picks</h3>
+              <p className="text-[11px] text-gray-500">First timers welcome · no expectations</p>
+            </div>
+            <div className="px-4 space-y-2.5">
+              {lowPressure.slice(0, 3).map(move => (
+                <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Brio Livestreams teaser ───────────────────────────────── */}
+        <div className="mx-4 mb-6 rounded-2xl border border-white/8 bg-gradient-to-br from-[#1a1a1a] to-[#111] p-4 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 pointer-events-none" />
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center text-lg shrink-0">
+              📡
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-black text-white text-sm">Brio Livestreams</span>
+                <span className="text-[9px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/25 px-2 py-0.5 rounded-full uppercase tracking-wider">Coming Soon</span>
+              </div>
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                Preview the vibe before you pull up. Live moments from Moves and Circles — before you join.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Friends Activity ─────────────────────────────────────── */}
+        <section className="mb-4">
+          <div className="px-4 mb-3">
+            <h3 className="text-base font-black text-white">Friends Activity</h3>
+          </div>
+          <div className="px-4 space-y-2">
             {friendsActivity.map((fa, i) => (
               <Link key={i} href={`/rally/${fa.moveId}`}>
-                <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-2xl px-4 py-3">
+                <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-2xl px-4 py-3 active:scale-[0.99] transition-transform">
                   <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">
                     {fa.name.charAt(0)}
                   </div>
@@ -202,108 +288,70 @@ export default function Discover() {
               </Link>
             ))}
           </div>
-        )}
+        </section>
 
-        {/* Move cards */}
-        <div className="px-4 space-y-3">
-          {displayMoves.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="text-4xl mb-4">
-                {activeTab === "Friends" ? "👯" : activeCategory === "All" ? "🗺️" : (CAT_CONFIG[activeCategory]?.emoji ?? "📍")}
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">
-                {activeTab === "Friends" ? "No friend activity" :
-                 activeTab === "Live Now" ? "Nothing live right now" :
-                 `No ${activeCategory === "All" ? "" : activeCategory + " "}moves later today`}
-              </h3>
-              <p className="text-sm text-gray-500 max-w-[200px] mb-6">
-                {activeTab === "Friends"
-                  ? "Add friends to see what they're doing."
-                  : "Be the first to make a move."}
-              </p>
-              <Link href="/create">
-                <Button className="bg-primary text-black font-bold rounded-xl px-6">
-                  Make a Move
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            displayMoves.map(move => (
-              <RallyCard key={move.id} rally={move} onJoin={() => joinRally(move.id)} />
-            ))
-          )}
-        </div>
-
-        {/* Private Moves card */}
-        {displayMoves.length > 0 && (
-          <div className="mx-4 mt-6 mb-2 rounded-2xl p-4 bg-gradient-to-br from-[#1c1c1c] to-[#111] border border-white/8 relative overflow-hidden">
-            <div className="absolute top-4 right-4 flex items-center gap-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-              </span>
-              <span className="text-[10px] font-black text-primary uppercase tracking-wider">Live</span>
-            </div>
-            <div className="flex items-center gap-2 mb-1">
-              <Lock className="w-4 h-4 text-primary" />
-              <h3 className="font-black text-white">Private Moves Nearby</h3>
-            </div>
-            <p className="text-xs text-gray-500 mb-3">
-              Unlock invite-only moves happening right now around you.
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => setShowFomoModal(true)}
-              className="w-full h-9 bg-transparent border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl text-xs font-bold"
-            >
-              Unlock at Level 5 · {5 - user.level > 0 ? `${5 - user.level} levels away` : "Ready!"}
-            </Button>
-          </div>
-        )}
       </div>
 
-      {/* Private Moves Modal */}
-      <Dialog open={showFomoModal} onOpenChange={setShowFomoModal}>
-        <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#161616] border-white/10 text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+      <BottomNav />
+    </div>
+  );
+}
+
+// ── Inline Move Card ─────────────────────────────────────────────────────────
+function MoveCard({ move, onJoin, highlight }: { move: { id: string; title: string; category: string; time: string; distance: string; going: number; maxSpots: number; hostName: string; hostLevel: number; vibeTags: string[]; requiresApproval: boolean; joined: boolean }; onJoin: (id: string) => void; highlight: boolean }) {
+  const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
+  const spotsLeft = move.maxSpots - move.going;
+  const isFull = spotsLeft <= 0;
+  const isJoined = move.joined || highlight;
+
+  return (
+    <div className="bg-[#161616] border border-white/5 rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
+      <Link href={`/rally/${move.id}`} className="block p-4 pb-3">
+        <div className="flex items-start gap-3">
+          <div className={cn("w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0", cat.color)}>
+            {cat.emoji}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <h4 className="text-sm font-bold text-white leading-snug line-clamp-2">{move.title}</h4>
+              <span className="text-[10px] text-gray-600 shrink-0 mt-0.5">{move.time}</span>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] text-gray-500">
+              <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{move.distance}</span>
+              <span className="flex items-center gap-1"><Users className="w-3 h-3" />{move.going} in</span>
+              <span className={cn("font-bold", isFull ? "text-red-400" : spotsLeft <= 2 ? "text-amber-400" : "text-gray-500")}>
+                {isFull ? "Full" : `${spotsLeft} left`}
               </span>
-              Happening Right Now
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              Private moves around you — not listed publicly.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2 mt-2 select-none pointer-events-none">
-            {[
-              { title: "Rooftop Hang", dist: "0.6 mi", going: 9 },
-              { title: "Coffee & Deep Talks", dist: "0.3 mi", going: 4 },
-              { title: "Lakefront Bike Crew", dist: "0.9 mi", going: 8 },
-            ].map((item, i) => (
-              <div key={i} className={cn("bg-white/5 border border-white/5 p-3 rounded-xl flex justify-between items-center", i === 1 && "blur-[2px] opacity-60")}>
-                <div>
-                  <div className="font-bold text-sm text-white">{item.title}</div>
-                  <div className="text-[11px] text-gray-500">{item.dist} away</div>
-                </div>
-                <div className="text-xs font-black text-primary">{item.going} in</div>
-              </div>
+            </div>
+          </div>
+        </div>
+        {move.vibeTags.length > 0 && (
+          <div className="flex gap-1.5 flex-wrap mt-2.5">
+            {move.vibeTags.slice(0, 3).map(t => (
+              <span key={t} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-white/5 text-gray-500 rounded-md border border-white/5">{t}</span>
             ))}
           </div>
-          <div className="mt-3 bg-white/3 border border-white/8 rounded-xl p-3 space-y-1.5">
-            <p className="text-[11px] text-gray-400 flex items-center gap-2"><ChevronRight className="w-3 h-3 text-primary"/> Moves last 30–60 min</p>
-            <p className="text-[11px] text-gray-400 flex items-center gap-2"><ChevronRight className="w-3 h-3 text-primary"/> Host approves drop-ins</p>
-            <p className="text-[11px] text-white font-bold flex items-center gap-2"><Lock className="w-3 h-3 text-primary"/> Unlocks at Level 5</p>
-          </div>
-          <Button onClick={() => setShowFomoModal(false)} className="w-full mt-2 bg-primary text-black font-bold rounded-xl h-11">
-            Got it
-          </Button>
-        </DialogContent>
-      </Dialog>
-
-      <BottomNav />
+        )}
+      </Link>
+      <div className="px-4 pb-3.5 flex gap-2">
+        <button
+          onClick={() => onJoin(move.id)}
+          disabled={isFull || isJoined}
+          className={cn(
+            "flex-1 font-bold text-sm rounded-xl py-2 transition-all",
+            isJoined ? "bg-white/5 text-gray-400 border border-white/8"
+            : isFull  ? "bg-white/3 text-gray-600 cursor-not-allowed"
+            : "bg-primary text-black shadow-[0_0_10px_rgba(250,204,21,0.2)] active:scale-95"
+          )}
+        >
+          {isJoined ? "You're In ✓" : isFull ? "Move is Full" : move.requiresApproval ? "Request to Join" : "I'm In"}
+        </button>
+        <Link href={`/rally/${move.id}`}>
+          <button className="px-3 py-2 rounded-xl bg-white/5 border border-white/8 text-[11px] font-bold text-gray-400 hover:text-gray-200 transition-colors">
+            Ask Host
+          </button>
+        </Link>
+      </div>
     </div>
   );
 }

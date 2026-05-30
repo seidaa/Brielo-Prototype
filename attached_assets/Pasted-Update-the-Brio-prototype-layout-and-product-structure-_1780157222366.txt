@@ -1,0 +1,263 @@
+Update the Brio prototype layout and product structure.
+
+This is a layout redesign + rebrand refinement, not a full rebuild.
+
+Keep:
+- React + Tailwind
+- localStorage/mock data
+- existing clickable prototype behavior
+- dark/light/auto theme system
+- no backend
+- no WebSockets
+- no push notifications
+- no payments
+- no real auth
+
+New app identity:
+Brio is a social lifestyle app for making real-life moves, joining recurring circles, and doing more outside the screen.
+
+Core language:
+- Brio = app name
+- Moves = one-time activities
+- Make a Move = create an activity
+- Circles = recurring activity groups
+- Sessions = structured activities like gym/study/work/creative meetups
+- Live Moves Nearby = active nearby activities
+- After the Move? = follow-up prompt
+- Brio Livestreams = future feature only, do not fully build yet
+
+Important:
+I want the layout to feel different from the old Rally prototype.
+Make Brio feel warmer, more lifestyle-focused, more social, and less like a generic event listing app.
+
+LAYOUT DIRECTION
+
+1. New Home / Discover Layout
+
+Replace the old event-card-heavy feed with a more layered social dashboard.
+
+Top section:
+- Brio wordmark
+- Location: Chicago
+- Small profile/avatar
+- Notification icon
+- Greeting copy:
+  “What’s the move?”
+
+Under that, add a prominent quick action card:
+“Make a Move”
+Subtitle:
+“Post something you’re down to do and see who’s in.”
+Button:
+“Make It Live”
+
+Then show sections in this order:
+
+A. Live Moves Nearby
+Horizontal cards.
+These should feel urgent and active.
+Example:
+- Coffee Meetup — 0.3 mi — 4 here
+- Pickup Basketball — 0.9 mi — 8 here
+- Study Session — 0.4 mi — 3 here
+
+B. Moves For You
+Personalized-looking cards based on user interests.
+Example:
+- Sunday Coffee Run
+- Leg Day at XSport
+- Trivia Team Needed
+- Beginner-Friendly Walk
+
+C. Circles Near You
+Recurring groups.
+Example:
+- Sunday Coffee Circle
+- Chicago Gym Circle
+- Trivia Circle
+- Foodie Circle
+
+D. Low-Pressure Picks
+Cards tagged:
+- First timers welcome
+- Beginner friendly
+- Low pressure
+- Open to new people
+
+This should feel like a social lifestyle dashboard, not Eventbrite.
+
+2. Card Layout Changes
+
+Make Move cards cleaner and more modern.
+
+Each Move card should include:
+- title
+- category
+- time
+- distance
+- people going
+- host level/trust badge
+- vibe tags
+- primary button: “I’m In”
+- secondary text/action: “Ask Host”
+
+Use compact but visually rich cards.
+Avoid making every card look like a formal event listing.
+
+3. Create Screen Layout
+
+Rename and redesign the create screen as:
+
+“Make a Move”
+
+Make it feel casual and fast.
+
+Use conversational field labels:
+- What’s the move?
+- When?
+- Where?
+- Who’s coming?
+- What’s the vibe?
+
+Vibe tag chips:
+- Chill
+- Social
+- First timers welcome
+- Low pressure
+- Beginner friendly
+- Recurring
+- Quick
+- Hype
+
+Submit button:
+“Make It Live”
+
+4. Circles Layout
+
+Make Circles feel like a major Brio feature, not a secondary page.
+
+Add a section/page:
+“Brio Circles”
+
+Copy:
+“Recurring groups built around the things you actually like doing.”
+
+Circle cards should include:
+- Circle name
+- category
+- member count
+- next Move
+- recurring schedule
+- public/private badge
+- button: “Join Circle” or “View Circle”
+
+Use examples:
+- Sunday Coffee Circle
+- Chicago Gym Circle
+- Trivia Circle
+- Concert Circle
+- Pickup Basketball Circle
+- Foodie Circle
+- Study Circle
+- Walking Circle
+
+5. Profile Layout
+
+Make the profile feel more like a social identity page.
+
+Show:
+- avatar
+- username
+- level
+- short bio
+- badges
+- Moves attended
+- Moves hosted
+- Circles joined
+- Activity History
+- progress to next level
+
+Badges:
+- Early Brio User
+- Shows Up
+- Reliable Host
+- Circle Starter
+- Live Nearby Access
+
+6. Future Feature Placeholder: Brio Livestreams
+
+Do not fully build livestreaming.
+
+Add a small tasteful placeholder card somewhere appropriate, preferably on the Discover page or Profile feature preview:
+
+Title:
+“Brio Livestreams”
+
+Copy:
+“Coming later: preview the vibe before you pull up.”
+
+Or:
+“See live moments from Moves and Circles before you join.”
+
+Make it clearly marked:
+“Coming Soon”
+
+Do not add video upload, streaming, camera access, WebRTC, or backend features.
+
+This is only a future feature teaser.
+
+7. Visual Direction
+
+Make the UI feel:
+- warm
+- energetic
+- polished
+- modern
+- social
+- lifestyle-focused
+- less racing/checkered
+- less formal event app
+
+Keep yellow as the action/energy accent, but use softer Brio details:
+- glow
+- spark
+- circular patterns
+- motion gradients
+- subtle city energy
+- social rings/circles
+
+Reduce old checkered flag/racing visuals.
+
+8. Navigation
+
+Keep bottom nav:
+- Discover
+- Map
+- Create
+- Chat
+- Profile
+
+The center Create button should still lead to “Make a Move.”
+
+Include Circles inside Discover and Profile for now rather than overcrowding bottom nav.
+
+9. Quality Check
+
+After changes:
+- Make sure all pages still work.
+- Make sure localStorage still works.
+- Make sure created Moves appear in Discover.
+- Make sure old Rally wording is removed.
+- Make sure old Plan wording is removed.
+- Make sure Crew wording is replaced with Circle/Circles.
+- Make sure UI works in dark and light mode.
+- Make sure content does not hide behind bottom navigation.
+- Make sure no console errors appear.
+
+Final goal:
+Brio should feel like its own product, not a renamed Rally clone.
+
+It should feel like a warm, energetic social lifestyle app built around:
+Make Moves.
+Join Circles.
+Do more outside the screen.

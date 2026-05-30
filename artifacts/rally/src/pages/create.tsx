@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ChevronLeft, MapPin, Clock, Users } from "lucide-react";
+import { ChevronLeft, MapPin, Clock, Users, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { CAT_CONFIG } from "@/data/mockData";
 
-const CATEGORIES = ["Fitness", "Coffee", "Food", "Study", "Sports", "Nightlife", "Outdoors", "Concerts", "Gaming", "Creative", "Networking", "Errands"];
+const CATEGORIES = ["Fitness", "Coffee", "Food", "Study", "Sports", "Nightlife", "Outdoors", "Concerts", "Gaming", "Creative", "Networking", "Walking", "Errands"];
 const TIMES = ["Now", "In 30 min", "In 1 hour", "Later today", "Tomorrow"];
-const VIBES = ["Chill", "Productive", "Social", "Hype", "Quick Hang", "First Timers Welcome", "Low Pressure", "Beginner Friendly", "Open to New People"];
+const VIBES = ["Chill", "Social", "First Timers Welcome", "Low Pressure", "Beginner Friendly", "Recurring", "Quick", "Hype", "Open to New People", "Productive"];
 
 export default function CreateMove() {
   const [, setLoc] = useLocation();
@@ -34,8 +34,7 @@ export default function CreateMove() {
       toast({ title: "Add a title and location to continue", variant: "destructive" });
       return;
     }
-
-    const newMove = {
+    addRally({
       id: "r" + Date.now(),
       title: title.trim(),
       category,
@@ -50,21 +49,17 @@ export default function CreateMove() {
       description: description.trim() || "Come join the move!",
       requiresApproval,
       joined: true,
-    };
-
-    addRally(newMove);
+    });
     toast({ title: "⚡ Move is live!", description: "You're hosting. Move Chat is open." });
     setLoc("/discover");
   };
 
-  const toggleVibe = (v: string) => {
-    setSelectedVibes(prev =>
-      prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]
-    );
-  };
+  const toggleVibe = (v: string) =>
+    setSelectedVibes(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]);
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-32">
+    <div className="min-h-screen bg-[#0d0d0d] pb-36">
+
       {/* Header */}
       <header className="sticky top-0 bg-[#0d0d0d]/95 backdrop-blur-xl z-40 px-4 h-14 flex items-center border-b border-white/5">
         <Link href="/discover" className="mr-3 w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
@@ -72,14 +67,17 @@ export default function CreateMove() {
         </Link>
         <div>
           <h1 className="text-base font-black text-white leading-tight">Make a Move</h1>
-          <p className="text-[10px] text-gray-500">What are you doing?</p>
+          <p className="text-[10px] text-gray-500">Post something, see who's in</p>
         </div>
       </header>
 
-      <div className="p-4 space-y-5">
-        {/* Title */}
+      <div className="p-4 space-y-6">
+
+        {/* What's the move? */}
         <div className="space-y-2">
-          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">What's the move?</label>
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+            <Zap className="w-3 h-3 text-primary" /> What's the move?
+          </label>
           <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
@@ -101,9 +99,7 @@ export default function CreateMove() {
                   onClick={() => setCategory(cat)}
                   className={cn(
                     "whitespace-nowrap flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold border transition-all shrink-0",
-                    isSelected
-                      ? "bg-primary text-black border-primary"
-                      : "bg-white/5 text-gray-400 border-white/5"
+                    isSelected ? "bg-primary text-black border-primary" : "bg-white/5 text-gray-400 border-white/5"
                   )}
                 >
                   <span>{cfg?.emoji}</span> {cat}
@@ -113,10 +109,10 @@ export default function CreateMove() {
           </div>
         </div>
 
-        {/* When */}
+        {/* When? */}
         <div className="space-y-2">
           <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5" /> When
+            <Clock className="w-3 h-3" /> When?
           </label>
           <div className="flex flex-wrap gap-2">
             {TIMES.map(t => (
@@ -134,10 +130,10 @@ export default function CreateMove() {
           </div>
         </div>
 
-        {/* Location */}
+        {/* Where? */}
         <div className="space-y-2">
           <label className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5" /> Where
+            <MapPin className="w-3 h-3" /> Where?
           </label>
           <Input
             value={location}
@@ -147,7 +143,7 @@ export default function CreateMove() {
           />
         </div>
 
-        {/* Description */}
+        {/* Details */}
         <div className="space-y-2">
           <label className="text-xs font-black text-gray-400 uppercase tracking-wider">Details (optional)</label>
           <textarea
@@ -159,35 +155,25 @@ export default function CreateMove() {
           />
         </div>
 
-        {/* Max spots */}
+        {/* Who's coming? */}
         <div className="flex items-center justify-between bg-[#1a1a1a] border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-primary" />
             <div>
-              <div className="text-sm font-bold text-white">Spots Available</div>
-              <div className="text-xs text-gray-500">Including you</div>
+              <div className="text-sm font-bold text-white">Who's coming?</div>
+              <div className="text-xs text-gray-500">Max spots (including you)</div>
             </div>
           </div>
           <div className="flex items-center gap-3 bg-black/30 rounded-full border border-white/8 px-1 py-1">
-            <button
-              onClick={() => setMaxSpots(Math.max(2, maxSpots - 1))}
-              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white font-bold text-lg rounded-full hover:bg-white/5 transition-all"
-            >
-              −
-            </button>
+            <button onClick={() => setMaxSpots(Math.max(2, maxSpots - 1))} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white font-bold text-lg rounded-full hover:bg-white/5 transition-all">−</button>
             <span className="font-black text-white w-5 text-center">{maxSpots}</span>
-            <button
-              onClick={() => setMaxSpots(Math.min(50, maxSpots + 1))}
-              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white font-bold text-lg rounded-full hover:bg-white/5 transition-all"
-            >
-              +
-            </button>
+            <button onClick={() => setMaxSpots(Math.min(50, maxSpots + 1))} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white font-bold text-lg rounded-full hover:bg-white/5 transition-all">+</button>
           </div>
         </div>
 
-        {/* Vibe tags */}
+        {/* What's the vibe? */}
         <div className="space-y-2">
-          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">Vibe Tags</label>
+          <label className="text-xs font-black text-gray-400 uppercase tracking-wider">What's the vibe?</label>
           <div className="flex flex-wrap gap-2">
             {VIBES.map(v => (
               <button
@@ -222,7 +208,7 @@ export default function CreateMove() {
           onClick={handleCreate}
           className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)]"
         >
-          ⚡ Make a Move
+          <Zap className="w-5 h-5 mr-2 fill-black/30" /> Make It Live
         </Button>
       </div>
     </div>

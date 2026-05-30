@@ -16,18 +16,19 @@ export type Move = {
 };
 
 export const CAT_CONFIG: Record<string, { emoji: string; color: string; border: string; text: string; dot: string }> = {
-  Fitness:    { emoji: "💪", color: "bg-orange-500/15", border: "border-orange-500/30", text: "text-orange-400", dot: "bg-orange-400" },
-  Coffee:     { emoji: "☕", color: "bg-amber-500/15",  border: "border-amber-500/30",  text: "text-amber-400",  dot: "bg-amber-400" },
-  Food:       { emoji: "🍕", color: "bg-green-500/15",  border: "border-green-500/30",  text: "text-green-400",  dot: "bg-green-400" },
-  Study:      { emoji: "📚", color: "bg-cyan-500/15",   border: "border-cyan-500/30",   text: "text-cyan-400",   dot: "bg-cyan-400" },
-  Sports:     { emoji: "🏀", color: "bg-blue-500/15",   border: "border-blue-500/30",   text: "text-blue-400",   dot: "bg-blue-400" },
-  Nightlife:  { emoji: "🎵", color: "bg-purple-500/15", border: "border-purple-500/30", text: "text-purple-400", dot: "bg-purple-400" },
-  Outdoors:   { emoji: "🌿", color: "bg-emerald-500/15",border: "border-emerald-500/30",text: "text-emerald-400",dot: "bg-emerald-400" },
-  Concerts:   { emoji: "🎤", color: "bg-pink-500/15",   border: "border-pink-500/30",   text: "text-pink-400",   dot: "bg-pink-400" },
-  Gaming:     { emoji: "🎮", color: "bg-indigo-500/15", border: "border-indigo-500/30", text: "text-indigo-400", dot: "bg-indigo-400" },
-  Networking: { emoji: "🤝", color: "bg-slate-500/15",  border: "border-slate-500/30",  text: "text-slate-400",  dot: "bg-slate-400" },
-  Creative:   { emoji: "🎨", color: "bg-rose-500/15",   border: "border-rose-500/30",   text: "text-rose-400",   dot: "bg-rose-400" },
-  Errands:    { emoji: "✅", color: "bg-gray-500/15",   border: "border-gray-500/30",   text: "text-gray-400",   dot: "bg-gray-400" },
+  Fitness:    { emoji: "💪", color: "bg-orange-500/15", border: "border-orange-500/30", text: "text-orange-400",  dot: "bg-orange-400"  },
+  Coffee:     { emoji: "☕", color: "bg-amber-500/15",  border: "border-amber-500/30",  text: "text-amber-400",   dot: "bg-amber-400"   },
+  Food:       { emoji: "🍕", color: "bg-green-500/15",  border: "border-green-500/30",  text: "text-green-400",   dot: "bg-green-400"   },
+  Study:      { emoji: "📚", color: "bg-cyan-500/15",   border: "border-cyan-500/30",   text: "text-cyan-400",    dot: "bg-cyan-400"    },
+  Sports:     { emoji: "🏀", color: "bg-blue-500/15",   border: "border-blue-500/30",   text: "text-blue-400",    dot: "bg-blue-400"    },
+  Nightlife:  { emoji: "🎵", color: "bg-purple-500/15", border: "border-purple-500/30", text: "text-purple-400",  dot: "bg-purple-400"  },
+  Outdoors:   { emoji: "🌿", color: "bg-emerald-500/15",border: "border-emerald-500/30",text: "text-emerald-400", dot: "bg-emerald-400" },
+  Concerts:   { emoji: "🎤", color: "bg-pink-500/15",   border: "border-pink-500/30",   text: "text-pink-400",    dot: "bg-pink-400"    },
+  Gaming:     { emoji: "🎮", color: "bg-indigo-500/15", border: "border-indigo-500/30", text: "text-indigo-400",  dot: "bg-indigo-400"  },
+  Networking: { emoji: "🤝", color: "bg-slate-500/15",  border: "border-slate-500/30",  text: "text-slate-400",   dot: "bg-slate-400"   },
+  Creative:   { emoji: "🎨", color: "bg-rose-500/15",   border: "border-rose-500/30",   text: "text-rose-400",    dot: "bg-rose-400"    },
+  Errands:    { emoji: "✅", color: "bg-gray-500/15",   border: "border-gray-500/30",   text: "text-gray-400",    dot: "bg-gray-400"    },
+  Walking:    { emoji: "🚶", color: "bg-teal-500/15",   border: "border-teal-500/30",   text: "text-teal-400",    dot: "bg-teal-400"    },
 };
 
 export const defaultCatConfig = { emoji: "📍", color: "bg-primary/15", border: "border-primary/30", text: "text-primary", dot: "bg-primary" };
@@ -47,7 +48,7 @@ export const defaultMoves: Move[] = [
     description: "Heavy leg day session at XSport Fitness on Michigan Ave. All levels welcome but bring your A-game. We'll hit squats, leg press, and Romanian deadlifts.",
     location: "XSport Fitness, Michigan Ave",
     requiresApproval: false,
-    joined: false
+    joined: false,
   },
   {
     id: "r2",
@@ -63,7 +64,7 @@ export const defaultMoves: Move[] = [
     description: "Grabbing coffee at Intelligentsia on Randolph. Come chat and chill — no agenda, just good convo and better espresso.",
     location: "Intelligentsia Coffee, Randolph St",
     requiresApproval: false,
-    joined: false
+    joined: false,
   },
   {
     id: "r3",
@@ -75,11 +76,11 @@ export const defaultMoves: Move[] = [
     maxSpots: 10,
     hostName: "Jordan K.",
     hostLevel: 5,
-    vibeTags: ["Hype", "Quick Hang"],
+    vibeTags: ["Hype", "Quick"],
     description: "Pickup run at Grant Park courts. Full court. We need 4 more for even teams. Bring water, it's warm out.",
     location: "Grant Park Basketball Courts",
     requiresApproval: true,
-    joined: false
+    joined: false,
   },
   {
     id: "r4",
@@ -95,7 +96,7 @@ export const defaultMoves: Move[] = [
     description: "Pub trivia at Longman & Eagle. Need 2 more people to fill the team. We came 2nd last week — let's get that win.",
     location: "Longman & Eagle, Logan Square",
     requiresApproval: false,
-    joined: false
+    joined: false,
   },
   {
     id: "r5",
@@ -111,7 +112,7 @@ export const defaultMoves: Move[] = [
     description: "Hitting up the new taco spot in Pilsen. Great reviews — want to check it out with people and share plates.",
     location: "Pilsen, Chicago",
     requiresApproval: false,
-    joined: false
+    joined: false,
   },
   {
     id: "r6",
@@ -123,11 +124,11 @@ export const defaultMoves: Move[] = [
     maxSpots: 12,
     hostName: "Camille D.",
     hostLevel: 5,
-    vibeTags: ["Productive", "Low Pressure"],
+    vibeTags: ["Low Pressure", "Beginner Friendly"],
     description: "Easy 4-mile run along the lakefront path at sunset. All paces welcome. We'll finish near Navy Pier.",
     location: "Lakefront Trail, Chicago",
     requiresApproval: false,
-    joined: false
+    joined: false,
   },
   {
     id: "r7",
@@ -143,14 +144,46 @@ export const defaultMoves: Move[] = [
     description: "Live jazz night at The Green Mill. Cover charge is $10. Getting there early to grab seats. Real Chicago vibes.",
     location: "The Green Mill, Uptown",
     requiresApproval: false,
-    joined: false
-  }
+    joined: false,
+  },
+  {
+    id: "r8",
+    title: "Beginner-Friendly Walk",
+    category: "Walking",
+    distance: "0.5 mi",
+    time: "5:00 PM",
+    going: 2,
+    maxSpots: 10,
+    hostName: "Riley S.",
+    hostLevel: 2,
+    vibeTags: ["Low Pressure", "First Timers Welcome", "Beginner Friendly"],
+    description: "Casual neighborhood walk around Lincoln Park. Great way to meet new people with zero pressure. Bring your dog if you have one!",
+    location: "Lincoln Park, Chicago",
+    requiresApproval: false,
+    joined: false,
+  },
+  {
+    id: "r9",
+    title: "Study Session @ Harold's",
+    category: "Study",
+    distance: "0.7 mi",
+    time: "3:00 PM",
+    going: 2,
+    maxSpots: 6,
+    hostName: "Jamie K.",
+    hostLevel: 4,
+    vibeTags: ["Productive", "Low Pressure", "Open to New People"],
+    description: "Quiet study/work session at Harold Washington Library. Bring headphones, laptop, whatever you're working on.",
+    location: "Harold Washington Library, State St",
+    requiresApproval: false,
+    joined: false,
+  },
 ];
 
 export const friendsActivity = [
-  { name: "Marcus L.", action: "joined", moveTitle: "Leg Day at XSport", moveId: "r1", time: "2m ago" },
-  { name: "Priya S.", action: "hosting", moveTitle: "Sunday Coffee Run", moveId: "r2", time: "5m ago" },
-  { name: "Jordan K.", action: "joined", moveTitle: "Pickup Basketball", moveId: "r3", time: "12m ago" },
+  { name: "Marcus L.", action: "joined",  moveTitle: "Leg Day at XSport",  moveId: "r1", time: "2m ago"  },
+  { name: "Priya S.",  action: "hosting", moveTitle: "Sunday Coffee Run",   moveId: "r2", time: "5m ago"  },
+  { name: "Jordan K.", action: "joined",  moveTitle: "Pickup Basketball",   moveId: "r3", time: "12m ago" },
 ];
 
 export type UserProfile = {
@@ -175,25 +208,31 @@ export const defaultUserProfile: UserProfile = {
   rallyCount: 8,
   hostedCount: 2,
   friendsCount: 14,
-  badges: ["Phone Verified", "Early Mover"],
-  interests: []
+  badges: ["Early Brio User", "Shows Up"],
+  interests: [],
 };
 
-export type Crew = {
+export type Circle = {
   id: string;
   name: string;
+  category: string;
   membersCount: number;
   nextMoveTime: string;
+  schedule: string;
   isPublic: boolean;
   emoji: string;
+  description: string;
 };
 
-export const defaultCrews: Crew[] = [
-  { id: "c1", name: "Sunday Coffee Crew",      membersCount: 8,  nextMoveTime: "Sunday 9:00 AM",   isPublic: true,  emoji: "☕" },
-  { id: "c2", name: "Chicago Gym Crew",         membersCount: 12, nextMoveTime: "Monday 6:30 PM",   isPublic: false, emoji: "💪" },
-  { id: "c3", name: "Trivia Crew",              membersCount: 4,  nextMoveTime: "Thursday 7:30 PM", isPublic: false, emoji: "🧠" },
-  { id: "c4", name: "Concert Crew",             membersCount: 21, nextMoveTime: "TBD",              isPublic: true,  emoji: "🎵" },
-  { id: "c5", name: "Pickup Basketball Crew",   membersCount: 15, nextMoveTime: "Saturday 10:00 AM",isPublic: true,  emoji: "🏀" },
+export const defaultCircles: Circle[] = [
+  { id: "c1", name: "Sunday Coffee Circle",    category: "Coffee",    membersCount: 8,  nextMoveTime: "Sun 9:00 AM",  schedule: "Every Sunday",    isPublic: true,  emoji: "☕", description: "Weekly coffee ritual. Good people, no agenda." },
+  { id: "c2", name: "Chicago Gym Circle",      category: "Fitness",   membersCount: 12, nextMoveTime: "Mon 6:30 PM",  schedule: "Mon / Wed / Fri", isPublic: false, emoji: "💪", description: "Accountability crew for the gym. Push each other." },
+  { id: "c3", name: "Trivia Circle",           category: "Nightlife", membersCount: 4,  nextMoveTime: "Thu 7:30 PM",  schedule: "Every Thursday",  isPublic: false, emoji: "🧠", description: "Weekly pub trivia team at Longman & Eagle." },
+  { id: "c4", name: "Concert Circle",          category: "Concerts",  membersCount: 21, nextMoveTime: "TBD",          schedule: "As shows come up", isPublic: true,  emoji: "🎵", description: "People who actually go to shows, not just save Spotify." },
+  { id: "c5", name: "Pickup Basketball Circle",category: "Sports",    membersCount: 15, nextMoveTime: "Sat 10:00 AM", schedule: "Every Saturday",  isPublic: true,  emoji: "🏀", description: "Full-court pickup at Grant Park. All skill levels." },
+  { id: "c6", name: "Foodie Circle",           category: "Food",      membersCount: 9,  nextMoveTime: "Fri 7:00 PM",  schedule: "Every other Fri", isPublic: true,  emoji: "🍕", description: "Rotating dinner spots around Chicago neighborhoods." },
+  { id: "c7", name: "Study Circle",            category: "Study",     membersCount: 6,  nextMoveTime: "Wed 2:00 PM",  schedule: "Every Wednesday", isPublic: true,  emoji: "📚", description: "Co-working and study sessions. Bring your focus." },
+  { id: "c8", name: "Walking Circle",          category: "Walking",   membersCount: 11, nextMoveTime: "Sat 8:00 AM",  schedule: "Every Saturday",  isPublic: true,  emoji: "🚶", description: "Morning walks around different Chicago neighborhoods." },
 ];
 
 export type ChatMessage = {
@@ -205,22 +244,20 @@ export type ChatMessage = {
 };
 
 export const mockMessages: Record<string, ChatMessage[]> = {
-  "r1": [
+  r1: [
     { id: "m1", moveId: "r1", senderName: "Marcus L.", text: "I'm running 5 minutes late", isMe: false },
     { id: "m2", moveId: "r1", senderName: "Jordan K.", text: "All good, we're warming up", isMe: false },
     { id: "m3", moveId: "r1", senderName: "Marcus L.", text: "Which entrance are you at?", isMe: false },
   ],
-  "r2": [
+  r2: [
     { id: "m4", moveId: "r2", senderName: "Priya S.", text: "Meet near the front entrance", isMe: false },
     { id: "m5", moveId: "r2", senderName: "Priya S.", text: "I grabbed the corner table 🙌", isMe: false },
   ],
-  "r3": [
+  r3: [
     { id: "m6", moveId: "r3", senderName: "Jordan K.", text: "Can I bring a friend?", isMe: false },
     { id: "m7", moveId: "r3", senderName: "Marcus L.", text: "Yeah we need 1 more anyway", isMe: false },
-  ]
+  ],
 };
-
-// ─── Activity History ──────────────────────────────────────────────────────────
 
 export type FeedbackLabel = "Good vibes" | "Would do again" | "No-show" | "Felt off";
 
@@ -231,78 +268,16 @@ export type ActivityHistoryItem = {
   date: string;
   role: "hosted" | "attended";
   attendeeCount: number;
-  tags: ("Recurring" | "Crew Move")[];
+  tags: ("Recurring" | "Circle Move")[];
   feedback?: FeedbackLabel;
 };
 
 export const mockActivityHistory: ActivityHistoryItem[] = [
-  {
-    id: "h1",
-    title: "Sunday Coffee Run",
-    category: "Coffee",
-    date: "May 18",
-    role: "hosted",
-    attendeeCount: 4,
-    tags: ["Recurring"],
-    feedback: "Good vibes",
-  },
-  {
-    id: "h2",
-    title: "Tuesday Trivia Crew",
-    category: "Nightlife",
-    date: "May 13",
-    role: "attended",
-    attendeeCount: 6,
-    tags: [],
-    feedback: "Would do again",
-  },
-  {
-    id: "h3",
-    title: "Weekly Gym Session",
-    category: "Fitness",
-    date: "May 12",
-    role: "attended",
-    attendeeCount: 3,
-    tags: ["Crew Move"],
-    feedback: "Good vibes",
-  },
-  {
-    id: "h4",
-    title: "Pickup Basketball",
-    category: "Sports",
-    date: "May 10",
-    role: "hosted",
-    attendeeCount: 8,
-    tags: [],
-    feedback: "Would do again",
-  },
-  {
-    id: "h5",
-    title: "Jazz at the Green Mill",
-    category: "Nightlife",
-    date: "May 5",
-    role: "attended",
-    attendeeCount: 5,
-    tags: [],
-  },
-  {
-    id: "h6",
-    title: "Lakefront Sunset Run",
-    category: "Outdoors",
-    date: "Apr 29",
-    role: "attended",
-    attendeeCount: 7,
-    tags: ["Recurring"],
-    feedback: "Good vibes",
-  },
-  {
-    id: "h7",
-    title: "Board Games Night",
-    category: "Gaming",
-    date: "Apr 22",
-    role: "hosted",
-    attendeeCount: 5,
-    tags: ["Crew Move"],
-    feedback: "Would do again",
-  },
+  { id: "h1", title: "Sunday Coffee Run",    category: "Coffee",    date: "May 18", role: "hosted",   attendeeCount: 4, tags: ["Recurring"],     feedback: "Good vibes"     },
+  { id: "h2", title: "Tuesday Trivia Circle",category: "Nightlife", date: "May 13", role: "attended", attendeeCount: 6, tags: [],                feedback: "Would do again" },
+  { id: "h3", title: "Weekly Gym Session",   category: "Fitness",   date: "May 12", role: "attended", attendeeCount: 3, tags: ["Circle Move"],   feedback: "Good vibes"     },
+  { id: "h4", title: "Pickup Basketball",    category: "Sports",    date: "May 10", role: "hosted",   attendeeCount: 8, tags: [],                feedback: "Would do again" },
+  { id: "h5", title: "Jazz at the Green Mill",category:"Nightlife",  date: "May 5",  role: "attended", attendeeCount: 5, tags: []                                            },
+  { id: "h6", title: "Lakefront Sunset Run", category: "Outdoors",  date: "Apr 29", role: "attended", attendeeCount: 7, tags: ["Recurring"],     feedback: "Good vibes"     },
+  { id: "h7", title: "Board Games Night",    category: "Gaming",    date: "Apr 22", role: "hosted",   attendeeCount: 5, tags: ["Circle Move"],   feedback: "Would do again" },
 ];

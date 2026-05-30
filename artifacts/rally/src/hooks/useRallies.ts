@@ -2,46 +2,30 @@ import { useState, useEffect } from "react";
 import {
   defaultMoves, defaultUserProfile,
   Move, UserProfile,
-  defaultCrews, Crew,
+  defaultCircles, Circle,
   ChatMessage, mockMessages,
   ActivityHistoryItem, mockActivityHistory, FeedbackLabel,
 } from "@/data/mockData";
 
-const MOVES_KEY    = "brio_moves";
-const USER_KEY     = "brio_user";
+const MOVES_KEY      = "brio_moves";
+const USER_KEY       = "brio_user";
 const ONBOARDING_KEY = "brio_onboarding";
-const MESSAGES_KEY = "brio_messages";
-const HISTORY_KEY  = "brio_history";
+const MESSAGES_KEY   = "brio_messages";
+const HISTORY_KEY    = "brio_history";
 
 export function useRallies() {
   const [rallies, setRallies] = useState<Move[]>([]);
 
   useEffect(() => {
     const stored = localStorage.getItem(MOVES_KEY);
-    if (stored) {
-      setRallies(JSON.parse(stored));
-    } else {
-      setRallies(defaultMoves);
-      localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
-    }
+    setRallies(stored ? JSON.parse(stored) : defaultMoves);
+    if (!stored) localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
   }, []);
 
-  const saveMoves = (newMoves: Move[]) => {
-    setRallies(newMoves);
-    localStorage.setItem(MOVES_KEY, JSON.stringify(newMoves));
-  };
-
-  const addRally = (move: Move) => {
-    saveMoves([move, ...rallies]);
-  };
-
-  const joinRally = (id: string) => {
-    saveMoves(
-      rallies.map((r) =>
-        r.id === id ? { ...r, joined: true, going: r.going + 1 } : r
-      )
-    );
-  };
+  const saveMoves = (m: Move[]) => { setRallies(m); localStorage.setItem(MOVES_KEY, JSON.stringify(m)); };
+  const addRally  = (m: Move)   => saveMoves([m, ...rallies]);
+  const joinRally = (id: string) =>
+    saveMoves(rallies.map(r => r.id === id ? { ...r, joined: true, going: r.going + 1 } : r));
 
   return { rallies, addRally, joinRally };
 }
@@ -51,40 +35,26 @@ export function useUser() {
 
   useEffect(() => {
     const stored = localStorage.getItem(USER_KEY);
-    if (stored) {
-      setUser(JSON.parse(stored));
-    } else {
-      localStorage.setItem(USER_KEY, JSON.stringify(defaultUserProfile));
-    }
+    if (stored) setUser(JSON.parse(stored));
+    else localStorage.setItem(USER_KEY, JSON.stringify(defaultUserProfile));
   }, []);
 
-  const saveUser = (newUser: UserProfile) => {
-    setUser(newUser);
-    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
-  };
-
-  const updateInterests = (interests: string[]) => {
-    saveUser({ ...user, interests });
-  };
+  const saveUser = (u: UserProfile) => { setUser(u); localStorage.setItem(USER_KEY, JSON.stringify(u)); };
+  const updateInterests = (interests: string[]) => saveUser({ ...user, interests });
 
   return { user, saveUser, updateInterests };
 }
 
 export function useOnboarding() {
-  const [isOnboarded, setIsOnboarded] = useState<boolean>(() => {
-    return localStorage.getItem(ONBOARDING_KEY) === "true";
-  });
-
-  const completeOnboarding = () => {
-    setIsOnboarded(true);
-    localStorage.setItem(ONBOARDING_KEY, "true");
-  };
-
+  const [isOnboarded, setIsOnboarded] = useState<boolean>(() =>
+    localStorage.getItem(ONBOARDING_KEY) === "true"
+  );
+  const completeOnboarding = () => { setIsOnboarded(true); localStorage.setItem(ONBOARDING_KEY, "true"); };
   return { isOnboarded, completeOnboarding };
 }
 
 export function useCircles() {
-  return { circles: defaultCrews };
+  return { circles: defaultCircles };
 }
 
 export function useMessages(moveId: string) {
@@ -92,28 +62,18 @@ export function useMessages(moveId: string) {
 
   useEffect(() => {
     const storedStr = localStorage.getItem(MESSAGES_KEY);
-    const allMessages = storedStr ? JSON.parse(storedStr) : mockMessages;
-    if (!storedStr) {
-      localStorage.setItem(MESSAGES_KEY, JSON.stringify(mockMessages));
-    }
-    setMessages(allMessages[moveId] || []);
+    const all = storedStr ? JSON.parse(storedStr) : mockMessages;
+    if (!storedStr) localStorage.setItem(MESSAGES_KEY, JSON.stringify(mockMessages));
+    setMessages(all[moveId] || []);
   }, [moveId]);
 
   const sendMessage = (text: string) => {
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      moveId,
-      senderName: "You",
-      text,
-      isMe: true,
-    };
-
+    const msg: ChatMessage = { id: Date.now().toString(), moveId, senderName: "You", text, isMe: true };
     const storedStr = localStorage.getItem(MESSAGES_KEY);
-    const allMessages = storedStr ? JSON.parse(storedStr) : {};
-    const updatedMoveMessages = [...(allMessages[moveId] || []), newMessage];
-    const updatedAll = { ...allMessages, [moveId]: updatedMoveMessages };
-    localStorage.setItem(MESSAGES_KEY, JSON.stringify(updatedAll));
-    setMessages(updatedMoveMessages);
+    const all = storedStr ? JSON.parse(storedStr) : {};
+    const updated = { ...all, [moveId]: [...(all[moveId] || []), msg] };
+    localStorage.setItem(MESSAGES_KEY, JSON.stringify(updated));
+    setMessages(updated[moveId]);
   };
 
   return { messages, sendMessage };
@@ -124,27 +84,23 @@ export function useActivityHistory() {
 
   useEffect(() => {
     const stored = localStorage.getItem(HISTORY_KEY);
-    if (stored) {
-      setHistory(JSON.parse(stored));
-    } else {
-      setHistory(mockActivityHistory);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(mockActivityHistory));
-    }
+    if (stored) setHistory(JSON.parse(stored));
+    else { setHistory(mockActivityHistory); localStorage.setItem(HISTORY_KEY, JSON.stringify(mockActivityHistory)); }
   }, []);
 
   const setFeedback = (id: string, feedback: FeedbackLabel) => {
     setHistory(prev => {
-      const updated = prev.map(item =>
-        item.id === id ? { ...item, feedback } : item
-      );
+      const updated = prev.map(item => item.id === id ? { ...item, feedback } : item);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
       return updated;
     });
   };
 
-  const attendedCount = history.filter(h => h.role === "attended").length;
-  const hostedCount   = history.filter(h => h.role === "hosted").length;
-  const crewCount     = history.filter(h => h.tags.includes("Crew Move")).length;
-
-  return { history, setFeedback, attendedCount, hostedCount, crewCount };
+  return {
+    history,
+    setFeedback,
+    attendedCount: history.filter(h => h.role === "attended").length,
+    hostedCount:   history.filter(h => h.role === "hosted").length,
+    circleCount:   history.filter(h => h.tags.includes("Circle Move")).length,
+  };
 }
