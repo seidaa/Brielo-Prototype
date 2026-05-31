@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, UsersRound, Radio } from "lucide-react";
+import {
+  MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, UsersRound, Radio,
+  Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints, Clock,
+} from "lucide-react";
 import { BrioLogo } from "@/components/BrioLogo";
 import { useRallies, useUser, useCirclePersons } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
@@ -17,7 +21,24 @@ const TICKER = [
 
 const LOW_PRESSURE_TAGS = ["Low Pressure", "First Timers Welcome", "Beginner Friendly", "Open to New People"];
 
-type FilterType = "all" | "public" | "circle";
+type FilterType = "all" | "nearby" | "circle";
+
+// ── Category icon map (line icons, consistent with Brio style) ────────────────
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
 
 export default function Discover() {
   const { rallies, joinRally } = useRallies();
@@ -38,6 +59,7 @@ export default function Discover() {
   }, []);
 
   const nowMoves    = rallies.filter(r => r.time === "Now");
+  const nearbyMoves = rallies.filter(r => parseFloat(r.distance) <= 2.0);
   const circleMoves = rallies.filter(r => r.isCircleMove);
   const forYou      = rallies.filter(r =>
     user.interests.length === 0 || user.interests.includes(r.category)
@@ -57,8 +79,10 @@ export default function Discover() {
     setTimeout(() => setJoinedId(null), 2000);
   };
 
+  const displayedNowMoves = filter === "nearby" ? nearbyMoves.filter(r => r.time === "Now") : nowMoves;
+
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-28">
+    <div className="min-h-screen bg-[#0d0d0d] pb-40">
 
       {/* ── Fixed Header ─────────────────────────────────────────────── */}
       <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/96 backdrop-blur-xl z-40 border-b border-white/5">
@@ -125,9 +149,9 @@ export default function Discover() {
         {/* ── Filter row ───────────────────────────────────────────── */}
         <div className="flex gap-2 px-4 mb-5 overflow-x-auto no-scrollbar">
           {([
-            { id: "all"    as FilterType, label: "All Moves",        icon: null        },
-            { id: "public" as FilterType, label: "Public",           icon: null        },
-            { id: "circle" as FilterType, label: "From Your Circle", icon: "circle"    },
+            { id: "all"    as FilterType, label: "All Moves",        icon: null     },
+            { id: "nearby" as FilterType, label: "Nearby",           icon: null     },
+            { id: "circle" as FilterType, label: "From Your Circle", icon: "circle" },
           ]).map(f => (
             <button
               key={f.id}
@@ -139,16 +163,14 @@ export default function Discover() {
                   : "bg-white/5 text-gray-400 border-white/5"
               )}
             >
-              {f.icon === "circle" && (
-                <UsersRound className="w-3 h-3" />
-              )}
+              {f.icon === "circle" && <UsersRound className="w-3 h-3" />}
               {f.label}
             </button>
           ))}
         </div>
 
         {/* ── A: Live Moves Nearby ─────────────────────────────────── */}
-        {(filter === "all" || filter === "public") && (
+        {(filter === "all" || filter === "nearby") && (
           <section className="mb-6">
             <div className="flex items-center justify-between px-4 mb-3">
               <div>
@@ -159,49 +181,70 @@ export default function Discover() {
                     <span className="relative rounded-full h-2 w-2 bg-red-500" />
                   </span>
                 </h3>
-                <p className="text-[11px] text-gray-500">{nowMoves.length} happening right now</p>
+                <p className="text-[11px] text-gray-500">{displayedNowMoves.length} happening right now</p>
               </div>
               <Link href="/map">
                 <span className="text-[11px] font-bold text-primary flex items-center gap-1">Map <ChevronRight className="w-3 h-3" /></span>
               </Link>
             </div>
 
-            {nowMoves.length === 0 ? (
+            {displayedNowMoves.length === 0 ? (
               <div className="mx-4 bg-[#161616] border border-white/5 rounded-2xl p-5 text-center">
                 <p className="text-sm text-gray-500">Nothing live right now.</p>
                 <Link href="/create"><span className="text-xs font-bold text-primary mt-1 block">Be the first →</span></Link>
               </div>
             ) : (
               <div className="flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar">
-                {nowMoves.map(move => {
+                {displayedNowMoves.map(move => {
                   const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
+                  const CatIcon = CAT_ICONS[move.category];
                   const spotsLeft = move.maxSpots - move.going;
+                  const isJoined = move.joined || joinedId === move.id;
                   return (
                     <Link key={move.id} href={`/rally/${move.id}`}>
                       <div className="shrink-0 w-44 bg-[#181818] border border-white/8 rounded-2xl p-3.5 active:scale-[0.97] transition-transform cursor-pointer relative overflow-hidden">
                         {move.isCircleMove && (
                           <div className="absolute top-2 right-2 bg-primary/15 border border-primary/25 text-primary text-[9px] font-black px-1.5 py-0.5 rounded-full">Circle</div>
                         )}
-                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-lg mb-2.5", cat.color)}>
-                          {cat.emoji}
+                        {/* Icon */}
+                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center mb-2.5", cat.color)}>
+                          {CatIcon
+                            ? <CatIcon className={cn("w-4.5 h-4.5", cat.text)} strokeWidth={1.75} style={{ width: 18, height: 18 }} />
+                            : <span className="text-base">{cat.emoji}</span>
+                          }
                         </div>
-                        <p className="text-sm font-bold text-white leading-snug line-clamp-2 mb-1">{move.title}</p>
-                        <div className="flex items-center justify-between text-[11px] text-gray-500 mb-2.5">
-                          <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" /> {move.distance}</span>
-                          <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {move.going}</span>
+                        {/* Title */}
+                        <p className="text-sm font-bold text-white leading-snug line-clamp-2 mb-2">{move.title}</p>
+                        {/* Meta row */}
+                        <div className="space-y-1 mb-2.5">
+                          <div className="flex items-center justify-between text-[11px] text-gray-500">
+                            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{move.distance}</span>
+                            <span className="flex items-center gap-1"><Users className="w-3 h-3" />{move.going} going</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[11px]">
+                            <Clock className="w-3 h-3 text-red-400" />
+                            <span className="text-red-400 font-bold">Now</span>
+                            {spotsLeft > 0 && spotsLeft <= 3 && (
+                              <span className="text-amber-400 font-bold ml-auto">{spotsLeft} left</span>
+                            )}
+                            {spotsLeft <= 0 && (
+                              <span className="text-red-400 font-bold ml-auto">Full</span>
+                            )}
+                          </div>
                         </div>
+                        {/* Button */}
                         <button
                           onClick={e => { e.preventDefault(); handleJoin(move.id); }}
                           className={cn(
                             "w-full text-[11px] font-black rounded-lg py-1.5 transition-all",
-                            move.joined || joinedId === move.id
+                            isJoined
                               ? "bg-white/8 text-gray-400 border border-white/8"
                               : spotsLeft <= 0
                               ? "bg-white/5 text-gray-600"
                               : "bg-primary text-black shadow-[0_0_8px_rgba(250,204,21,0.3)]"
                           )}
                         >
-                          {move.joined || joinedId === move.id ? "You're In ✓" : spotsLeft <= 0 ? "Full" : "I'm In"}
+                          {isJoined ? "You're In ✓" : spotsLeft <= 0 ? "Full" : "I'm In"}
                         </button>
                       </div>
                     </Link>
@@ -234,18 +277,16 @@ export default function Discover() {
           </section>
         )}
 
-        {/* ── C: Moves For You ─────────────────────────────────────── */}
+        {/* ── C: Moves For You — compact empty state ───────────────── */}
         {filter !== "circle" && (
           <section className="mb-6">
             <div className="px-4 mb-3">
               <h3 className="text-base font-black text-white">Moves For You</h3>
             </div>
             {forYou.length === 0 ? (
-              <div className="mx-4 bg-[#161616] border border-white/5 rounded-2xl p-5 text-center">
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  Your picks will show up here as you make moves and add people to your Circle.
-                </p>
-              </div>
+              <p className="px-4 text-[12px] text-gray-600 leading-relaxed">
+                Your picks will show up as you make moves and add people to your Circle.
+              </p>
             ) : (
               <div className="px-4 space-y-2.5">
                 {forYou.slice(0, 5).map(move => (
@@ -323,7 +364,7 @@ export default function Discover() {
           <section className="mb-5">
             <div className="px-4 mb-3">
               <h3 className="text-base font-black text-white">Circle Activity</h3>
-              <p className="text-[11px] text-gray-500">People you've moved with before</p>
+              <p className="text-[11px] text-gray-500">Updates from people you've moved with</p>
             </div>
             <div className="px-4 space-y-2">
               {friendsActivity.map((fa, i) => (
@@ -355,9 +396,8 @@ export default function Discover() {
               <Radio className="w-4 h-4 text-gray-500" strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-400">
-                Coming later — preview the vibe before you pull up.
-              </p>
+              <p className="text-xs font-bold text-gray-400">Brio Livestreams</p>
+              <p className="text-[11px] text-gray-600">Preview the vibe before you pull up.</p>
             </div>
             <span className="text-[9px] font-black bg-white/5 text-gray-600 border border-white/8 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">Soon</span>
           </div>
@@ -398,6 +438,7 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
   circleLabel?: boolean;
 }) {
   const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
+  const CatIcon = CAT_ICONS[move.category];
   const spotsLeft = move.maxSpots - move.going;
   const isFull    = spotsLeft <= 0;
   const isJoined  = move.joined || highlight;
@@ -406,8 +447,11 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
     <div className="bg-[#161616] border border-white/5 rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
       <Link href={`/rally/${move.id}`} className="block p-4 pb-3">
         <div className="flex items-start gap-3">
-          <div className={cn("w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0", cat.color)}>
-            {cat.emoji}
+          <div className={cn("w-11 h-11 rounded-xl flex items-center justify-center shrink-0", cat.color)}>
+            {CatIcon
+              ? <CatIcon className={cn(cat.text)} strokeWidth={1.75} style={{ width: 20, height: 20 }} />
+              : <span className="text-xl">{cat.emoji}</span>
+            }
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1">
@@ -416,12 +460,17 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
                 {circleLabel && (
                   <span className="text-[9px] font-black bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 rounded-full">Circle</span>
                 )}
-                <span className="text-[10px] text-gray-600 mt-0.5">{move.time}</span>
+                <span className={cn(
+                  "text-[10px] mt-0.5 font-bold",
+                  move.time === "Now" ? "text-red-400" : "text-gray-600"
+                )}>
+                  {move.time}
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-3 text-[11px] text-gray-500">
               <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{move.distance}</span>
-              <span className="flex items-center gap-1"><Users className="w-3 h-3" />{move.going} in</span>
+              <span className="flex items-center gap-1"><Users className="w-3 h-3" />{move.going} going</span>
               <span className={cn("font-bold", isFull ? "text-red-400" : spotsLeft <= 2 ? "text-amber-400" : "text-gray-500")}>
                 {isFull ? "Full" : `${spotsLeft} left`}
               </span>
