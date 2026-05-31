@@ -1,0 +1,106 @@
+Polish the Brio Discover screen based on the latest review.
+
+Do not rebuild the app and do not add new backend features.
+
+Keep:
+- Brio branding
+- What’s the Move?
+- Make a Move card
+- Live Moves Nearby
+- Public / From Your Circle filters
+- Circle Activity section
+- bottom navigation
+- localStorage/mock data
+- dark/light theme support
+
+Updates needed:
+
+1. Fix Circle language and layout.
+
+Circles should NOT be treated as recurring themed groups by default.
+
+Replace the “Circles Near You” section that says “Recurring groups that meet regularly.”
+
+Instead, make Circles feel like a simple social connection layer.
+
+Use section title:
+“Your Circle”
+
+Subtitle:
+“People you’d move with again.”
+
+Show person-based cards instead of group cards.
+
+Example cards:
+- Marcus L. — moved with you at Leg Day at XSport — Add/Added
+- Priya S. — moved with you at Sunday Coffee Run — Add/Added
+- Jordan K. — moved with you at Pickup Basketball — Add/Added
+
+Each card should show:
+- avatar/initial
+- name
+- last Move together
+- level/trust badge if available
+- button: “Add to Circle” or “In Your Circle”
+
+Do not use examples like “Sunday Coffee Circle” or “Chicago Gym Circle” as the default Circle concept.
+
+2. Keep Circle Activity, but make it match the new Circle concept.
+
+Circle Activity should show updates from people already in your Circle.
+
+Example:
+- Marcus L. made a Move nearby
+- Priya S. is hosting Sunday Coffee Run
+- Jordan K. joined Pickup Basketball
+
+Subtitle:
+“People you’ve moved with before.”
+
+3. Fix “Moves For You — 0 picks.”
+
+If there are no personalized picks, hide the “0 picks” label.
+
+Either:
+- hide the section until there are picks
+OR
+- show a polished empty state:
+“Your picks will show up here as you make moves and add people to your Circle.”
+
+Do not show “0 picks” in the main UI.
+
+4. Make Brio Livestreams less prominent.
+
+Keep Brio Livestreams as a future feature placeholder only.
+
+Move it lower on the Discover screen or make it smaller/subtler.
+
+It should say:
+“Coming later: preview the vibe before you pull up.”
+
+Do not make it feel like a core MVP feature.
+Do not add actual livestreaming, video, camera access, WebRTC, backend, or uploads.
+
+5. Improve Move cards slightly.
+
+Keep the current card style, but make sure each Move card clearly shows:
+- Move title
+- time
+- distance
+- people in
+- spots left
+- vibe tags
+- “I’m In”
+- “Ask Host”
+
+6. Keep the app feeling like Brio:
+- warm
+- social
+- modern
+- lifestyle-focused
+- not Eventbrite
+- not Meetup
+- not a formal club app
+
+Final goal:
+The Discover screen should feel like a live social dashboard where users can make a Move, join nearby Moves, and reconnect with people they would move with again.

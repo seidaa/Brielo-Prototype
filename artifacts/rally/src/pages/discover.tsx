@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, Users2 } from "lucide-react";
+import { MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, UsersRound, Radio } from "lucide-react";
 import { BrioLogo } from "@/components/BrioLogo";
-import { useRallies, useUser, useCircles, useCirclePersons } from "@/hooks/useRallies";
+import { useRallies, useUser, useCirclePersons } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
-import { Button } from "@/components/ui/button";
 import { CAT_CONFIG, defaultCatConfig, friendsActivity } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
@@ -23,13 +22,12 @@ type FilterType = "all" | "public" | "circle";
 export default function Discover() {
   const { rallies, joinRally } = useRallies();
   const { user } = useUser();
-  const { circles } = useCircles();
-  const { myCircle } = useCirclePersons();
+  const { myCircle, wouldMoveAgain, addToCircle } = useCirclePersons();
 
-  const [tickerIdx, setTickerIdx] = useState(0);
+  const [tickerIdx, setTickerIdx]       = useState(0);
   const [tickerVisible, setTickerVisible] = useState(true);
-  const [joinedId, setJoinedId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [joinedId, setJoinedId]         = useState<string | null>(null);
+  const [filter, setFilter]             = useState<FilterType>("all");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -48,7 +46,10 @@ export default function Discover() {
     r.vibeTags.some(t => LOW_PRESSURE_TAGS.includes(t))
   );
 
-  const circleNames = new Set(myCircle.map(p => p.name));
+  const circleAndSuggested = [
+    ...myCircle,
+    ...wouldMoveAgain.slice(0, 3),
+  ];
 
   const handleJoin = (id: string) => {
     joinRally(id);
@@ -124,9 +125,9 @@ export default function Discover() {
         {/* ── Filter row ───────────────────────────────────────────── */}
         <div className="flex gap-2 px-4 mb-5 overflow-x-auto no-scrollbar">
           {([
-            { id: "all"    as FilterType, label: "All Moves",         icon: null },
-            { id: "public" as FilterType, label: "Public",            icon: null },
-            { id: "circle" as FilterType, label: "From Your Circle",  icon: "🫂"  },
+            { id: "all"    as FilterType, label: "All Moves",        icon: null        },
+            { id: "public" as FilterType, label: "Public",           icon: null        },
+            { id: "circle" as FilterType, label: "From Your Circle", icon: "circle"    },
           ]).map(f => (
             <button
               key={f.id}
@@ -138,7 +139,9 @@ export default function Discover() {
                   : "bg-white/5 text-gray-400 border-white/5"
               )}
             >
-              {f.icon && <span className="text-sm">{f.icon}</span>}
+              {f.icon === "circle" && (
+                <UsersRound className="w-3 h-3" />
+              )}
               {f.label}
             </button>
           ))}
@@ -173,17 +176,16 @@ export default function Discover() {
                 {nowMoves.map(move => {
                   const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
                   const spotsLeft = move.maxSpots - move.going;
-                  const fromCircle = move.isCircleMove && circleNames.has(move.hostName);
                   return (
                     <Link key={move.id} href={`/rally/${move.id}`}>
                       <div className="shrink-0 w-44 bg-[#181818] border border-white/8 rounded-2xl p-3.5 active:scale-[0.97] transition-transform cursor-pointer relative overflow-hidden">
-                        {fromCircle && (
+                        {move.isCircleMove && (
                           <div className="absolute top-2 right-2 bg-primary/15 border border-primary/25 text-primary text-[9px] font-black px-1.5 py-0.5 rounded-full">Circle</div>
                         )}
                         <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-lg mb-2.5", cat.color)}>
                           {cat.emoji}
                         </div>
-                        <p className="text-sm font-bold text-white leading-snug line-clamp-2 mb-2">{move.title}</p>
+                        <p className="text-sm font-bold text-white leading-snug line-clamp-2 mb-1">{move.title}</p>
                         <div className="flex items-center justify-between text-[11px] text-gray-500 mb-2.5">
                           <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" /> {move.distance}</span>
                           <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {move.going}</span>
@@ -216,7 +218,7 @@ export default function Discover() {
             <div className="flex items-center justify-between px-4 mb-3">
               <div>
                 <h3 className="text-base font-black text-white flex items-center gap-2">
-                  <Users2 className="w-4 h-4 text-primary" /> Moves from your Circle
+                  <UsersRound className="w-4 h-4 text-primary" /> Moves from your Circle
                 </h3>
                 <p className="text-[11px] text-gray-500">People you've moved with before</p>
               </div>
@@ -235,56 +237,68 @@ export default function Discover() {
         {/* ── C: Moves For You ─────────────────────────────────────── */}
         {filter !== "circle" && (
           <section className="mb-6">
-            <div className="flex items-center justify-between px-4 mb-3">
+            <div className="px-4 mb-3">
               <h3 className="text-base font-black text-white">Moves For You</h3>
-              <span className="text-[11px] text-gray-600">{forYou.length} picks</span>
             </div>
-            <div className="px-4 space-y-2.5">
-              {forYou.slice(0, 5).map(move => (
-                <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
-              ))}
-            </div>
+            {forYou.length === 0 ? (
+              <div className="mx-4 bg-[#161616] border border-white/5 rounded-2xl p-5 text-center">
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Your picks will show up here as you make moves and add people to your Circle.
+                </p>
+              </div>
+            ) : (
+              <div className="px-4 space-y-2.5">
+                {forYou.slice(0, 5).map(move => (
+                  <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
-        {/* ── D: Circles Near You ──────────────────────────────────── */}
-        {filter !== "circle" && (
+        {/* ── D: Your Circle — person-based ───────────────────────── */}
+        {filter !== "circle" && circleAndSuggested.length > 0 && (
           <section className="mb-6">
             <div className="flex items-center justify-between px-4 mb-3">
               <div>
-                <h3 className="text-base font-black text-white">Circles Near You</h3>
-                <p className="text-[11px] text-gray-500">Recurring groups that meet regularly</p>
+                <h3 className="text-base font-black text-white">Your Circle</h3>
+                <p className="text-[11px] text-gray-500">People you'd move with again</p>
               </div>
               <Link href="/circles">
                 <span className="text-[11px] font-bold text-primary flex items-center gap-1">All <ChevronRight className="w-3 h-3" /></span>
               </Link>
             </div>
             <div className="flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar">
-              {circles.slice(0, 6).map(circle => {
-                const cat = CAT_CONFIG[circle.category] ?? defaultCatConfig;
+              {circleAndSuggested.map(person => {
+                const isInCircle = person.inCircle;
                 return (
-                  <Link key={circle.id} href={`/circles/${circle.id}`}>
-                    <div className="shrink-0 w-36 bg-[#161616] border border-white/5 rounded-2xl p-3 active:scale-[0.97] transition-transform cursor-pointer">
-                      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-2", cat.color)}>
-                        {circle.emoji}
+                  <div key={person.id} className="shrink-0 w-40 bg-[#161616] border border-white/5 rounded-2xl p-3.5 flex flex-col">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={cn("w-9 h-9 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0", person.color)}>
+                        {person.initials}
                       </div>
-                      <p className="text-xs font-bold text-white leading-snug mb-1 line-clamp-2">{circle.name}</p>
-                      <p className="text-[10px] text-gray-600 flex items-center gap-1 mb-2">
-                        <Users className="w-3 h-3" /> {circle.membersCount}
-                      </p>
-                      <p className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full text-center", cat.color, cat.text)}>
-                        {circle.schedule.split(" ").slice(0, 2).join(" ")}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-white truncate">{person.name}</p>
+                        <span className="text-[9px] font-black text-gray-500">Lv {person.level}</span>
+                      </div>
                     </div>
-                  </Link>
+                    <p className="text-[10px] text-gray-500 leading-snug mb-3 line-clamp-2 flex-1">
+                      Moved together at <span className="text-gray-400">{person.lastMove}</span>
+                    </p>
+                    <button
+                      onClick={() => !isInCircle && addToCircle(person.id)}
+                      className={cn(
+                        "w-full text-[10px] font-black rounded-lg py-1.5 transition-all active:scale-95",
+                        isInCircle
+                          ? "bg-white/5 text-gray-500 border border-white/8 cursor-default"
+                          : "bg-primary/15 border border-primary/25 text-primary"
+                      )}
+                    >
+                      {isInCircle ? "In Your Circle ✓" : "Add to Circle"}
+                    </button>
+                  </div>
                 );
               })}
-              <Link href="/circles">
-                <div className="shrink-0 w-36 border border-dashed border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center gap-2 active:scale-[0.97] transition-transform cursor-pointer">
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-xl">🫂</div>
-                  <p className="text-[11px] font-bold text-gray-400 text-center">View all circles</p>
-                </div>
-              </Link>
             </div>
           </section>
         )}
@@ -304,28 +318,9 @@ export default function Discover() {
           </section>
         )}
 
-        {/* ── Brio Livestreams teaser ───────────────────────────────── */}
+        {/* ── F: Circle Activity ───────────────────────────────────── */}
         {filter === "all" && (
-          <div className="mx-4 mb-6 rounded-2xl border border-white/8 bg-gradient-to-br from-[#1a1a1a] to-[#111] p-4 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 pointer-events-none" />
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center text-lg shrink-0">📡</div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-black text-white text-sm">Brio Livestreams</span>
-                  <span className="text-[9px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/25 px-2 py-0.5 rounded-full uppercase tracking-wider">Coming Soon</span>
-                </div>
-                <p className="text-[11px] text-gray-500 leading-relaxed">
-                  Preview the vibe before you pull up. Live moments from Moves and Circles — before you join.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── Friends Activity ─────────────────────────────────────── */}
-        {filter === "all" && (
-          <section className="mb-4">
+          <section className="mb-5">
             <div className="px-4 mb-3">
               <h3 className="text-base font-black text-white">Circle Activity</h3>
               <p className="text-[11px] text-gray-500">People you've moved with before</p>
@@ -353,10 +348,27 @@ export default function Discover() {
           </section>
         )}
 
-        {/* Empty state for circle filter with no moves */}
+        {/* ── G: Brio Livestreams — subtle future teaser ───────────── */}
+        {filter === "all" && (
+          <div className="mx-4 mb-6 flex items-center gap-3 bg-white/3 border border-white/5 rounded-2xl px-4 py-3">
+            <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
+              <Radio className="w-4 h-4 text-gray-500" strokeWidth={1.5} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-gray-400">
+                Coming later — preview the vibe before you pull up.
+              </p>
+            </div>
+            <span className="text-[9px] font-black bg-white/5 text-gray-600 border border-white/8 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">Soon</span>
+          </div>
+        )}
+
+        {/* ── Empty state for circle filter ────────────────────────── */}
         {filter === "circle" && circleMoves.length === 0 && (
           <div className="mx-4 flex flex-col items-center text-center py-16 gap-3">
-            <div className="text-4xl">🫂</div>
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center">
+              <UsersRound className="w-6 h-6 text-gray-500" strokeWidth={1.5} />
+            </div>
             <p className="font-black text-white">No Circle Moves yet</p>
             <p className="text-sm text-gray-500 max-w-[220px]">
               Once you add people to your Circle, their Moves will show up here.
@@ -376,15 +388,19 @@ export default function Discover() {
 
 // ── Inline Move Card ──────────────────────────────────────────────────────────
 function MoveCard({ move, onJoin, highlight, circleLabel }: {
-  move: { id: string; title: string; category: string; time: string; distance: string; going: number; maxSpots: number; hostName: string; hostLevel: number; vibeTags: string[]; requiresApproval: boolean; joined: boolean };
+  move: {
+    id: string; title: string; category: string; time: string; distance: string;
+    going: number; maxSpots: number; hostName: string; hostLevel: number;
+    vibeTags: string[]; requiresApproval: boolean; joined: boolean;
+  };
   onJoin: (id: string) => void;
   highlight: boolean;
   circleLabel?: boolean;
 }) {
   const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
   const spotsLeft = move.maxSpots - move.going;
-  const isFull = spotsLeft <= 0;
-  const isJoined = move.joined || highlight;
+  const isFull    = spotsLeft <= 0;
+  const isJoined  = move.joined || highlight;
 
   return (
     <div className="bg-[#161616] border border-white/5 rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
