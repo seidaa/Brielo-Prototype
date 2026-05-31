@@ -5,9 +5,9 @@ import { ArrowRight } from "lucide-react";
 import { BrioLogo } from "@/components/BrioLogo";
 
 const BRAND_LINES = [
-  { emoji: "⚡", headline: "Make Moves.",    sub: "Post something you're down to do and see who's in — same day, no RSVP, no apps." },
-  { emoji: "🫂", headline: "Join Circles.",  sub: "Find recurring groups built around things you actually like doing." },
-  { emoji: "🌆", headline: "Do more outside the screen.", sub: "Real people. Real plans. No flaking." },
+  { emoji: "⚡", headline: "Make Moves.",       sub: "Post something you're down to do and see who's in." },
+  { emoji: "🫂", headline: "Build your Circle.", sub: "Add people you'd actually move with again." },
+  { emoji: "🌆", headline: "Live More.",         sub: "Turn free time into real life." },
 ];
 
 export default function Onboarding() {
