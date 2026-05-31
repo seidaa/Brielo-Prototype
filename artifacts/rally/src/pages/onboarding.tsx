@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useOnboarding } from "@/hooks/useRallies";
 import { ArrowRight } from "lucide-react";
+import { BrioLogo } from "@/components/BrioLogo";
 
 const BRAND_LINES = [
   { emoji: "⚡", headline: "Make Moves.",    sub: "Post something you're down to do and see who's in — same day, no RSVP, no apps." },
@@ -22,15 +23,14 @@ export default function Onboarding() {
       {/* Hero section */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-8 relative z-10">
 
-        {/* Mark */}
+        {/* App icon mark — yellow ring */}
         <div className="relative w-20 h-20 flex items-center justify-center mb-7">
-          <div className="absolute inset-0 rounded-[22px] bg-primary/10 border border-primary/20" />
-          <div className="absolute inset-0 rounded-[22px] shadow-[0_0_50px_rgba(250,204,21,0.2)]" />
-          <span className="relative text-4xl">⚡</span>
+          <div className="absolute inset-0 rounded-[22px] bg-white/5 border border-white/8 shadow-[0_0_50px_rgba(250,204,21,0.22)]" />
+          <div className="relative w-9 h-9 rounded-full" style={{ border: "5px solid #FACC15" }} />
         </div>
 
         {/* Brand stack */}
-        <h1 className="text-[52px] font-black text-white tracking-tight leading-none mb-1">Brio</h1>
+        <BrioLogo size="hero" className="mb-1" />
         <p className="text-2xl font-black text-primary mb-2">Live More</p>
         <p className="text-xs font-bold text-gray-600 uppercase tracking-[0.2em] mb-10">
           Less scrolling. More doing.

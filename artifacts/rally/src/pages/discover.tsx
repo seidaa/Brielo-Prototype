@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, Users2 } from "lucide-react";
+import { BrioLogo } from "@/components/BrioLogo";
 import { useRallies, useUser, useCircles, useCirclePersons } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ export default function Discover() {
       <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto bg-[#0d0d0d]/96 backdrop-blur-xl z-40 border-b border-white/5">
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-primary tracking-tight">Brio</h1>
+            <BrioLogo size="md" />
             <button className="flex items-center text-[11px] font-bold text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 gap-1 active:scale-95 transition-transform">
               <MapPin className="w-3 h-3 text-primary" /> Chicago
             </button>
