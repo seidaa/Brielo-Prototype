@@ -58,8 +58,10 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
       const ringPx   = px * 0.22;
       const strokePx = px * 0.065;
 
-      // Center the ring horizontally on the ı stem
-      const cx = sBox.left - wBox.left + sBox.width / 2;
+      // Center the ring horizontally on the ı stem.
+      // Nudge left by ~2 % em — the dotless-ı glyph has slightly more
+      // right side-bearing than left, so pure sBox.width/2 sits a touch right.
+      const cx = sBox.left - wBox.left + sBox.width / 2 - px * 0.02;
 
       // Anchor from the BOTTOM of the span (descender line) — much more
       // stable across fonts than the top which includes variable line-box
