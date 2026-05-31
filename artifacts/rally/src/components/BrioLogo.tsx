@@ -10,13 +10,36 @@ const SIZE_MAP: Record<BrioLogoSize, string> = {
   hero: "text-[52px]",
 };
 
+/**
+ * How this works:
+ *
+ * 1. Render "i" normally in white — the font's natural dot is white too.
+ * 2. Stack a solid yellow circle directly on the dot → paints over it yellow.
+ * 3. Stack a slightly-smaller circle in the background color on top → carves a
+ *    hole in the middle, turning the yellow disc into a yellow ring.
+ *
+ * All sizes are in `em` so they scale with the font automatically.
+ * The `bg` prop lets callers pass the local background colour for step 3.
+ * Both the onboarding page and nav header are #0d0d0d, so the default works.
+ */
 interface BrioLogoProps {
   size?: BrioLogoSize;
   className?: string;
+  /** Match the surface colour behind the logo so the ring cutout is invisible. */
+  bg?: string;
 }
 
-export function BrioLogo({ size = "md", className }: BrioLogoProps) {
+export function BrioLogo({ size = "md", className, bg = "#0d0d0d" }: BrioLogoProps) {
   const fontSize = SIZE_MAP[size];
+
+  // Ring geometry (em units, relative to the "i" span's font-size)
+  const outerD   = "0.28em"; // yellow disc diameter — covers natural dot
+  const innerD   = "0.13em"; // dark cutout diameter — creates the hole
+  // Center the ring at the natural i-dot height (~0.81 em above baseline).
+  // The inline-block span's bottom edge sits ~0.24 em below baseline (descender),
+  // so target bottom = 0.81 + 0.24 - outerR = 0.81 + 0.24 - 0.14 = 0.91 em.
+  const outerBot = "0.91em";
+  const innerBot = "0.98em"; // outerBot + (outerR - innerR) = 0.91 + 0.07
 
   return (
     <span className={cn("inline-flex items-baseline select-none", className)}>
@@ -25,28 +48,34 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
         Br
       </span>
 
-      {/*
-        "i" rendered as dotless-ı (U+0131) so the natural white dot is gone,
-        then a yellow ring is placed at exactly the dot position.
-      */}
+      {/* "i" with yellow ring replacing the natural white dot */}
       <span className="relative inline-block leading-none">
-        {/* Dotless i stem */}
         <span className={cn("font-black text-white tracking-tight leading-none", fontSize)}>
-          ı
+          i
         </span>
 
-        {/* Yellow ring — anchored from bottom so it lands at the natural i-dot height */}
+        {/* Layer 1 – yellow disc covers the natural white dot */}
+        <span
+          className="absolute left-1/2 rounded-full pointer-events-none bg-[#FACC15]"
+          style={{
+            width:     outerD,
+            height:    outerD,
+            bottom:    outerBot,
+            transform: "translateX(-50%)",
+            zIndex:    10,
+          }}
+        />
+
+        {/* Layer 2 – dark cutout makes it a ring */}
         <span
           className="absolute left-1/2 rounded-full pointer-events-none"
           style={{
-            width:           "0.38em",
-            height:          "0.38em",
-            border:          "0.072em solid #FACC15",
-            backgroundColor: "transparent",
-            // bottom: distance from container base (~descender) up to ring bottom
-            // puts ring center at ~0.78em above baseline (natural i-dot position)
-            bottom:    "0.86em",
-            transform: "translateX(-50%)",
+            width:           innerD,
+            height:          innerD,
+            bottom:          innerBot,
+            transform:       "translateX(-50%)",
+            backgroundColor: bg,
+            zIndex:          11,
           }}
         />
       </span>
