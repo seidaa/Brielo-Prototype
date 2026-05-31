@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Link, useParams, useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, Check, UserPlus, ArrowRight, X } from "lucide-react";
+import {
+  ChevronLeft, ChevronRight, Check, ArrowRight, X,
+  Sparkles, RefreshCw, CheckCircle2, Minus, UserX, Star, Feather, Heart,
+  Zap, Smartphone, UsersRound, AlertTriangle, AlertCircle, ShieldAlert, Trash2, MoreHorizontal,
+  Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRallies, useCirclePersons } from "@/hooks/useRallies";
 import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
@@ -10,33 +16,51 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
-const REACTIONS = [
-  { id: "good-vibes",    label: "Good vibes",          emoji: "✨" },
-  { id: "would-again",  label: "Would do again",       emoji: "🔁" },
-  { id: "easy",         label: "Easy to show up",      emoji: "👍" },
-  { id: "felt-off",     label: "Felt off",             emoji: "😶" },
-  { id: "no-show",      label: "No-show issue",        emoji: "👻" },
-  { id: "great-host",   label: "Great host",           emoji: "⭐" },
-  { id: "low-pressure", label: "Low pressure",         emoji: "😌" },
-  { id: "new-fave",     label: "New favorite",         emoji: "🫶" },
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
+
+type Reaction = { id: string; label: string; Icon: React.ElementType };
+const REACTIONS: Reaction[] = [
+  { id: "good-vibes",    label: "Good vibes",       Icon: Sparkles      },
+  { id: "would-again",  label: "Would move again",  Icon: RefreshCw     },
+  { id: "easy",         label: "Easy to show up",   Icon: CheckCircle2  },
+  { id: "felt-off",     label: "Felt off",          Icon: Minus         },
+  { id: "no-show",      label: "No-show issue",     Icon: UserX         },
+  { id: "great-host",   label: "Great host",        Icon: Star          },
+  { id: "low-pressure", label: "Low pressure",      Icon: Feather       },
+  { id: "new-fave",     label: "New favorite",      Icon: Heart         },
 ];
 
 const PERSON_FEEDBACK = [
-  { id: "add-circle",   label: "Add to Circle",     style: "positive" },
-  { id: "would-again",  label: "Would move again",  style: "positive" },
-  { id: "good-vibes",   label: "Good vibes",        style: "positive" },
-  { id: "no-show",      label: "Didn't show",       style: "negative" },
-  { id: "felt-off",     label: "Felt off",          style: "negative" },
-  { id: "report",       label: "Report",            style: "report"   },
+  { id: "add-circle",   label: "Add to Circle",    style: "positive" },
+  { id: "would-again",  label: "Would move again", style: "positive" },
+  { id: "good-vibes",   label: "Good vibes",       style: "positive" },
+  { id: "no-show",      label: "Didn't show",      style: "negative" },
+  { id: "felt-off",     label: "Felt off",         style: "negative" },
+  { id: "report",       label: "Report",           style: "report"   },
 ];
 
-const REPORT_OPTIONS = [
-  { label: "No-show",          emoji: "👻" },
-  { label: "Creepy behavior",  emoji: "😶" },
-  { label: "Harassment",       emoji: "🚫" },
-  { label: "Fake Move",        emoji: "⚠️" },
-  { label: "Spam / scam",      emoji: "🗑️" },
-  { label: "Other",            emoji: "📝" },
+type ReportOption = { label: string; Icon: React.ElementType };
+const REPORT_OPTIONS: ReportOption[] = [
+  { label: "No-show",         Icon: UserX          },
+  { label: "Creepy behavior", Icon: AlertCircle    },
+  { label: "Harassment",      Icon: ShieldAlert    },
+  { label: "Fake Move",       Icon: AlertTriangle  },
+  { label: "Spam / scam",     Icon: Trash2         },
+  { label: "Other",           Icon: MoreHorizontal },
 ];
 
 const MOCK_ATTENDEES = [
@@ -55,6 +79,7 @@ export default function PostMove() {
 
   const move = rallies.find(r => r.id === id);
   const cat = move ? (CAT_CONFIG[move.category] ?? defaultCatConfig) : defaultCatConfig;
+  const CatIcon = move ? CAT_ICONS[move.category] : null;
 
   const [step, setStep]       = useState(1);
   const [reactions, setReactions] = useState<Set<string>>(new Set());
@@ -121,7 +146,6 @@ export default function PostMove() {
           <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-0.5">After the Move</p>
           <h1 className="text-base font-black text-white truncate">{move.title}</h1>
         </div>
-        {/* Step indicator */}
         <div className="flex gap-1.5">
           {[1, 2, 3].map(s => (
             <div key={s} className={cn("h-1.5 rounded-full transition-all", s === step ? "w-6 bg-primary" : s < step ? "w-2 bg-primary/50" : "w-2 bg-white/10")} />
@@ -141,8 +165,11 @@ export default function PostMove() {
 
             {/* Move preview */}
             <div className="flex items-center gap-3 bg-[#161616] border border-white/5 rounded-2xl p-3.5 mb-6">
-              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0", cat.color)}>
-                {cat.emoji}
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", cat.color)}>
+                {CatIcon
+                  ? <CatIcon className={cat.text} strokeWidth={1.75} style={{ width: 18, height: 18 }} />
+                  : <span className="text-xl">{cat.emoji}</span>
+                }
               </div>
               <div>
                 <p className="font-bold text-white text-sm">{move.title}</p>
@@ -168,7 +195,7 @@ export default function PostMove() {
                         : "bg-[#161616] border-white/5 text-gray-400"
                     )}
                   >
-                    <span className="text-lg shrink-0">{r.emoji}</span>
+                    <r.Icon className={cn("w-4 h-4 shrink-0", selected ? (isNegative ? "text-red-400" : "text-primary") : "text-gray-500")} strokeWidth={1.75} />
                     <span className="text-xs font-bold leading-snug">{r.label}</span>
                   </button>
                 );
@@ -244,7 +271,9 @@ export default function PostMove() {
         {step === 3 && (
           <div>
             <div className="mb-6">
-              <div className="text-4xl mb-3">🫶</div>
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                <Heart className="w-7 h-7 text-primary" strokeWidth={1.75} />
+              </div>
               <h2 className="text-xl font-black text-white mb-1">Move again?</h2>
               <p className="text-sm text-gray-500">Keep the momentum going. Good moves lead to more moves.</p>
             </div>
@@ -252,7 +281,9 @@ export default function PostMove() {
             <div className="space-y-3">
               <Link href="/create">
                 <div className="flex items-center gap-4 bg-primary/10 border border-primary/25 rounded-2xl px-4 py-4 active:scale-[0.98] transition-transform cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-xl shrink-0">⚡</div>
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                    <Zap className="w-5 h-5 text-primary" strokeWidth={1.75} />
+                  </div>
                   <div className="flex-1">
                     <p className="font-black text-white text-sm">Make Another Move</p>
                     <p className="text-[11px] text-gray-400">Post your next one right now</p>
@@ -263,10 +294,12 @@ export default function PostMove() {
 
               <Link href="/create">
                 <div className="flex items-center gap-4 bg-[#161616] border border-white/5 rounded-2xl px-4 py-4 active:scale-[0.98] transition-transform cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xl shrink-0">📲</div>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                    <Smartphone className="w-5 h-5 text-gray-400" strokeWidth={1.75} />
+                  </div>
                   <div className="flex-1">
                     <p className="font-black text-white text-sm">Invite Them to a Move</p>
-                    <p className="text-[11px] text-gray-400">Make a move and share it with tonight's crew</p>
+                    <p className="text-[11px] text-gray-400">Make a move and share it with the crew</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-600 shrink-0" />
                 </div>
@@ -274,9 +307,11 @@ export default function PostMove() {
 
               <Link href="/circles">
                 <div className="flex items-center gap-4 bg-[#161616] border border-white/5 rounded-2xl px-4 py-4 active:scale-[0.98] transition-transform cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xl shrink-0">🫂</div>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                    <UsersRound className="w-5 h-5 text-gray-400" strokeWidth={1.75} />
+                  </div>
                   <div className="flex-1">
-                    <p className="font-black text-white text-sm">Add People to Circle</p>
+                    <p className="font-black text-white text-sm">Add People to Your Circle</p>
                     <p className="text-[11px] text-gray-400">Build your trusted Brio people</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-600 shrink-0" />
@@ -323,14 +358,14 @@ export default function PostMove() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 mt-1">
-            {REPORT_OPTIONS.map(({ label, emoji }) => (
+            {REPORT_OPTIONS.map(({ label, Icon }) => (
               <Button
                 key={label}
                 variant="outline"
                 className="justify-start bg-white/5 border-white/8 hover:bg-white/10 text-left rounded-xl text-gray-200 gap-2.5 h-auto py-3"
                 onClick={() => handleReportSubmit(label)}
               >
-                <span className="text-base shrink-0">{emoji}</span>
+                <Icon className="w-4 h-4 shrink-0 text-gray-400" strokeWidth={1.75} />
                 <span className="text-sm font-medium">{label}</span>
               </Button>
             ))}

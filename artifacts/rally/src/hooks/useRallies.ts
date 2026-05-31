@@ -25,12 +25,14 @@ export function useRallies() {
     if (!stored) localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
   }, []);
 
-  const saveMoves = (m: Move[]) => { setRallies(m); localStorage.setItem(MOVES_KEY, JSON.stringify(m)); };
-  const addRally  = (m: Move)   => saveMoves([m, ...rallies]);
-  const joinRally = (id: string) =>
+  const saveMoves  = (m: Move[]) => { setRallies(m); localStorage.setItem(MOVES_KEY, JSON.stringify(m)); };
+  const addRally   = (m: Move)   => saveMoves([m, ...rallies]);
+  const joinRally  = (id: string) =>
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: true, going: r.going + 1 } : r));
+  const leaveRally = (id: string) =>
+    saveMoves(rallies.map(r => r.id === id ? { ...r, joined: false, going: Math.max(0, r.going - 1) } : r));
 
-  return { rallies, addRally, joinRally };
+  return { rallies, addRally, joinRally, leaveRally };
 }
 
 export function useUser() {

@@ -1,0 +1,245 @@
+Polish the Brio prototype based on the latest screen review.
+
+Do not rebuild the app. Do not add backend, real auth, payments, push notifications, livestreaming, or WebSockets.
+
+Focus on:
+
+* replacing remaining emoji icons
+* cleaning up outdated wording
+* adding Leave Move behavior
+* keeping Brio’s current layout and working localStorage flows
+
+1. Replace emoji icons across all remaining screens
+
+Replace all emoji-style icons with clean line icons consistent with the Brio onboarding/Discover style.
+
+Check these screens:
+
+* Move Detail
+* Move Chat list
+* Move Chat detail if present
+* Profile
+* Active Moves
+* Activity History
+* Perks & Unlocks
+* Move cards
+* Category badges
+* Any empty states or badges
+
+Remove emoji icons like:
+
+* coffee cup emoji
+* bicep emoji
+* music note emoji
+* basketball emoji
+* raised hand emoji
+* target emoji
+* people emoji
+* lightning emoji where it feels too emoji-like
+* city emoji
+* satellite emoji
+* any other native emoji visuals
+
+Replace with minimal line icons or simple CSS/SVG-style icons.
+
+Use consistent Brio icon style:
+
+* thin/medium line weight
+* rounded corners
+* yellow accent only when active/important
+* muted gray for inactive/supporting icons
+* no cartoon/emoji style
+
+2. Add Leave Move option
+
+If a user has already joined a Move, show a clear secondary option on the Move Detail screen:
+
+“Leave Move”
+
+Placement:
+
+* Below the primary “Open Move Chat” button
+    OR
+* In a subtle secondary button near the bottom
+    OR
+* In a small options/menu area
+
+Behavior:
+When user taps “Leave Move,” show a confirmation modal:
+
+Title:
+“Leave this Move?”
+
+Copy:
+“You’ll be removed from the attendee list and the Move Chat will disappear from your chats.”
+
+Buttons:
+
+* Cancel
+* Leave Move
+
+After confirming:
+
+* Remove the user from the Move attendee count
+* Change the Move CTA back to “I’m In” or “Ask to Join”
+* Remove the Move from the user’s active Moves
+* Remove that Move Chat from the Move Chats list
+* Update chat unread badge/count if needed
+* Save the updated state in localStorage
+* Show a small confirmation toast:
+    “You left the Move.”
+
+Important:
+If the user is hosting the Move, do not show “Leave Move.”
+For hosted Moves, show a separate option:
+“Cancel Move”
+but it can be non-functional or show a placeholder confirmation for now.
+
+3. Make Move Chats list react to Leave Move
+
+If the user leaves a Move:
+
+* That Move should no longer appear in Move Chats.
+* If there are no active Move Chats, show an empty state:
+
+Title:
+“No active Move Chats”
+
+Copy:
+“Join a Move to unlock the chat.”
+
+Button:
+“Find Moves”
+
+4. Clean up outdated Crew/Circle language
+
+Brio Circles are now a simple social connection layer, not recurring themed groups by default.
+
+Search the app for old or confusing language:
+
+* Crew
+* Crews
+* Crew Move
+* Trivia Crew
+* Weekly Gym Crew
+* Sunday Coffee Circle as a recurring group
+* My Circles / circles joined, if it implies groups joined
+* Create unlimited circles
+
+Replace with Brio’s current Circle concept:
+
+* Circle = people you’ve moved with and would move with again
+* Add to Circle
+* In Your Circle
+* Your Circle
+* Circle Activity
+* People you’d move with again
+* Moves from your Circle
+
+Specific replacements:
+
+* “Crew Move” → “Circle Move” or remove if not needed
+* “Tuesday Trivia Crew” → “Tuesday Trivia Move” or “Trivia Night”
+* “Weekly Gym Session” can stay if it is a Move/Session, but do not call it a Crew
+* “My Circles” → “Your Circle”
+* “8 circles joined” → “14 people in your Circle” or “14 Circle connections”
+* “Create unlimited circles” → “Add more people to your Circle” or “Expand your Circle”
+
+5. Clean up Activity History
+
+Activity History should show past Moves, not formal recurring groups.
+
+Each history item should show:
+
+* Move title
+* category
+* date
+* attended/hosted status
+* people count
+* reaction badge if available:
+    * Good vibes
+    * Would Move Again
+    * Low pressure
+    * Great host
+
+Replace emoji icons in Activity History with line icons or simple category icons.
+
+Avoid:
+
+* “Crew Move”
+* “Recurring” unless the Move itself is weekly/repeating
+
+Use:
+
+* “Weekly”
+* “Would Move Again”
+* “Good vibes”
+* “Hosted”
+* “Attended”
+
+6. Profile cleanup
+
+Keep the current profile layout, but clean the language.
+
+Profile stats should be:
+
+* Moves
+* Hosted
+* Circle
+
+Or:
+
+* Moves
+* Hosted
+* People
+
+Use whichever fits the current UI best.
+
+Badges can stay:
+
+* Phone Verified
+* Early Mover
+* 5 Moves
+
+Perks & Unlocks can stay, but update anything confusing:
+
+* Lv 7: Local Mover can stay
+* “Create unlimited circles” should change to “Expand your Circle” or “Add unlimited Circle connections”
+
+7. Move Detail polish
+
+On Move Detail:
+
+* Replace category emoji with line icon.
+* Keep host card, vibe tags, About This Move, Who’s In, After the Move?, Report Move, and Open Move Chat.
+* Add Leave Move behavior when already joined.
+* Make sure “After the Move?” remains visible and explains:
+    “React, add people to your Circle, keep it going.”
+
+8. Preserve working behavior
+
+Keep existing working flows:
+
+* onboarding
+* interest selection
+* Discover
+* Make a Move
+* created Moves saving to localStorage
+* joining Moves
+* Move Detail
+* Move Chat
+* Map
+* Profile
+* Activity History
+* Circle Activity
+* dark/light/auto theme
+
+Do not break:
+
+* created Moves appearing in Discover
+* joined Moves appearing in Move Chats
+* “I’m In” state
+* localStorage persistence
+
+Final goal:
+Brio should feel consistent and polished across all screens, with clean line icons, no leftover emoji visuals, no outdated Crew language, and a clear Leave Move flow that removes the user from the Move and removes the chat from their Move Chats.

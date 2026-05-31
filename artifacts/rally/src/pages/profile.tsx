@@ -1,32 +1,60 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Settings, Award, Users, ChevronRight, Lock, CheckCircle2, Zap, Star, History, ChevronDown, ChevronUp, Repeat } from "lucide-react";
-import { useUser, useRallies, useActivityHistory, useCircles } from "@/hooks/useRallies";
+import {
+  Settings, Award, Users, ChevronRight, Lock, CheckCircle2, Zap, Star,
+  History, ChevronDown, ChevronUp, Repeat, UsersRound, Calendar,
+  RefreshCw, Sparkles, UserX, Minus,
+  Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints,
+} from "lucide-react";
+import { useUser, useRallies, useActivityHistory } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
-import { CAT_CONFIG, FeedbackLabel } from "@/data/mockData";
+import { CAT_CONFIG, defaultCatConfig, FeedbackLabel } from "@/data/mockData";
 import { cn } from "@/lib/utils";
+
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
 
 const PERKS = [
   { level: 1,  title: "Early Mover",        desc: "You were here from the start",            unlocked: true  },
   { level: 2,  title: "Shows Up",           desc: "Attended 3+ moves",                        unlocked: true  },
   { level: 3,  title: "Reliable Host",      desc: "Host up to 8 people per move",             unlocked: true  },
   { level: 5,  title: "Live Nearby Access", desc: "See private moves near you",               unlocked: false },
-  { level: 7,  title: "Local Mover",        desc: "Create unlimited circles",                 unlocked: false },
+  { level: 7,  title: "Local Mover",        desc: "Expand your Circle",                       unlocked: false },
   { level: 10, title: "City Legend",        desc: "Custom profile badge + city features",     unlocked: false },
 ];
 
-const FEEDBACK_OPTIONS: { label: FeedbackLabel; emoji: string; color: string }[] = [
-  { label: "Good vibes",    emoji: "✨", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25" },
-  { label: "Would do again",emoji: "🔁", color: "bg-blue-500/15 text-blue-400 border-blue-500/25" },
-  { label: "No-show",       emoji: "👻", color: "bg-gray-500/15 text-gray-400 border-gray-500/25" },
-  { label: "Felt off",      emoji: "😶", color: "bg-amber-500/15 text-amber-400 border-amber-500/25" },
+type FeedbackOpt = { label: FeedbackLabel; Icon: React.ElementType; color: string };
+const FEEDBACK_OPTIONS: FeedbackOpt[] = [
+  { label: "Good vibes",    Icon: Sparkles,   color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25" },
+  { label: "Would do again",Icon: RefreshCw,  color: "bg-blue-500/15 text-blue-400 border-blue-500/25" },
+  { label: "No-show",       Icon: UserX,      color: "bg-gray-500/15 text-gray-400 border-gray-500/25" },
+  { label: "Felt off",      Icon: Minus,      color: "bg-amber-500/15 text-amber-400 border-amber-500/25" },
 ];
 
 const TAG_STYLES: Record<string, string> = {
   "Hosted":       "bg-primary/15 text-primary border-primary/25",
   "Attended":     "bg-white/8 text-gray-400 border-white/10",
-  "Recurring":    "bg-blue-500/15 text-blue-400 border-blue-500/25",
+  "Weekly":       "bg-blue-500/15 text-blue-400 border-blue-500/25",
   "Circle Move":  "bg-purple-500/15 text-purple-400 border-purple-500/25",
+};
+
+const TAG_ICONS: Record<string, React.ElementType> = {
+  "Weekly":      Repeat,
+  "Circle Move": UsersRound,
 };
 
 function FeedbackPicker({ current, onSelect }: { current?: FeedbackLabel; onSelect: (f: FeedbackLabel) => void }) {
@@ -42,7 +70,10 @@ function FeedbackPicker({ current, onSelect }: { current?: FeedbackLabel; onSele
           selected ? selected.color : "bg-white/3 text-gray-600 border-white/8 hover:border-white/15 hover:text-gray-400"
         )}
       >
-        {selected ? <>{selected.emoji} {selected.label}</> : <>+ Rate it</>}
+        {selected
+          ? <><selected.Icon className="w-3 h-3" strokeWidth={2} /> {selected.label}</>
+          : <>+ Rate it</>
+        }
       </button>
       {open && (
         <div className="absolute bottom-full mb-2 right-0 bg-[#1e1e1e] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 min-w-[160px]">
@@ -52,7 +83,7 @@ function FeedbackPicker({ current, onSelect }: { current?: FeedbackLabel; onSele
               onClick={() => { onSelect(opt.label); setOpen(false); }}
               className={cn("w-full flex items-center gap-2.5 px-3 py-2.5 text-left text-xs font-bold transition-colors hover:bg-white/5", current === opt.label ? "text-white" : "text-gray-400")}
             >
-              <span className="text-sm">{opt.emoji}</span>
+              <opt.Icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
               {opt.label}
               {current === opt.label && <span className="ml-auto text-primary text-[10px]">✓</span>}
             </button>
@@ -67,12 +98,18 @@ export default function Profile() {
   const { user } = useUser();
   const { rallies } = useRallies();
   const { history, setFeedback, attendedCount, hostedCount, circleCount } = useActivityHistory();
-  const { circles } = useCircles();
   const [showAllHistory, setShowAllHistory] = useState(false);
 
   const joinedMoves = rallies.filter(r => r.joined);
   const progress = Math.min(100, (user.xp / user.xpToNext) * 100);
   const visibleHistory = showAllHistory ? history : history.slice(0, 4);
+
+  const STATS_GRID = [
+    { label: "Attended", value: attendedCount, Icon: Users       },
+    { label: "Hosted",   value: hostedCount,   Icon: Star        },
+    { label: "Circle",   value: circleCount,   Icon: UsersRound  },
+    { label: "Level",    value: user.level,    Icon: Zap         },
+  ];
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] pb-28">
@@ -159,12 +196,16 @@ export default function Profile() {
             <h3 className="text-[11px] font-black text-gray-500 mb-2.5 uppercase tracking-widest">Active Moves</h3>
             <div className="space-y-2">
               {joinedMoves.map(move => {
-                const cat = CAT_CONFIG[move.category];
+                const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
+                const CatIcon = CAT_ICONS[move.category];
                 return (
                   <Link key={move.id} href={`/rally/${move.id}`}>
                     <div className="flex items-center gap-3 bg-[#161616] border border-white/5 p-3 rounded-2xl active:scale-[0.99] transition-all">
-                      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0", cat?.color ?? "bg-primary/15")}>
-                        {cat?.emoji ?? "📍"}
+                      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", cat.color)}>
+                        {CatIcon
+                          ? <CatIcon className={cat.text} strokeWidth={1.75} style={{ width: 18, height: 18 }} />
+                          : <span className="text-lg">{cat.emoji}</span>
+                        }
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-white truncate">{move.title}</p>
@@ -184,10 +225,12 @@ export default function Profile() {
           <Link href="/circles">
             <div className="bg-[#161616] rounded-2xl p-4 border border-white/5 flex items-center justify-between group active:scale-[0.99] transition-all">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-base">🫂</div>
+                <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center">
+                  <UsersRound className="w-4.5 h-4.5 text-gray-400" style={{ width: 18, height: 18 }} strokeWidth={1.75} />
+                </div>
                 <div>
-                  <div className="font-bold text-white text-sm">My Circles</div>
-                  <div className="text-[11px] text-gray-500">{circles.length} circles joined</div>
+                  <div className="font-bold text-white text-sm">Your Circle</div>
+                  <div className="text-[11px] text-gray-500">{user.friendsCount} people in your Circle</div>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-primary transition-colors" />
@@ -197,10 +240,12 @@ export default function Profile() {
           <Link href="/friends">
             <div className="bg-[#161616] rounded-2xl p-4 border border-white/5 flex items-center justify-between group active:scale-[0.99] transition-all">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-base">👥</div>
+                <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center">
+                  <Users className="w-4.5 h-4.5 text-gray-400" style={{ width: 18, height: 18 }} strokeWidth={1.75} />
+                </div>
                 <div>
-                  <div className="font-bold text-white text-sm">Friends</div>
-                  <div className="text-[11px] text-gray-500">{user.friendsCount} friends</div>
+                  <div className="font-bold text-white text-sm">People</div>
+                  <div className="text-[11px] text-gray-500">{user.friendsCount} connections</div>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-primary transition-colors" />
@@ -218,14 +263,11 @@ export default function Profile() {
           </div>
 
           <div className="grid grid-cols-4 gap-2 mb-4">
-            {[
-              { label: "Attended", value: attendedCount, icon: "🙋" },
-              { label: "Hosted",   value: hostedCount,   icon: "🎯" },
-              { label: "Circles",  value: circleCount,   icon: "🫂" },
-              { label: "Level",    value: user.level,    icon: "⚡" },
-            ].map(({ label, value, icon }) => (
+            {STATS_GRID.map(({ label, value, Icon }) => (
               <div key={label} className="bg-[#161616] border border-white/5 rounded-xl p-2.5 text-center">
-                <div className="text-base mb-0.5">{icon}</div>
+                <div className="flex justify-center mb-1">
+                  <Icon className="w-4 h-4 text-gray-500" strokeWidth={1.75} />
+                </div>
                 <div className="text-base font-black text-white leading-none">{value}</div>
                 <div className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mt-0.5">{label}</div>
               </div>
@@ -234,10 +276,12 @@ export default function Profile() {
 
           {history.length === 0 ? (
             <div className="bg-[#161616] border border-white/5 rounded-2xl p-6 flex flex-col items-center text-center gap-3">
-              <div className="text-3xl">🗓️</div>
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-gray-600" strokeWidth={1.5} />
+              </div>
               <div>
                 <p className="text-sm font-bold text-white mb-1">No activity yet</p>
-                <p className="text-xs text-gray-500">Join or make your first move to see your history here.</p>
+                <p className="text-xs text-gray-500">Join or make your first Move to see your history here.</p>
               </div>
               <Link href="/discover"><span className="text-xs font-bold text-primary">Find a Move →</span></Link>
             </div>
@@ -246,12 +290,16 @@ export default function Profile() {
               <div className="absolute left-[19px] top-2 bottom-2 w-px bg-white/5 z-0" />
               <div className="space-y-1">
                 {visibleHistory.map((item, idx) => {
-                  const cat = CAT_CONFIG[item.category] ?? { emoji: "📍", color: "bg-primary/15", text: "text-primary" };
+                  const cat = CAT_CONFIG[item.category] ?? defaultCatConfig;
+                  const CatIcon = CAT_ICONS[item.category];
                   return (
                     <div key={item.id} className="relative flex gap-3 pl-1">
                       <div className="relative z-10 flex flex-col items-center shrink-0 mt-3.5">
-                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-base border", cat.color, idx === 0 ? "border-white/15" : "border-white/5")}>
-                          {cat.emoji}
+                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border", cat.color, idx === 0 ? "border-white/15" : "border-white/5")}>
+                          {CatIcon
+                            ? <CatIcon className={cat.text} strokeWidth={1.75} style={{ width: 16, height: 16 }} />
+                            : <span className="text-sm">{cat.emoji}</span>
+                          }
                         </div>
                       </div>
                       <div className={cn("flex-1 min-w-0 bg-[#161616] border rounded-2xl px-3.5 py-3 mb-2", idx === 0 ? "border-white/10" : "border-white/5")}>
@@ -270,11 +318,15 @@ export default function Profile() {
                         </div>
                         <div className="flex items-center justify-between gap-2 flex-wrap">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            {item.tags.map(tag => (
-                              <span key={tag} className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full border", TAG_STYLES[tag])}>
-                                {tag === "Recurring" ? "🔁" : "🫂"} {tag}
-                              </span>
-                            ))}
+                            {item.tags.map(tag => {
+                              const TagIcon = TAG_ICONS[tag];
+                              return (
+                                <span key={tag} className={cn("flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border", TAG_STYLES[tag] ?? "bg-white/5 text-gray-500 border-white/8")}>
+                                  {TagIcon && <TagIcon className="w-2.5 h-2.5" strokeWidth={2} />}
+                                  {tag}
+                                </span>
+                              );
+                            })}
                           </div>
                           <FeedbackPicker current={item.feedback} onSelect={f => setFeedback(item.id, f)} />
                         </div>

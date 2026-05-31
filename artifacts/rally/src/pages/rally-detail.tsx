@@ -1,12 +1,20 @@
-import { Link, useParams } from "wouter";
-import { ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2, Users, Zap, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Link, useParams, useLocation } from "wouter";
+import {
+  ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2,
+  Users, Zap, ChevronRight, LogOut, Heart,
+  Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRallies } from "@/hooks/useRallies";
+import { useRallies, useUser } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { ReportModal } from "@/components/ReportModal";
 import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 
 const AVATAR_COLORS = [
   "bg-orange-500", "bg-blue-500", "bg-emerald-500",
@@ -25,18 +33,40 @@ const HOST_AVATAR_COLORS: Record<string, string> = {
   "Jamie K.":   "bg-rose-500",
 };
 
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
+
 export default function MoveDetail() {
   const { id } = useParams<{ id: string }>();
-  const { rallies, joinRally } = useRallies();
+  const { rallies, joinRally, leaveRally } = useRallies();
+  const { user } = useUser();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [reportOpen, setReportOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   const move = rallies.find(r => r.id === id);
 
   if (!move) return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
       <div className="text-center p-8">
-        <div className="text-4xl mb-3">📍</div>
+        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
+          <MapPin className="w-7 h-7 text-gray-600" strokeWidth={1.5} />
+        </div>
         <p className="text-white font-bold mb-2">Move not found</p>
         <Link href="/discover"><span className="text-primary text-sm">← Back to Discover</span></Link>
       </div>
@@ -44,25 +74,43 @@ export default function MoveDetail() {
   );
 
   const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
+  const CatIcon = CAT_ICONS[move.category];
   const isLive = move.time === "Now";
   const spotsLeft = move.maxSpots - move.going;
   const fillPct = Math.min(100, (move.going / move.maxSpots) * 100);
   const hostColor = HOST_AVATAR_COLORS[move.hostName] ?? "bg-gray-700";
+  const isHost = move.hostName === user.username;
 
   const handleJoin = () => {
     joinRally(move.id);
-    toast({ title: "⚡ You're in!", description: "Move Chat is now open." });
+    toast({ title: "You're in!", description: "Move Chat is now open." });
+  };
+
+  const handleLeaveConfirm = () => {
+    leaveRally(move.id);
+    setLeaveOpen(false);
+    toast({ title: "You left the Move." });
+    navigate("/discover");
+  };
+
+  const handleCancelConfirm = () => {
+    setCancelOpen(false);
+    toast({ title: "Move cancelled.", description: "Attendees will be notified." });
+    navigate("/discover");
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] pb-32 relative">
+    <div className="min-h-screen bg-[#0d0d0d] pb-40 relative">
 
       {/* Hero banner */}
       <div className={cn("h-52 w-full relative overflow-hidden flex items-center justify-center", cat.color)}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(255,255,255,0.04),transparent_70%)]" />
         <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0d0d0d] to-transparent" />
         <div className="relative flex flex-col items-center gap-3 z-10">
-          <div className="text-6xl drop-shadow-lg">{cat.emoji}</div>
+          {CatIcon
+            ? <CatIcon className={cn(cat.text, "drop-shadow-lg")} strokeWidth={1.25} style={{ width: 80, height: 80 }} />
+            : <span className="text-7xl drop-shadow-lg">{cat.emoji}</span>
+          }
           {isLive && (
             <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur px-3 py-1.5 rounded-full border border-white/10">
               <span className="relative flex h-2 w-2">
@@ -96,7 +144,11 @@ export default function MoveDetail() {
           {/* Category + distance */}
           <div className="flex items-center justify-between mb-3">
             <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold", cat.color, cat.text)}>
-              {cat.emoji} {move.category}
+              {CatIcon
+                ? <CatIcon style={{ width: 12, height: 12 }} strokeWidth={2} />
+                : null
+              }
+              {move.category}
             </span>
             <div className="flex items-center gap-2">
               {move.isCircleMove && (
@@ -140,7 +192,7 @@ export default function MoveDetail() {
             </div>
             <Link href={`/chat/${move.id}`}>
               <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 bg-transparent text-gray-300 hover:bg-white/5 text-xs font-bold gap-1">
-                <MessageCircle className="w-3 h-3" /> Message Host
+                <MessageCircle className="w-3 h-3" /> Message
               </Button>
             </Link>
           </div>
@@ -198,7 +250,9 @@ export default function MoveDetail() {
         {move.joined && (
           <Link href={`/post-move/${move.id}`}>
             <div className="bg-[#161616] rounded-2xl border border-white/5 p-4 flex items-center gap-3 active:scale-[0.99] transition-transform cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-xl shrink-0">🫶</div>
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                <Heart className="w-5 h-5 text-primary" strokeWidth={1.75} />
+              </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
                   <Zap className="w-3.5 h-3.5 text-primary fill-primary/30" />
@@ -218,13 +272,30 @@ export default function MoveDetail() {
       </div>
 
       {/* Fixed CTA */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto px-4 pb-8 pt-4 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/95 to-transparent z-50">
+      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto px-4 pb-8 pt-4 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/95 to-transparent z-50 space-y-2">
         {move.joined ? (
-          <Link href={`/chat/${move.id}`}>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)] flex items-center justify-center gap-2">
-              <MessageCircle className="w-5 h-5" /> Open Move Chat
-            </Button>
-          </Link>
+          <>
+            <Link href={`/chat/${move.id}`}>
+              <Button className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)] flex items-center justify-center gap-2">
+                <MessageCircle className="w-5 h-5" /> Open Move Chat
+              </Button>
+            </Link>
+            {isHost ? (
+              <button
+                onClick={() => setCancelOpen(true)}
+                className="w-full flex items-center justify-center gap-2 py-2 text-[12px] font-bold text-gray-600 hover:text-red-400 transition-colors"
+              >
+                Cancel Move
+              </button>
+            ) : (
+              <button
+                onClick={() => setLeaveOpen(true)}
+                className="w-full flex items-center justify-center gap-2 py-2 text-[12px] font-bold text-gray-600 hover:text-red-400 transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" /> Leave Move
+              </button>
+            )}
+          </>
         ) : (
           <Button
             onClick={handleJoin}
@@ -240,6 +311,60 @@ export default function MoveDetail() {
           </Button>
         )}
       </div>
+
+      {/* Leave Move confirmation */}
+      <Dialog open={leaveOpen} onOpenChange={setLeaveOpen}>
+        <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Leave this Move?</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              You'll be removed from the attendee list and the Move Chat will disappear from your chats.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="outline"
+              className="flex-1 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-xl"
+              onClick={() => setLeaveOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="flex-1 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 font-bold rounded-xl"
+              onClick={handleLeaveConfirm}
+            >
+              Leave Move
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Move confirmation (host only) */}
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Cancel this Move?</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Everyone who joined will be notified that the Move is cancelled.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="outline"
+              className="flex-1 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-xl"
+              onClick={() => setCancelOpen(false)}
+            >
+              Keep it
+            </Button>
+            <Button
+              className="flex-1 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 font-bold rounded-xl"
+              onClick={handleCancelConfirm}
+            >
+              Cancel Move
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <ReportModal open={reportOpen} onOpenChange={setReportOpen} />
     </div>

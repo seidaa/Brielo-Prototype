@@ -212,16 +212,16 @@ export type ActivityHistoryItem = {
   date: string;
   role: "hosted" | "attended";
   attendeeCount: number;
-  tags: ("Recurring" | "Circle Move")[];
+  tags: ("Weekly" | "Circle Move")[];
   feedback?: FeedbackLabel;
 };
 
 export const mockActivityHistory: ActivityHistoryItem[] = [
-  { id: "h1", title: "Sunday Coffee Run",     category: "Coffee",    date: "May 18", role: "hosted",   attendeeCount: 4, tags: ["Recurring"],   feedback: "Good vibes"     },
-  { id: "h2", title: "Tuesday Trivia Circle", category: "Nightlife", date: "May 13", role: "attended", attendeeCount: 6, tags: [],              feedback: "Would do again" },
+  { id: "h1", title: "Sunday Coffee Run",     category: "Coffee",    date: "May 18", role: "hosted",   attendeeCount: 4, tags: ["Weekly"],      feedback: "Good vibes"     },
+  { id: "h2", title: "Trivia Night",          category: "Nightlife", date: "May 13", role: "attended", attendeeCount: 6, tags: [],              feedback: "Would do again" },
   { id: "h3", title: "Weekly Gym Session",    category: "Fitness",   date: "May 12", role: "attended", attendeeCount: 3, tags: ["Circle Move"], feedback: "Good vibes"     },
   { id: "h4", title: "Pickup Basketball",     category: "Sports",    date: "May 10", role: "hosted",   attendeeCount: 8, tags: [],              feedback: "Would do again" },
   { id: "h5", title: "Jazz at the Green Mill",category: "Nightlife", date: "May 5",  role: "attended", attendeeCount: 5, tags: []                                           },
-  { id: "h6", title: "Lakefront Sunset Run",  category: "Outdoors",  date: "Apr 29", role: "attended", attendeeCount: 7, tags: ["Recurring"],   feedback: "Good vibes"     },
+  { id: "h6", title: "Lakefront Sunset Run",  category: "Outdoors",  date: "Apr 29", role: "attended", attendeeCount: 7, tags: ["Weekly"],      feedback: "Good vibes"     },
   { id: "h7", title: "Board Games Night",     category: "Gaming",    date: "Apr 22", role: "hosted",   attendeeCount: 5, tags: ["Circle Move"], feedback: "Would do again" },
 ];
