@@ -18,6 +18,7 @@ import Circles from "@/pages/circles";
 import CircleDetail from "@/pages/circle-detail";
 import Profile from "@/pages/profile";
 import Map from "@/pages/map";
+import Reset from "@/pages/reset";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/circles/:id"   component={CircleDetail}/>
       <Route path="/profile"       component={Profile}     />
       <Route path="/map"           component={Map}         />
+      <Route path="/reset"         component={Reset}       />
       <Route component={NotFound} />
     </Switch>
   );
