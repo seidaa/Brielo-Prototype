@@ -122,7 +122,7 @@ export default function Discover() {
 
         {/* ── Greeting + Make a Move CTA ───────────────────────────── */}
         <div className="px-4 pt-5 pb-4">
-          <p className="text-sm text-gray-500 mb-0.5">Good afternoon ☀️</p>
+          <p className="text-sm text-gray-500 mb-0.5">Good afternoon</p>
           <h2 className="text-2xl font-black text-white mb-4">What's the move?</h2>
 
           <Link href="/create">
@@ -138,7 +138,7 @@ export default function Discover() {
                     Post something you're down to do — see who's in.
                   </p>
                   <div className="inline-flex items-center gap-1.5 bg-primary text-black font-black text-sm px-4 py-2 rounded-xl shadow-[0_0_16px_rgba(250,204,21,0.4)]">
-                    Post Move <ArrowRight className="w-3.5 h-3.5" />
+                    Make It Live <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
@@ -277,23 +277,17 @@ export default function Discover() {
           </section>
         )}
 
-        {/* ── C: Moves For You — compact empty state ───────────────── */}
-        {filter !== "circle" && (
+        {/* ── C: Moves For You — hidden when empty ─────────────────── */}
+        {filter !== "circle" && forYou.length > 0 && (
           <section className="mb-6">
             <div className="px-4 mb-3">
               <h3 className="text-base font-black text-white">Moves For You</h3>
             </div>
-            {forYou.length === 0 ? (
-              <p className="px-4 text-[12px] text-gray-600 leading-relaxed">
-                Your picks will show up as you make moves and add people to your Circle.
-              </p>
-            ) : (
-              <div className="px-4 space-y-2.5">
-                {forYou.slice(0, 5).map(move => (
-                  <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
-                ))}
-              </div>
-            )}
+            <div className="px-4 space-y-2.5">
+              {forYou.slice(0, 5).map(move => (
+                <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
+              ))}
+            </div>
           </section>
         )}
 
