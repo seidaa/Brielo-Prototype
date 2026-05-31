@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ChevronLeft, MapPin, Clock, Users, Zap } from "lucide-react";
+import {
+  ChevronLeft, MapPin, Clock, Users, Zap,
+  Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints,
+} from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +14,25 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { CAT_CONFIG } from "@/data/mockData";
 
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
+
 const CATEGORIES = ["Fitness", "Coffee", "Food", "Study", "Sports", "Nightlife", "Outdoors", "Concerts", "Gaming", "Creative", "Networking", "Walking", "Errands"];
 const TIMES = ["Now", "In 30 min", "In 1 hour", "Later today", "Tomorrow"];
-const VIBES = ["Chill", "Social", "First Timers Welcome", "Low Pressure", "Beginner Friendly", "Recurring", "Quick", "Hype", "Open to New People", "Productive"];
+const VIBES = ["Chill", "Social", "First Timers Welcome", "Low Pressure", "Beginner Friendly", "Weekly", "Quick", "Hype", "Open to New People", "Productive"];
 
 export default function CreateMove() {
   const [, setLoc] = useLocation();
@@ -89,9 +109,10 @@ export default function CreateMove() {
         {/* Category */}
         <div className="space-y-2">
           <label className="text-xs font-black text-gray-400 uppercase tracking-wider">Category</label>
-          <div className="flex overflow-x-auto gap-2 no-scrollbar pb-1">
+          <div className="flex overflow-x-auto gap-2 no-scrollbar pb-1 px-0.5">
             {CATEGORIES.map(cat => {
               const cfg = CAT_CONFIG[cat];
+              const CatIcon = CAT_ICONS[cat];
               const isSelected = category === cat;
               return (
                 <button
@@ -102,7 +123,11 @@ export default function CreateMove() {
                     isSelected ? "bg-primary text-black border-primary" : "bg-white/5 text-gray-400 border-white/5"
                   )}
                 >
-                  <span>{cfg?.emoji}</span> {cat}
+                  {CatIcon
+                    ? <CatIcon style={{ width: 13, height: 13 }} strokeWidth={1.75} className={isSelected ? "text-black" : cfg?.text} />
+                    : <span>{cfg?.emoji}</span>
+                  }
+                  {cat}
                 </button>
               );
             })}
@@ -208,7 +233,7 @@ export default function CreateMove() {
           onClick={handleCreate}
           className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.35)]"
         >
-          <Zap className="w-5 h-5 mr-2 fill-black/30" /> Post Move
+          <Zap className="w-5 h-5 mr-2 fill-black/30" /> Make It Live
         </Button>
       </div>
     </div>
