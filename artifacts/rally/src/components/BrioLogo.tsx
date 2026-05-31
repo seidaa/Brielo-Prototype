@@ -65,9 +65,10 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
       // stable across fonts than the top which includes variable line-box
       // leading. Typical font metrics: descender ≈ 0.20 em below baseline,
       // cap-height ≈ 0.72 em above baseline  →  cap top ≈ bottom − 0.92 em.
-      // We want the ring bottom to sit exactly at that cap top.
+      // We want the ring bottom to float ~10 % of em above the cap top —
+      // close but not touching, like a natural i-dot.
       const capTop = (sBox.bottom - wBox.top) - px * 0.92;
-      const cy = capTop - ringPx / 2;
+      const cy = capTop - ringPx / 2 - px * 0.10;
 
       setRing({
         left:   cx - ringPx / 2,
