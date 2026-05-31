@@ -23,12 +23,6 @@ export default function Onboarding() {
       {/* Hero section */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-8 relative z-10">
 
-        {/* App icon mark — yellow ring */}
-        <div className="relative w-20 h-20 flex items-center justify-center mb-7">
-          <div className="absolute inset-0 rounded-[22px] bg-white/5 border border-white/8 shadow-[0_0_50px_rgba(250,204,21,0.22)]" />
-          <div className="relative w-9 h-9 rounded-full" style={{ border: "5px solid #FACC15" }} />
-        </div>
-
         {/* Brand stack */}
         <BrioLogo size="hero" className="mb-1" />
         <p className="text-2xl font-black text-primary mb-2">Live More</p>

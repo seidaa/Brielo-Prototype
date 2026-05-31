@@ -55,16 +55,14 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
       const px    = parseFloat(getComputedStyle(stem).fontSize);
 
       // Ring geometry (em → px)
-      const ringPx   = px * 0.44;   // outer diameter
-      const strokePx = px * 0.10;   // stroke width → inner gap = ringPx - 2×strokePx
+      const ringPx   = px * 0.30;   // outer diameter — tight, proportional to font
+      const strokePx = px * 0.075;  // stroke width
 
       // Center the ring horizontally on the ı stem
       const cx = sBox.left - wBox.left + sBox.width  / 2;
 
-      // Place the ring centre just above the top of the ı:
-      // sBox.top is the rendered cap-height; the natural dot floats ~4 % of
-      // font-size above that, so ring centre = sBox.top − 0.04×px
-      const cy = sBox.top  - wBox.top  - px * 0.04;
+      // Place the ring centre just kissing the top of the ı (no gap)
+      const cy = sBox.top  - wBox.top;
 
       setRing({
         left:   cx - ringPx / 2,
