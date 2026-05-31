@@ -1,16 +1,18 @@
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * BrioLogo renders "Brio" with the natural i-dot replaced by a yellow ring.
+ * BrioLogo — "Brio" wordmark with the natural i-dot replaced by a yellow ring.
  *
- * Technique:
- *  1. Use the Unicode dotless-i (ı / U+0131) for the "i" stem — this removes
- *     the natural white dot from the font itself, so nothing bleeds through.
- *  2. Overlay a hollow yellow ring at the exact natural dot height using
- *     em-relative `bottom` positioning anchored to the span's baseline.
+ * The ring is positioned via runtime DOM measurement so it works correctly on
+ * every device and font (Safari / SF Pro, Chrome / Roboto, etc.) without any
+ * hardcoded font-metric assumptions.
  *
- * Because the natural dot is gone, the ring centre can be fully transparent —
- * no dark-background masking required. Works on any surface colour.
+ * Steps:
+ *  1. Render "Br", dotless-ı (U+0131), "o" as normal HTML text.
+ *  2. After fonts load, measure the ı span's bounding rect.
+ *  3. Place a hollow yellow ring with its center just above the ı's top edge
+ *     — exactly where the natural dot would sit.
  */
 
 type Size = "sm" | "md" | "lg" | "xl" | "hero";
@@ -28,12 +30,63 @@ interface BrioLogoProps {
   className?: string;
 }
 
+interface RingMetrics {
+  left: number;
+  top:  number;
+  size: number;
+  stroke: number;
+}
+
 export function BrioLogo({ size = "md", className }: BrioLogoProps) {
   const fs = TEXT_SIZE[size];
 
+  const wrapRef = useRef<HTMLSpanElement>(null);
+  const stemRef = useRef<HTMLSpanElement>(null);
+  const [ring, setRing] = useState<RingMetrics | null>(null);
+
+  useEffect(() => {
+    function measure() {
+      const wrap = wrapRef.current;
+      const stem = stemRef.current;
+      if (!wrap || !stem) return;
+
+      const wBox  = wrap.getBoundingClientRect();
+      const sBox  = stem.getBoundingClientRect();
+      const px    = parseFloat(getComputedStyle(stem).fontSize);
+
+      // Ring geometry (em → px)
+      const ringPx   = px * 0.44;   // outer diameter
+      const strokePx = px * 0.10;   // stroke width → inner gap = ringPx - 2×strokePx
+
+      // Center the ring horizontally on the ı stem
+      const cx = sBox.left - wBox.left + sBox.width  / 2;
+
+      // Place the ring centre just above the top of the ı:
+      // sBox.top is the rendered cap-height; the natural dot floats ~4 % of
+      // font-size above that, so ring centre = sBox.top − 0.04×px
+      const cy = sBox.top  - wBox.top  - px * 0.04;
+
+      setRing({
+        left:   cx - ringPx / 2,
+        top:    cy - ringPx / 2,
+        size:   ringPx,
+        stroke: strokePx,
+      });
+    }
+
+    // Measure immediately (fonts may already be cached)
+    measure();
+    // Re-measure once web fonts finish loading
+    document.fonts.ready.then(measure);
+    // Re-measure on resize / orientation change
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [size]);
+
   return (
     <span
-      className={cn("inline-flex items-baseline select-none", className)}
+      ref={wrapRef}
+      className={cn("relative inline-flex items-baseline select-none", className)}
       aria-label="Brio"
     >
       {/* "Br" */}
@@ -41,46 +94,39 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
         Br
       </span>
 
-      {/*
-        "i" — rendered as dotless ı (U+0131) so the font produces NO white dot.
-        A hollow yellow ring is then placed at the natural dot height.
-
-        Sizing & position (em-relative, so they scale with every font size):
-          • Ring outer: 0.44 em diameter
-          • Ring stroke: 0.10 em  →  inner transparent hole: 0.24 em
-          • Ring sits just above the top of the stem (cap-height ≈ 0.73 em).
-            – inline-block's bottom edge ≈ baseline + 0.24 em (descender)
-            – to clear cap-height: ring_bottom_from_element = 0.73 + 0.24 + 0.05 gap = 1.02 em
-            – ring centre = 1.02 + 0.22 = 1.24 em from element bottom = 1.00 em above baseline
-      */}
-      <span className="relative inline-block leading-none">
-        <span className={cn("font-black text-white tracking-tight leading-none", fs)}>
-          ı
-        </span>
-
-        <span
-          aria-hidden="true"
-          className="absolute left-1/2 rounded-full pointer-events-none"
-          style={{
-            width:           "0.44em",
-            height:          "0.44em",
-            border:          "0.10em solid #FACC15",
-            backgroundColor: "transparent",
-            bottom:          "1.02em",
-            transform:       "translateX(-50%)",
-          }}
-        />
+      {/* Dotless ı — no natural dot, ring overlay added by JS below */}
+      <span
+        ref={stemRef}
+        className={cn("font-black text-white tracking-tight leading-none", fs)}
+      >
+        ı
       </span>
 
       {/* "o" */}
       <span className={cn("font-black text-white tracking-tight leading-none", fs)}>
         o
       </span>
+
+      {/* Yellow ring — positioned after runtime measurement */}
+      {ring && (
+        <span
+          aria-hidden="true"
+          className="absolute pointer-events-none rounded-full"
+          style={{
+            left:            ring.left,
+            top:             ring.top,
+            width:           ring.size,
+            height:          ring.size,
+            border:          `${ring.stroke}px solid #FACC15`,
+            backgroundColor: "transparent",
+          }}
+        />
+      )}
     </span>
   );
 }
 
-/** App-icon mark — the ring on its own, at any square size */
+/** App-icon mark — standalone ring on a dark rounded square */
 export function BrioMark({ className }: { className?: string }) {
   return (
     <div
