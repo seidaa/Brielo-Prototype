@@ -1,0 +1,75 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Polish the toast/confirmation banner behavior across the Brielo prototype.
+
+This is a small UX polish fix only.
+
+Do not add:
+
+* backend
+* database
+* auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* major refactors
+
+Do not rename folders or routes.
+
+Problem:
+The confirmation banner/toast at the top of the screen stays visible too long and blocks the app experience.
+
+Example:
+“You left the Move. Your spot is open again.”
+
+Expected behavior:
+Toasts should feel helpful but temporary.
+
+Update toast behavior so:
+
+* toast appears after important actions
+* toast automatically disappears after about 4 seconds
+* user can manually dismiss it
+* user can swipe it away if the current toast system supports swipe gestures
+* toast should not permanently block the top of the screen
+* toast should not cover important buttons for too long
+
+Preferred behavior:
+
+* Auto-dismiss after 4 seconds
+* Include a close/dismiss option if easy
+* Support swipe-to-dismiss if supported by the existing toast component/library
+* Keep styling consistent with Brielo: dark card, rounded corners, subtle border, clean text
+
+Apply this to action confirmations like:
+
+* “You left the Move. Your spot is open again.”
+* “Move canceled. The chat is closed.”
+* “You’re in. Your spot is saved.”
+* “Your Move is live.”
+* notification-related confirmation messages
+* post-Move feedback confirmations
+
+Do not remove the toasts entirely.
+Do not make them require tapping to disappear.
+Do not make them stay longer than needed.
+
+Quality check:
+After changes, test:
+
+* join a Move
+* leave a Move
+* cancel a hosted Move
+* create/post a Move
+* submit feedback if available
+* confirm each toast disappears after about 4 seconds
+* confirm the user can dismiss or swipe it away if supported
+* confirm Discover, Profile, Move Chat, and Show-Up Trust still work
+* confirm no old Rally/Brio/Plan/Crew language is reintroduced
+* confirm no emoji icons are added
+
+Final goal:
+Brielo confirmation messages should feel quick, polished, and user-controlled instead of lingering on screen too long.
