@@ -2,25 +2,19 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  UserPlus, MessageCircle, BadgeCheck, RotateCcw, CalendarX, BellOff,
+  BadgeCheck, LogOut, Megaphone, CalendarX, Heart, BellOff,
 } from "lucide-react";
+import { useNotifications } from "@/hooks/useRallies";
+import { relativeTime, NotifKind } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 
-type NotificationItem = {
-  id: string;
-  icon: React.ElementType;
-  iconColor: string;
-  text: string;
-  time: string;
+const KIND_META: Record<NotifKind, { icon: React.ElementType; color: string }> = {
+  join:     { icon: BadgeCheck, color: "text-primary"      },
+  leave:    { icon: LogOut,     color: "text-gray-400"     },
+  create:   { icon: Megaphone,  color: "text-primary"      },
+  cancel:   { icon: CalendarX,  color: "text-red-400"      },
+  feedback: { icon: Heart,      color: "text-emerald-400"  },
 };
-
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  { id: "n1", icon: UserPlus,      iconColor: "text-primary",      text: "Marcus L. joined Leg Day at XSport",            time: "2m ago"  },
-  { id: "n2", icon: MessageCircle, iconColor: "text-sky-400",      text: "Priya S. sent a message in Sunday Coffee Run", time: "18m ago" },
-  { id: "n3", icon: BadgeCheck,    iconColor: "text-primary",      text: "Your spot is saved for Grocery run",           time: "1h ago"  },
-  { id: "n4", icon: RotateCcw,     iconColor: "text-emerald-400",  text: "Jordan K. would move again",                   time: "3h ago"  },
-  { id: "n5", icon: CalendarX,     iconColor: "text-gray-400",     text: "Move canceled. Chat closed.",                  time: "Yesterday" },
-];
 
 interface NotificationsSheetProps {
   open: boolean;
@@ -28,7 +22,7 @@ interface NotificationsSheetProps {
 }
 
 export function NotificationsSheet({ open, onOpenChange }: NotificationsSheetProps) {
-  const notifications = MOCK_NOTIFICATIONS;
+  const { notifications } = useNotifications();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -50,19 +44,24 @@ export function NotificationsSheet({ open, onOpenChange }: NotificationsSheetPro
         ) : (
           <div className="px-3 space-y-1 max-h-[60vh] overflow-y-auto no-scrollbar">
             {notifications.map(n => {
-              const Icon = n.icon;
+              const meta = KIND_META[n.kind];
+              const Icon = meta.icon;
               return (
                 <div
                   key={n.id}
-                  className="flex items-center gap-3 px-2.5 py-3 rounded-xl active:bg-white/5 transition-colors"
+                  className={cn(
+                    "flex items-center gap-3 px-2.5 py-3 rounded-xl transition-colors",
+                    n.read ? "active:bg-white/5" : "bg-primary/[0.06]"
+                  )}
                 >
                   <div className="w-9 h-9 rounded-full bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
-                    <Icon className={cn("w-4 h-4", n.iconColor)} strokeWidth={1.75} />
+                    <Icon className={cn("w-4 h-4", meta.color)} strokeWidth={1.75} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] text-gray-200 leading-snug">{n.text}</p>
-                    <p className="text-[10px] font-bold text-gray-600 mt-0.5">{n.time}</p>
+                    <p className="text-[10px] font-bold text-gray-600 mt-0.5">{relativeTime(n.createdAt)}</p>
                   </div>
+                  {!n.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
                 </div>
               );
             })}

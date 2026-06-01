@@ -1,0 +1,159 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Polish the “Save your spot?” join modal copy and make the prototype notification drawer update when key Move actions happen.
+
+This is front-end/localStorage prototype behavior only.
+
+Do not add:
+
+* backend
+* database
+* real auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* major refactors
+
+Do not rename folders or routes.
+
+Preserve:
+
+* Brielo branding
+* Moves language
+* I’m In
+* Make It Live
+* Leave Move
+* Cancel Move
+* Move Chat
+* Show-Up Trust
+* localStorage/mock data
+* current clickable flows
+
+PART 1 — Polish “Save your spot?” modal copy
+
+Problem:
+The current copy says something like:
+
+“Tapping I’m In holds a spot someone else may want — only join if you plan to show.”
+
+This feels a little awkward.
+
+Update the modal copy to be more natural, clear, and firm.
+
+Preferred copy:
+
+Title:
+“Save your spot?”
+
+Body:
+“Only 3 spots left for Leg Day at XSport.”
+
+Secondary body:
+“Only join if you plan to show. When you save a spot, someone else may miss out.”
+
+Primary button:
+“I’m In — Save My Spot”
+
+Secondary button:
+“Not yet”
+
+Footer copy:
+“Things come up. Leaving before it starts opens your spot back up and does not count as a no-show.”
+
+Keep the spot count and Move name dynamic.
+
+Make sure this copy still works if the Move has a different number of spots or different title.
+
+PART 2 — Make notifications update from prototype actions
+
+Problem:
+The notification drawer currently opens, but posting, joining, leaving, and canceling Moves do not update the notification list. This makes the notification menu feel static.
+
+Expected behavior:
+Use localStorage/mock state to add lightweight notifications when key prototype actions happen.
+
+Add a simple notification system if one does not already exist.
+
+Suggested localStorage key:
+`brio_notifications`
+
+Add notifications for these actions:
+
+1. When the user joins a Move:
+   “Your spot is saved for [Move Name].”
+
+2. When the user leaves a Move:
+   “You left [Move Name]. Your spot is open again.”
+
+3. When the user creates/posts a Move:
+   “Your Move is live: [Move Name].”
+
+4. When the host cancels a Move:
+   “[Move Name] was canceled. The chat is closed.”
+
+5. When post-Move feedback is submitted:
+   “Thanks for your feedback on [Move Name].”
+
+Keep notifications lightweight and prototype-friendly.
+
+Notification drawer behavior:
+
+* show newest notifications first
+* show timestamp-style text if easy, like “now” or “2m ago”
+* the red notification dot should appear when there are unread notifications
+* opening the notification drawer can mark notifications as read and clear the red dot
+* if there are no notifications, show:
+  “You’re all caught up.”
+
+Do not create real push notifications.
+Do not request notification permissions.
+Do not add backend notification logic.
+
+PART 3 — Notification drawer copy/style
+
+Keep the drawer title:
+
+“Notifications”
+
+Use Brielo’s existing dark card style:
+
+* rounded cards
+* dark background
+* yellow accent where appropriate
+* clean line icons only
+* no emoji icons
+
+Example notification list:
+
+* “Your spot is saved for Leg Day at XSport.”
+* “You left Sunday Coffee Run. Your spot is open again.”
+* “Your Move is live: Grocery run.”
+* “Move canceled. The chat is closed.”
+* “Thanks for your feedback on Pickup Basketball.”
+
+PART 4 — Quality check
+
+After changes, test:
+
+* tap I’m In
+* verify the Save Your Spot modal copy feels natural
+* confirm joining a Move adds a notification
+* confirm leaving a Move adds a notification
+* confirm creating/posting a Move adds a notification
+* confirm canceling a hosted Move adds a notification
+* confirm notification drawer opens and shows newest notifications first
+* confirm red dot clears after opening notifications
+* confirm Move Chat still appears only for joined Moves
+* confirm Move Chat disappears after leaving
+* confirm hosted Move cancellation still removes the Move and closes chat
+* confirm Profile Show-Up Trust still works
+* confirm Discover still loads
+* confirm localStorage still works after refresh
+* confirm no old Rally/Brio/Plan/Crew language is reintroduced
+* confirm no emoji icons are added
+
+Final goal:
+The join commitment modal should feel natural and firm, and the notification drawer should feel connected to real prototype actions without adding real notification infrastructure.

@@ -10,6 +10,10 @@ import {
   PersonTrust, PEOPLE_TRUST,
 } from "@/data/mockData";
 import { computeShowUpRate, computeWarning } from "@/lib/trust";
+import {
+  pushNotification, getNotifications, markAllNotificationsRead,
+  AppNotification, NOTIF_EVENT,
+} from "@/lib/notifications";
 
 const MOVES_KEY      = "brio_moves";
 const USER_KEY       = "brio_user";
@@ -41,19 +45,51 @@ export function useRallies() {
   }, []);
 
   const saveMoves  = (m: Move[]) => { setRallies(m); localStorage.setItem(MOVES_KEY, JSON.stringify(m)); };
-  const addRally   = (m: Move)   => saveMoves([m, ...rallies]);
-  const joinRally  = (id: string) =>
+  const addRally   = (m: Move)   => {
+    saveMoves([m, ...rallies]);
+    pushNotification("create", `Your Move is live: ${m.title}.`);
+  };
+  const joinRally  = (id: string) => {
+    const move = rallies.find(r => r.id === id);
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: true, going: r.going + 1 } : r));
-  const leaveRally = (id: string) =>
+    if (move) pushNotification("join", `Your spot is saved for ${move.title}.`);
+  };
+  const leaveRally = (id: string) => {
+    const move = rallies.find(r => r.id === id);
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: false, going: Math.max(0, r.going - 1) } : r));
+    if (move) pushNotification("leave", `You left ${move.title}. Your spot is open again.`);
+  };
   // Host closes a Move they created: fully remove it so it stops appearing on every
   // active surface (Discover, Live Moves Nearby, Live Map, Profile, Move Chat list,
   // chat badge). This is NOT a no-show or trust penalty — past Activity History lives
   // in a separate store (HISTORY_KEY) and is untouched.
-  const cancelMove = (id: string) =>
+  const cancelMove = (id: string) => {
+    const move = rallies.find(r => r.id === id);
     saveMoves(rallies.filter(r => r.id !== id));
+    if (move) pushNotification("cancel", `${move.title} was canceled. The chat is closed.`);
+  };
 
   return { rallies, addRally, joinRally, leaveRally, cancelMove };
+}
+
+// Prototype notification feed. Reads the localStorage store on mount and stays in
+// sync via the NOTIF_EVENT window event, so the bell dot and drawer update live the
+// moment an action fires — even within the same screen, no navigation required.
+export function useNotifications() {
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+
+  useEffect(() => {
+    const refresh = () => setNotifications(getNotifications());
+    refresh();
+    window.addEventListener(NOTIF_EVENT, refresh);
+    return () => window.removeEventListener(NOTIF_EVENT, refresh);
+  }, []);
+
+  return {
+    notifications,
+    unreadCount: notifications.filter(n => !n.read).length,
+    markAllRead: markAllNotificationsRead,
+  };
 }
 
 export function useUser() {

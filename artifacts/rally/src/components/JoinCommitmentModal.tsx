@@ -23,12 +23,14 @@ export function JoinCommitmentModal({ open, onOpenChange, move, onConfirm }: {
             <CalendarCheck className="w-5 h-5 text-primary" strokeWidth={1.75} />
           </div>
           <DialogTitle className="text-white">Save your spot?</DialogTitle>
-          <DialogDescription className="text-gray-400 leading-relaxed">
-            Only {left} spot{left === 1 ? "" : "s"} left on{" "}
-            <span className="text-gray-200 font-semibold">{move.title}</span>. Tapping I'm In holds a
-            spot someone else may want — only join if you plan to show.
+          <DialogDescription className="text-gray-300 leading-relaxed">
+            Only {left} spot{left === 1 ? "" : "s"} left for{" "}
+            <span className="text-white font-semibold">{move.title}</span>.
           </DialogDescription>
         </DialogHeader>
+        <p className="text-[13px] text-gray-400 leading-relaxed -mt-1">
+          Only join if you plan to show. When you save a spot, someone else may miss out.
+        </p>
         <div className="flex flex-col gap-2 mt-2">
           <Button
             onClick={onConfirm}
@@ -45,8 +47,8 @@ export function JoinCommitmentModal({ open, onOpenChange, move, onConfirm }: {
           </Button>
         </div>
         <p className="text-[11px] text-gray-600 text-center mt-1 leading-relaxed">
-          Things come up — leave anytime before it starts and your spot opens back up. Leaving early
-          isn't a no-show.
+          Things come up. Leaving before it starts opens your spot back up and does not count as a
+          no-show.
         </p>
       </DialogContent>
     </Dialog>

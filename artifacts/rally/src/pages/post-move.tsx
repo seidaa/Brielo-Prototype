@@ -17,6 +17,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { pushNotification } from "@/lib/notifications";
 
 const CAT_ICONS: Record<string, React.ElementType> = {
   Fitness:    Dumbbell,
@@ -363,7 +364,10 @@ export default function PostMove() {
           </Button>
         ) : (
           <Link href="/discover">
-            <Button className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.3)]">
+            <Button
+              onClick={() => pushNotification("feedback", `Thanks for your feedback on ${move.title}.`)}
+              className="w-full bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl h-14 shadow-[0_0_20px_rgba(250,204,21,0.3)]"
+            >
               Done · Back to Discover
             </Button>
           </Link>
