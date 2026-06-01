@@ -1,45 +1,65 @@
-# [Project name]
+# Brielo Replit Project
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Brielo is a mobile-first social lifestyle prototype built in Replit.
+
+The current app prototype lives in:
+
+artifacts/rally
+
+Note: the folder name still says rally because Rally was an earlier codename. Do not rename this folder yet.
+
+## Current Brand
+
+* App name: Brielo
+* Tagline: Live More
+* Core action: Make a Move
+* Supporting line: Find people to do things with — once, weekly, or whenever you're down.
+
+## Product Summary
+
+Brielo helps people make real-life Moves, meet people through activities, and add good people to their Circle.
+
+## Current Prototype Status
+
+* Front-end clickable prototype
+* React/Tailwind-style app
+* localStorage/mock data
+* No production backend
+* No real authentication
+* No payments
+* No WebSockets
+* No push notifications
+* No livestreaming
+
+## Agent Instructions
+
+Before making changes, read:
+
+* docs/06_AGENT_HANDOFF.md
+* docs/05_DECISION_LOG.md
+* docs/02_PRODUCT_SPEC.md
+
+Do not reintroduce old Rally, Brio, Plan, or Crew language.
+
+After making changes:
+
+* Do not change app functionality.
+* Do not run broad refactors.
+* Do not rename folders.
+* Summarize the files created or updated.
+* Confirm that the prototype behavior was not intentionally changed.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
-
-## Stack
-
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
-
-## Where things live
-
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
-
-## Architecture decisions
-
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
+* `pnpm --filter @workspace/api-server run dev` — run the API server (serves the built Brielo frontend)
+* `pnpm --filter @workspace/rally run build` — build the Brielo frontend prototype
+* The api-server workflow auto-restarts the server on unexpected exit (see artifacts/api-server/supervise.mjs)
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
-
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
+* App is served via the Express api-server workflow, not a dev server. "Reset api" means restart the `artifacts/api-server: API Server` workflow only — never restart `artifacts/rally: web`.
+* Keep documentation accurate to the current Brielo direction; do not reintroduce Rally/Brio/Plan/Crew language.
 
 ## Pointers
 
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+* See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details

@@ -1,0 +1,476 @@
+Create a clean Brielo project documentation and agent handoff layer inside the repo.
+
+Do not rebuild the app.
+Do not add new features.
+Do not change the UI.
+Do not rename folders yet.
+Do not change routes yet.
+Do not add backend, auth, payments, WebSockets, push notifications, livestreaming, or database logic.
+
+Important:
+The app currently lives inside artifacts/rally. Even though that folder name is outdated, do not rename it right now because it may break paths/imports. We will clean internal naming later.
+
+Goal:
+Create clear project documentation so Replit Agent, Codex, ChatGPT, and Perplexity all understand the current Brielo product direction and do not reintroduce old Rally/Brio/Plan/Crew language.
+
+Create a new folder:
+
+docs
+
+Inside it, create these files:
+
+1. docs/01_BRAND_BRIEF.md
+2. docs/02_PRODUCT_SPEC.md
+3. docs/05_DECISION_LOG.md
+4. docs/06_AGENT_HANDOFF.md
+5. docs/09_CLEANUP_BACKLOG.md
+
+Also update the root replit.md so it accurately describes the current Brielo prototype instead of generic/template project text.
+
+DO NOT delete the old brio-brand-brief.md yet, but add a note at the top of it saying:
+
+“Deprecated: this file refers to the previous Brio name. Current brand is Brielo. See docs/01_BRAND_BRIEF.md.”
+
+FILE CONTENT REQUIREMENTS
+
+docs/01_BRAND_BRIEF.md
+
+Include:
+
+Brielo Brand Brief
+
+App Name
+
+Brielo
+
+Pronunciation: BREE-loh
+
+Previous names/codenames:
+
+* Rally
+* Brio
+
+Do not use Rally or Brio as user-facing names going forward.
+
+Brand Stack
+
+* App name: Brielo
+* Primary tagline: Live More
+* Core action phrase: Make a Move
+* Secondary marketing line: Less scrolling. More doing.
+* Supporting product line: Find people to do things with — once, weekly, or whenever you’re down.
+
+Brand Meaning
+
+Brielo evolved from Brio, which means energy, life, spirit, enthusiasm, and liveliness. Brielo should feel more ownable while keeping the same energy/life/social momentum meaning.
+
+Brand Personality
+
+Brielo should feel:
+
+* modern
+* warm
+* social
+* energetic
+* youthful
+* simple
+* lifestyle-focused
+
+Avoid:
+
+* dating app feel
+* professional networking feel
+* Eventbrite/Meetup event-listing feel
+* corporate startup-board feel
+* wellness clichés
+* racing/checkered identity
+* emoji-heavy UI
+
+Visual Identity
+
+* Clean wordmark-first logo
+* Simple black/white “Brielo” wordmark
+* Small yellow custom dot above the “i”
+* App icon uses the custom i-dot/circle symbol separately
+* Yellow is the action/energy accent
+* Dark mode and light mode both matter
+* Use clean line icons, not native emoji icons
+
+Avoid:
+
+* sun icons
+* spark icons
+* heavy lightning/bolt branding
+* checkered flags
+* racing visuals
+* giant standalone B icons
+* overly complicated “o” customization
+
+docs/02_PRODUCT_SPEC.md
+
+Include:
+
+Brielo Product Spec
+
+Product Summary
+
+Brielo is a mobile social lifestyle app that helps people make real-life Moves, meet people through activities, and add good people to their Circle.
+
+Brielo is not:
+
+* a dating app
+* a professional networking app
+* just an event listing app
+* just a nightlife app
+* a recurring club app by default
+
+Core Insight
+
+People do not just need more events. They need help turning social intent into real-life action and finding people they would actually do things with again.
+
+Product Language
+
+* Moves = one-time activities users create or join
+* Make a Move = create an activity
+* Make It Live = submit/create a Move
+* I’m In = join a Move
+* Leave Move = leave a Move and remove its chat
+* Move Chat = temporary chat for a joined Move
+* Circle = people the user has moved with and would move with again
+* Add to Circle = add someone after a Move
+* In Your Circle = already added
+* Circle Activity = updates from people the user has moved with before
+* Live Moves Nearby = active nearby Moves
+* Live Map = map view of nearby Moves
+* After the Move? = post-Move reactions, feedback, Would Move Again, and Add to Circle
+* Sessions = structured activities like gym, study, work, gaming, creative, or skill-based meetups
+* Brielo Livestreams = future feature only, not MVP core
+
+Important Circle Clarification
+
+Circles are people-based, not recurring themed groups by default.
+
+A Circle is a lightweight social graph made from people the user met through Moves and would move with again.
+
+Do not treat Circles as:
+
+* recurring clubs by default
+* themed community groups by default
+* Meetup-style groups by default
+* Crews
+
+Current MVP Screens
+
+* Onboarding / Welcome
+* Interest Selection
+* Discover / What’s the Move?
+* Live Moves Nearby
+* Make a Move
+* Move Detail
+* Move Chat list
+* Move Chat detail
+* Leave Move flow
+* Live Map
+* Profile
+* Activity History
+* Your Circle / Circle Activity
+* After the Move?
+* Safety / Reporting
+* Theme Settings
+
+Current Prototype Status
+
+* Built in Replit
+* Mobile-first React/Tailwind-style prototype
+* Uses localStorage/mock data
+* Buttons are clickable
+* Posting a Move works
+* Created Moves appear in the app
+* No real backend yet
+* No real authentication
+* No payments
+* No WebSockets
+* No push notifications
+* No real livestreaming
+* No production database yet
+
+docs/05_DECISION_LOG.md
+
+Include:
+
+Brielo Decision Log
+
+Locked Product Decisions
+
+1. App name is Brielo.
+2. Pronunciation is BREE-loh.
+3. Primary tagline is Live More.
+4. Main action phrase is Make a Move.
+5. Moves are one-time activities.
+6. The create submit CTA is Make It Live.
+7. The join CTA is I’m In.
+8. Move Chat is temporary and tied to a joined Move.
+9. Leave Move should remove the user from the Move and remove the Move Chat from the chat list.
+10. Circles are people-based social connections, not recurring themed groups by default.
+11. Add to Circle means adding someone you moved with and would move with again.
+12. Circle Activity means updates from people you’ve moved with before.
+13. Do not use Crew/Crews language.
+14. Do not use Plan/Plans language.
+15. Do not use Rally/Rallies language.
+16. Do not use Brio as the current user-facing app name.
+17. Use clean line icons, not native emoji icons.
+18. Logo is wordmark-first with a small yellow custom dot over the “i.”
+19. Do not use checkered flags, racing visuals, sun icons, spark icons, or heavy lightning/bolt branding.
+20. Brielo Livestreams is future/later-stage only, not MVP core.
+21. Current prototype should remain localStorage/mock data until backend is intentionally added.
+22. Do not add backend, WebSockets, real auth, payments, or livestreaming without explicit approval.
+
+Trust/Reputation Direction To Add Later
+
+Brielo should eventually penalize flaking fairly.
+
+Principle:
+When a user taps “I’m In,” they are holding a limited spot that someone else may have wanted.
+
+Future trust/reputation ideas:
+
+* show-up rate
+* recently missed Moves
+* Would Move Again count
+* Good Vibes count
+* host reliability
+* private safety/report signals
+* warning labels like Low Show-Up Rate or Recently Missed Moves
+* avoid public shaming or harsh labels like “flake” or “bad user”
+* allow reputation recovery through consistent attendance
+
+Do not implement this yet unless specifically requested.
+
+docs/06_AGENT_HANDOFF.md
+
+Include:
+
+Brielo Agent Handoff
+
+Read this before making any changes.
+
+Current Project Name
+
+Brielo
+
+Previous names/codenames:
+
+* Rally
+* Brio
+
+Do not reintroduce Rally, Brio, Plans, or Crews language.
+
+Product Summary
+
+Brielo is a mobile social lifestyle app that helps people make real-life Moves, meet people through activities, and add good people to their Circle.
+
+Brand Stack
+
+* App name: Brielo
+* Pronunciation: BREE-loh
+* Primary tagline: Live More
+* Core action phrase: Make a Move
+* Secondary marketing line: Less scrolling. More doing.
+* Supporting line: Find people to do things with — once, weekly, or whenever you’re down.
+
+Product Language
+
+* Moves = one-time activities users create or join
+* Make a Move = create an activity
+* Make It Live = submit/create a Move
+* I’m In = join a Move
+* Leave Move = leave a Move and remove its chat
+* Move Chat = temporary chat for a joined Move
+* Circle = people the user has moved with and would move with again
+* Add to Circle = add someone after a Move
+* In Your Circle = already added
+* Circle Activity = updates from people the user has moved with before
+* Live Moves Nearby = active nearby Moves
+* Live Map = map view of live nearby Moves
+* After the Move? = post-Move prompt for reactions, attendee feedback, Would Move Again, and Add to Circle
+* Sessions = structured activities like gym, study, work, gaming, creative, or skill-based meetups
+* Brielo Livestreams = future feature only, not MVP core
+
+Locked Rules
+
+* Circles are people-based, not recurring themed groups by default.
+* Do not use Crew/Crews language.
+* Do not use Plan/Plans language.
+* Do not use Rally/Rallies language.
+* Do not use Brio as the current app name.
+* Use clean line icons, not native emoji icons.
+* The logo is a clean Brielo wordmark with a small yellow custom dot over the “i.”
+* Do not add backend unless explicitly requested.
+* Do not add WebSockets unless explicitly requested.
+* Do not add real authentication unless explicitly requested.
+* Do not add payments unless explicitly requested.
+* Do not add livestreaming yet.
+* Keep localStorage/mock data for the current prototype.
+
+Current MVP Screens
+
+* Onboarding / welcome
+* Interest selection
+* Discover / What’s the Move?
+* Live Moves Nearby
+* Make a Move
+* Move Detail
+* Move Chat list
+* Move Chat detail
+* Leave Move flow
+* Live Map
+* Profile
+* Activity History
+* Your Circle / Circle Activity
+* After the Move?
+* Safety/reporting
+* Settings/theme
+
+Visual Direction
+
+Brielo should feel:
+
+* modern
+* warm
+* social
+* energetic
+* simple
+* youthful
+* lifestyle-focused
+
+Avoid:
+
+* Eventbrite/Meetup feeling
+* dating app feeling
+* corporate/startup-board feeling
+* emoji-heavy UI
+* racing/checkered identity
+* wellness cliché branding
+
+Development Rules
+
+* Preserve existing working flows.
+* Do not change unrelated screens.
+* Do not rename folders yet.
+* Do not rename routes yet unless specifically requested.
+* Before changing product language, check docs/05_DECISION_LOG.md.
+* After making changes, summarize what files changed and what should be reviewed.
+
+docs/09_CLEANUP_BACKLOG.md
+
+Include:
+
+Brielo Cleanup Backlog
+
+These are cleanup items for later. Do not complete them unless specifically requested.
+
+Internal Naming Cleanup
+
+The app currently lives in artifacts/rally. Do not rename this folder yet because it may break imports/build paths.
+
+Later cleanup:
+
+* Rename useRallies to useMoves
+* Rename addRally to addMove
+* Rename joinRally to joinMove
+* Rename leaveRally to leaveMove
+* Rename rally-detail route/page to move-detail
+* Change route /rally/:id to /move/:id
+* Update package name @workspace/rally to a Brielo/Move-based name
+
+User-Facing Cleanup
+
+Search for and remove leftover:
+
+* Rally
+* Rallies
+* Brio
+* Plan
+* Plans
+* Crew
+* Crews
+* RSVP language
+* emoji icons
+
+UI Cleanup
+
+* Replace remaining emoji icons with clean line icons
+* Make sure Leave Move removes Move Chat from chat list
+* Confirm created Moves still appear in Discover
+* Confirm localStorage still works
+* Confirm dark/light/auto themes still work
+
+Future Feature Backlog
+
+Do not build yet:
+
+* trust/reputation system
+* flaking penalties
+* real backend
+* real auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* venue dashboards
+
+Update root replit.md
+
+Replace template/generic content with:
+
+Brielo Replit Project
+
+Brielo is a mobile-first social lifestyle prototype built in Replit.
+
+The current app prototype lives in:
+
+artifacts/rally
+
+Note: the folder name still says rally because Rally was an earlier codename. Do not rename this folder yet.
+
+Current Brand
+
+* App name: Brielo
+* Tagline: Live More
+* Core action: Make a Move
+* Supporting line: Find people to do things with — once, weekly, or whenever you’re down.
+
+Product Summary
+
+Brielo helps people make real-life Moves, meet people through activities, and add good people to their Circle.
+
+Current Prototype Status
+
+* Front-end clickable prototype
+* React/Tailwind-style app
+* localStorage/mock data
+* No production backend
+* No real authentication
+* No payments
+* No WebSockets
+* No push notifications
+* No livestreaming
+
+Agent Instructions
+
+Before making changes, read:
+
+* docs/06_AGENT_HANDOFF.md
+* docs/05_DECISION_LOG.md
+* docs/02_PRODUCT_SPEC.md
+
+Do not reintroduce old Rally, Brio, Plan, or Crew language.
+
+After all files are created/updated:
+
+* Do not change app functionality.
+* Do not run broad refactors.
+* Do not rename folders.
+* Summarize the files created or updated.
+* Confirm that the prototype behavior was not intentionally changed.

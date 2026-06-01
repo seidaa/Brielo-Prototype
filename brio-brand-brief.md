@@ -1,3 +1,5 @@
+> **Deprecated:** this file refers to the previous Brio name. Current brand is Brielo. See docs/01_BRAND_BRIEF.md.
+
 # Brio — Brand Brief
 
 ---
