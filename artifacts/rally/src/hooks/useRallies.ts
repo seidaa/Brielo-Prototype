@@ -19,13 +19,25 @@ const HISTORY_KEY    = "brio_history";
 const CIRCLE_KEY     = "brio_circle_persons";
 const PEOPLE_TRUST_KEY = "brio_people_trust";
 
+// Safely parse a localStorage value. Returns null when the key is empty or holds
+// corrupted JSON, so a single bad entry can never white-screen the prototype —
+// callers fall back to their defaults and the value self-heals on the next write.
+function safeParse<T>(raw: string | null): T | null {
+  if (raw === null) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
+
 export function useRallies() {
   const [rallies, setRallies] = useState<Move[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(MOVES_KEY);
-    setRallies(stored ? JSON.parse(stored) : defaultMoves);
-    if (!stored) localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
+    const parsed = safeParse<Move[]>(localStorage.getItem(MOVES_KEY));
+    setRallies(parsed ?? defaultMoves);
+    if (!parsed) localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
   }, []);
 
   const saveMoves  = (m: Move[]) => { setRallies(m); localStorage.setItem(MOVES_KEY, JSON.stringify(m)); };
@@ -42,9 +54,8 @@ export function useUser() {
   const [user, setUser] = useState<UserProfile>(defaultUserProfile);
 
   useEffect(() => {
-    const stored = localStorage.getItem(USER_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
+    const parsed = safeParse<any>(localStorage.getItem(USER_KEY));
+    if (parsed) {
       // Migrate stale badge name
       if (parsed.badges?.includes("Early Brio User")) {
         parsed.badges = parsed.badges.map((b: string) => b === "Early Brio User" ? "Early Mover" : b);
@@ -90,10 +101,9 @@ export function useCirclePersons() {
     recentConnections: defaultRecentConnections,
   });
 
-  const [state, setState] = useState<CircleState>(() => {
-    const stored = localStorage.getItem(CIRCLE_KEY);
-    return stored ? JSON.parse(stored) : getDefault();
-  });
+  const [state, setState] = useState<CircleState>(() =>
+    safeParse<CircleState>(localStorage.getItem(CIRCLE_KEY)) ?? getDefault()
+  );
 
   const save = (s: CircleState) => {
     setState(s);
@@ -147,16 +157,15 @@ export function useMessages(moveId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
-    const storedStr = localStorage.getItem(MESSAGES_KEY);
-    const all = storedStr ? JSON.parse(storedStr) : mockMessages;
-    if (!storedStr) localStorage.setItem(MESSAGES_KEY, JSON.stringify(mockMessages));
+    const parsed = safeParse<Record<string, ChatMessage[]>>(localStorage.getItem(MESSAGES_KEY));
+    const all = parsed ?? mockMessages;
+    if (!parsed) localStorage.setItem(MESSAGES_KEY, JSON.stringify(mockMessages));
     setMessages(all[moveId] || []);
   }, [moveId]);
 
   const sendMessage = (text: string) => {
     const msg: ChatMessage = { id: Date.now().toString(), moveId, senderName: "You", text, isMe: true };
-    const storedStr = localStorage.getItem(MESSAGES_KEY);
-    const all = storedStr ? JSON.parse(storedStr) : {};
+    const all = safeParse<Record<string, ChatMessage[]>>(localStorage.getItem(MESSAGES_KEY)) ?? {};
     const updated = { ...all, [moveId]: [...(all[moveId] || []), msg] };
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(updated));
     setMessages(updated[moveId]);
@@ -169,8 +178,8 @@ export function useActivityHistory() {
   const [history, setHistory] = useState<ActivityHistoryItem[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(HISTORY_KEY);
-    if (stored) setHistory(JSON.parse(stored));
+    const parsed = safeParse<ActivityHistoryItem[]>(localStorage.getItem(HISTORY_KEY));
+    if (parsed) setHistory(parsed);
     else { setHistory(mockActivityHistory); localStorage.setItem(HISTORY_KEY, JSON.stringify(mockActivityHistory)); }
   }, []);
 
@@ -201,8 +210,8 @@ export function usePeopleTrust() {
   const [overrides, setOverrides] = useState<Record<string, PersonTrust>>({});
 
   useEffect(() => {
-    const stored = localStorage.getItem(PEOPLE_TRUST_KEY);
-    if (stored) setOverrides(JSON.parse(stored));
+    const parsed = safeParse<Record<string, PersonTrust>>(localStorage.getItem(PEOPLE_TRUST_KEY));
+    if (parsed) setOverrides(parsed);
   }, []);
 
   const getTrust = (name: string): PersonTrust | undefined =>

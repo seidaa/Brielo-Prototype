@@ -29,6 +29,14 @@ takes an `apply` boolean; callers pass `isAdding`.
   regress e.g. Priya "Trusted Host" → "Reliable").
 - Lucide line icons only, no emoji icons.
 
+**localStorage hardening rule:** every read of a `brio_*` key must go through the
+`safeParse<T>(raw): T | null` helper in `useRallies.ts`, never a raw `JSON.parse`.
+**Why:** a single corrupted/malformed localStorage value white-screens the whole
+prototype (there is no error boundary). `safeParse` returns null on bad/missing
+data so callers fall back to their defaults and the value self-heals on next write.
+**How to apply:** when adding any new localStorage-backed state, parse via
+`safeParse` and `?? <default>`.
+
 **Build/serve:** rally is served as a static build by the api-server, NOT its own
 dev workflow. After edits: `PORT=5000 BASE_PATH=/ pnpm --filter @workspace/rally run build`
 then restart workflow "artifacts/api-server: API Server". Do NOT restart "artifacts/rally: web".
