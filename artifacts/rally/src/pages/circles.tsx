@@ -246,7 +246,7 @@ function PersonCard({
           </div>
           <div className="text-[11px] text-gray-500 truncate">
             <Link href={`/rally/${person.lastMoveId}`}>
-              <span className="hover:text-gray-300 transition-colors">met at <span className="text-gray-400">{person.lastMove}</span></span>
+              <span className="hover:text-gray-300 transition-colors">Met through <span className="text-gray-400">{person.lastMove}</span></span>
             </Link>
             {person.mutualMoves > 1 && <span className="text-primary ml-1">· {person.mutualMoves} moves</span>}
           </div>

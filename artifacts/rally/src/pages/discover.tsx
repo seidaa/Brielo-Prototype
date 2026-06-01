@@ -334,7 +334,7 @@ export default function Discover() {
                       </div>
                     </div>
                     <p className="text-[10px] text-gray-500 leading-snug mb-3 line-clamp-2 flex-1">
-                      Moved together at <span className="text-gray-400">{person.lastMove}</span>
+                      Met through <span className="text-gray-400">{person.lastMove}</span>
                     </p>
                     <button
                       onClick={() => !isInCircle && addToCircle(person.id)}
