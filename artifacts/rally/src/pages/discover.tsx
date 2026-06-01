@@ -10,6 +10,7 @@ import { useRallies, useUser, useCirclePersons } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { BottomNav } from "@/components/BottomNav";
 import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
+import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { CAT_CONFIG, defaultCatConfig, friendsActivity, Move } from "@/data/mockData";
 import { isLimitedSpots } from "@/lib/trust";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,8 @@ export default function Discover() {
   const [joinedId, setJoinedId]         = useState<string | null>(null);
   const [pendingMove, setPendingMove]   = useState<Move | null>(null);
   const [filter, setFilter]             = useState<FilterType>("all");
+  const [notifOpen, setNotifOpen]       = useState(false);
+  const [notifSeen, setNotifSeen]       = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -110,9 +113,15 @@ export default function Discover() {
             </button>
           </div>
           <div className="flex items-center gap-2.5">
-            <button className="relative w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5">
+            <button
+              onClick={() => { setNotifOpen(true); setNotifSeen(true); }}
+              aria-label="Notifications"
+              className="relative w-9 h-9 flex items-center justify-center rounded-full bg-white/5 border border-white/5 active:scale-95 transition-transform"
+            >
               <Bell className="w-4 h-4 text-gray-300" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0d0d0d]" />
+              {!notifSeen && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0d0d0d]" />
+              )}
             </button>
             <Link href="/profile">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-orange-500 p-[2px] cursor-pointer">
@@ -437,6 +446,8 @@ export default function Discover() {
         move={pendingMove}
         onConfirm={() => pendingMove && doJoin(pendingMove.id, true)}
       />
+
+      <NotificationsSheet open={notifOpen} onOpenChange={setNotifOpen} />
 
       <BottomNav />
     </div>

@@ -1,0 +1,78 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Make the Profile settings gear button functional as a lightweight prototype settings sheet/modal.
+
+This is front-end prototype behavior only.
+
+Do not add:
+
+* backend
+* database
+* real auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* major refactors
+
+Do not rename folders or routes.
+
+Problem:
+The settings gear button on the Profile screen looks tappable but currently does nothing. That makes the prototype feel incomplete.
+
+Expected behavior:
+When the user taps the gear icon on Profile, open a simple bottom sheet or modal titled:
+
+“Settings”
+
+Use Brielo’s existing dark card style, rounded corners, yellow accent, clean line icons, and mobile-first layout.
+
+Include lightweight prototype settings sections:
+
+1. Account
+
+* Edit Profile
+* Privacy
+* Notifications
+
+2. Appearance
+
+* Theme
+* Auto / Light / Dark
+* Keep this consistent with the existing Theme Settings behavior if it already exists.
+
+3. Trust & Safety
+
+* Show-Up Trust
+* Blocked users
+* Report a problem
+
+4. About Brielo
+
+* Live More
+* Version 0.1 prototype
+
+Settings can be non-functional rows for now, but tapping them should not break the app. If easy, rows can show a small toast like:
+“Coming soon in the prototype.”
+
+The Theme row should connect to the existing theme settings if that already exists in the app. Do not create duplicate theme logic if a theme setting already exists.
+
+Quality check:
+After changes, confirm:
+
+* Profile gear opens the Settings sheet/modal
+* Settings sheet/modal closes correctly
+* Profile still loads
+* Show-Up Trust still displays correctly
+* Discover still loads
+* joining a Move still works
+* Leave Move still works
+* Cancel Move still works
+* Move Chat still works
+* no old Rally/Brio/Plan/Crew language is reintroduced
+* no emoji icons are added
+
+Final goal:
+The Profile settings gear should feel clickable and complete enough for a prototype without adding real account infrastructure.
