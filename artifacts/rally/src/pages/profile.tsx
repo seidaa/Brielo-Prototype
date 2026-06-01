@@ -11,6 +11,7 @@ import { useUser, useRallies, useActivityHistory } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
 import { TrustChip, WarningChip } from "@/components/TrustLabel";
 import { TrustInfoModal } from "@/components/TrustInfoModal";
+import { SettingsSheet } from "@/components/SettingsSheet";
 import { Button } from "@/components/ui/button";
 import { CAT_CONFIG, defaultCatConfig, FeedbackLabel } from "@/data/mockData";
 import { formatShowUpRate, RECOVERY_COPY } from "@/lib/trust";
@@ -104,6 +105,7 @@ export default function Profile() {
   const { history, setFeedback, attendedCount, hostedCount, circleCount } = useActivityHistory();
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [trustInfoOpen, setTrustInfoOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteDraft, setNoteDraft] = useState(user.missNote ?? "");
 
@@ -129,7 +131,11 @@ export default function Profile() {
               <span className="text-xl font-black text-white">YB</span>
             </div>
           </div>
-          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/8 flex items-center justify-center text-gray-400">
+          <button
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Settings"
+            className="w-9 h-9 rounded-full bg-white/5 border border-white/8 flex items-center justify-center text-gray-400 active:scale-95 transition-transform"
+          >
             <Settings className="w-4 h-4" />
           </button>
         </div>
@@ -475,6 +481,7 @@ export default function Profile() {
       </div>
 
       <TrustInfoModal open={trustInfoOpen} onOpenChange={setTrustInfoOpen} />
+      <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
       <BottomNav />
     </div>
   );
