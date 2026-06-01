@@ -7,8 +7,11 @@ import {
 } from "lucide-react";
 import { BrioLogo } from "@/components/BrioLogo";
 import { useRallies, useUser, useCirclePersons } from "@/hooks/useRallies";
+import { useToast } from "@/hooks/use-toast";
 import { BottomNav } from "@/components/BottomNav";
-import { CAT_CONFIG, defaultCatConfig, friendsActivity } from "@/data/mockData";
+import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
+import { CAT_CONFIG, defaultCatConfig, friendsActivity, Move } from "@/data/mockData";
+import { isLimitedSpots } from "@/lib/trust";
 import { cn } from "@/lib/utils";
 
 const TICKER = [
@@ -44,10 +47,12 @@ export default function Discover() {
   const { rallies, joinRally } = useRallies();
   const { user } = useUser();
   const { myCircle, wouldMoveAgain, addToCircle } = useCirclePersons();
+  const { toast } = useToast();
 
   const [tickerIdx, setTickerIdx]       = useState(0);
   const [tickerVisible, setTickerVisible] = useState(true);
   const [joinedId, setJoinedId]         = useState<string | null>(null);
+  const [pendingMove, setPendingMove]   = useState<Move | null>(null);
   const [filter, setFilter]             = useState<FilterType>("all");
 
   useEffect(() => {
@@ -73,10 +78,21 @@ export default function Discover() {
     ...wouldMoveAgain.slice(0, 3),
   ];
 
-  const handleJoin = (id: string) => {
+  const doJoin = (id: string, savedSpot: boolean) => {
     joinRally(id);
+    setPendingMove(null);
     setJoinedId(id);
     setTimeout(() => setJoinedId(null), 2000);
+    if (savedSpot) toast({ title: "You're in. Your spot is saved." });
+  };
+
+  const handleJoin = (id: string) => {
+    const move = rallies.find(r => r.id === id);
+    if (move && !move.requiresApproval && isLimitedSpots(move)) {
+      setPendingMove(move);
+      return;
+    }
+    doJoin(id, false);
   };
 
   const displayedNowMoves = filter === "nearby" ? nearbyMoves.filter(r => r.time === "Now") : nowMoves;
@@ -414,6 +430,13 @@ export default function Discover() {
         )}
 
       </div>
+
+      <JoinCommitmentModal
+        open={!!pendingMove}
+        onOpenChange={o => { if (!o) setPendingMove(null); }}
+        move={pendingMove}
+        onConfirm={() => pendingMove && doJoin(pendingMove.id, true)}
+      />
 
       <BottomNav />
     </div>

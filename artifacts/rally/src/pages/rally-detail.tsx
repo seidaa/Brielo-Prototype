@@ -2,15 +2,19 @@ import { useState } from "react";
 import { Link, useParams, useLocation } from "wouter";
 import {
   ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2,
-  Users, Zap, ChevronRight, LogOut, Heart,
+  Users, Zap, ChevronRight, LogOut, Heart, Info,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRallies, useUser } from "@/hooks/useRallies";
+import { useRallies, useUser, usePeopleTrust } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { ReportModal } from "@/components/ReportModal";
+import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
+import { TrustInfoModal } from "@/components/TrustInfoModal";
+import { TrustChip, WarningChip } from "@/components/TrustLabel";
 import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
+import { isLimitedSpots, deriveAttendees, formatShowUpRate } from "@/lib/trust";
 import { cn } from "@/lib/utils";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -53,11 +57,14 @@ export default function MoveDetail() {
   const { id } = useParams<{ id: string }>();
   const { rallies, joinRally, leaveRally } = useRallies();
   const { user } = useUser();
+  const { getTrust } = usePeopleTrust();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [reportOpen, setReportOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [trustInfoOpen, setTrustInfoOpen] = useState(false);
 
   const move = rallies.find(r => r.id === id);
 
@@ -80,16 +87,31 @@ export default function MoveDetail() {
   const fillPct = Math.min(100, (move.going / move.maxSpots) * 100);
   const hostColor = HOST_AVATAR_COLORS[move.hostName] ?? "bg-gray-700";
   const isHost = move.hostName === user.username;
+  const hostTrust = getTrust(move.hostName);
+  const attendees = deriveAttendees(move).map(a => ({ ...a, trust: getTrust(a.name) ?? a.trust }));
+
+  const confirmJoin = (savedSpot: boolean) => {
+    joinRally(move.id);
+    setJoinModalOpen(false);
+    toast(
+      savedSpot
+        ? { title: "You're in. Your spot is saved." }
+        : { title: "You're in!", description: "Move Chat is now open." }
+    );
+  };
 
   const handleJoin = () => {
-    joinRally(move.id);
-    toast({ title: "You're in!", description: "Move Chat is now open." });
+    if (!move.requiresApproval && isLimitedSpots(move)) {
+      setJoinModalOpen(true);
+    } else {
+      confirmJoin(false);
+    }
   };
 
   const handleLeaveConfirm = () => {
     leaveRally(move.id);
     setLeaveOpen(false);
-    toast({ title: "You left the Move." });
+    toast({ title: "You left the Move. Your spot is open again." });
     navigate("/discover");
   };
 
@@ -179,22 +201,35 @@ export default function MoveDetail() {
           </div>
 
           {/* Host */}
-          <div className="flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-white/5 mb-5">
-            <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0", hostColor)}>
-              {move.hostName.charAt(0)}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-bold text-white">
-                {move.hostName}
-                <span className="text-primary ml-2 text-xs">Lv {move.hostLevel}</span>
+          <div className="p-3 bg-black/20 rounded-xl border border-white/5 mb-5">
+            <div className="flex items-center gap-3">
+              <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0", hostColor)}>
+                {move.hostName.charAt(0)}
               </div>
-              <div className="text-[11px] text-gray-500">Hosting this Move</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-bold text-white">
+                  {move.hostName}
+                  <span className="text-primary ml-2 text-xs">Lv {move.hostLevel}</span>
+                </div>
+                <div className="text-[11px] text-gray-500">Hosting this Move</div>
+              </div>
+              <Link href={`/chat/${move.id}`}>
+                <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 bg-transparent text-gray-300 hover:bg-white/5 text-xs font-bold gap-1">
+                  <MessageCircle className="w-3 h-3" /> Message
+                </Button>
+              </Link>
             </div>
-            <Link href={`/chat/${move.id}`}>
-              <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 bg-transparent text-gray-300 hover:bg-white/5 text-xs font-bold gap-1">
-                <MessageCircle className="w-3 h-3" /> Message
-              </Button>
-            </Link>
+            {hostTrust && (
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-white/5">
+                <TrustChip label={hostTrust.trustLabel} />
+                {hostTrust.warningLabel && <WarningChip label={hostTrust.warningLabel} />}
+                {hostTrust.showUpRate >= 0 && (
+                  <span className="text-[11px] text-gray-500 ml-auto">
+                    Show-Up Rate <span className="font-bold text-gray-300">{formatShowUpRate(hostTrust.showUpRate)}</span>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Vibe tags */}
@@ -223,25 +258,58 @@ export default function MoveDetail() {
               <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5" /> Who's In
               </h3>
-              <span className="text-xs font-bold text-primary">{move.going} / {move.maxSpots}</span>
+              <button
+                onClick={() => setTrustInfoOpen(true)}
+                className="flex items-center gap-1 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors"
+              >
+                <Info className="w-3 h-3" /> How trust works
+              </button>
             </div>
-            <div className="flex -space-x-2 mb-3">
-              {Array.from({ length: Math.min(move.going, 7) }).map((_, i) => (
-                <div key={i} className={cn("w-9 h-9 rounded-full border-2 border-[#161616] flex items-center justify-center text-[11px] font-black text-white", AVATAR_COLORS[i % AVATAR_COLORS.length])}>
-                  {String.fromCharCode(65 + i)}
-                </div>
-              ))}
-              {Array.from({ length: Math.max(0, Math.min(move.maxSpots - move.going, 4)) }).map((_, i) => (
-                <div key={`e${i}`} className="w-9 h-9 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-gray-700 text-xs">?</div>
-              ))}
-            </div>
-            <div className="space-y-1">
+
+            {/* Attendee trust list */}
+            {attendees.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {attendees.slice(0, 4).map((a, i) => (
+                  <div key={`${a.name}-${i}`} className="flex items-center gap-2.5">
+                    <div className={cn("w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white shrink-0", a.color)}>
+                      {a.initials}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-bold text-white leading-tight truncate">{a.name}</div>
+                      {a.trust.showUpRate >= 0 && (
+                        <div className="text-[10px] text-gray-600">Show-Up Rate {formatShowUpRate(a.trust.showUpRate)}</div>
+                      )}
+                    </div>
+                    <div className="ml-auto shrink-0">
+                      {a.trust.warningLabel
+                        ? <WarningChip label={a.trust.warningLabel} size="xs" />
+                        : <TrustChip label={a.trust.trustLabel} size="xs" />}
+                    </div>
+                  </div>
+                ))}
+                {move.going > 4 && (
+                  <p className="text-[11px] text-gray-600 pl-[42px]">+{move.going - 4} more in</p>
+                )}
+              </div>
+            )}
+
+            {/* Spots progress + accountability */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-gray-500">{move.going} / {move.maxSpots} spots filled</span>
+                <span className="text-xs font-bold text-primary">
+                  {spotsLeft <= 0 ? "Move is full" : `${spotsLeft} left`}
+                </span>
+              </div>
               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                 <div className={cn("h-full rounded-full transition-all", spotsLeft <= 2 ? "bg-amber-500" : "bg-primary")} style={{ width: `${fillPct}%` }} />
               </div>
-              <p className="text-[11px] text-gray-600">
-                {spotsLeft <= 0 ? "Move is full" : `${spotsLeft} spot${spotsLeft === 1 ? "" : "s"} remaining`}
-              </p>
+              {!move.joined && spotsLeft > 0 && (
+                <p className="text-[11px] text-gray-600 leading-relaxed pt-0.5">
+                  Spots are limited. Only tap I'm In if you plan to show — your seat is held for you and
+                  counts against someone else joining.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -317,8 +385,9 @@ export default function MoveDetail() {
         <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
           <DialogHeader>
             <DialogTitle className="text-white">Leave this Move?</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-400 leading-relaxed">
               You'll be removed from the attendee list and the Move Chat will disappear from your chats.
+              Leaving ahead of time isn't a no-show — your spot simply opens back up for someone else.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-2 mt-2">
@@ -366,6 +435,13 @@ export default function MoveDetail() {
         </DialogContent>
       </Dialog>
 
+      <JoinCommitmentModal
+        open={joinModalOpen}
+        onOpenChange={setJoinModalOpen}
+        move={move}
+        onConfirm={() => confirmJoin(true)}
+      />
+      <TrustInfoModal open={trustInfoOpen} onOpenChange={setTrustInfoOpen} />
       <ReportModal open={reportOpen} onOpenChange={setReportOpen} />
     </div>
   );

@@ -3,13 +3,17 @@ import { Link } from "wouter";
 import {
   Settings, Award, Users, ChevronRight, Lock, CheckCircle2, Zap, Star,
   History, ChevronDown, ChevronUp, Repeat, UsersRound, Calendar,
-  RefreshCw, Sparkles, UserX, Minus,
+  RefreshCw, Sparkles, UserX, Minus, ShieldCheck, Info, Pencil,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints,
 } from "lucide-react";
 import { useUser, useRallies, useActivityHistory } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
+import { TrustChip, WarningChip } from "@/components/TrustLabel";
+import { TrustInfoModal } from "@/components/TrustInfoModal";
+import { Button } from "@/components/ui/button";
 import { CAT_CONFIG, defaultCatConfig, FeedbackLabel } from "@/data/mockData";
+import { formatShowUpRate, RECOVERY_COPY } from "@/lib/trust";
 import { cn } from "@/lib/utils";
 
 const CAT_ICONS: Record<string, React.ElementType> = {
@@ -95,10 +99,13 @@ function FeedbackPicker({ current, onSelect }: { current?: FeedbackLabel; onSele
 }
 
 export default function Profile() {
-  const { user } = useUser();
+  const { user, setMissNote } = useUser();
   const { rallies } = useRallies();
   const { history, setFeedback, attendedCount, hostedCount, circleCount } = useActivityHistory();
   const [showAllHistory, setShowAllHistory] = useState(false);
+  const [trustInfoOpen, setTrustInfoOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [noteDraft, setNoteDraft] = useState(user.missNote ?? "");
 
   const joinedMoves = rallies.filter(r => r.joined);
   const progress = Math.min(100, (user.xp / user.xpToNext) * 100);
@@ -170,6 +177,105 @@ export default function Profile() {
           </div>
           <div className="flex justify-between text-[10px] text-gray-600 mt-1.5 font-medium">
             <span>Lv {user.level}</span><span>Lv {user.level + 1}</span>
+          </div>
+        </div>
+
+        {/* ── Show-Up Trust ──────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center justify-between mb-2.5">
+            <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" /> Show-Up Trust
+            </h3>
+            <button
+              onClick={() => setTrustInfoOpen(true)}
+              className="flex items-center gap-1 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors"
+            >
+              <Info className="w-3 h-3" /> How trust works
+            </button>
+          </div>
+
+          <div className="bg-[#161616] border border-white/5 rounded-2xl p-4">
+            <div className="flex items-center gap-2 flex-wrap mb-4">
+              <TrustChip label={user.trustLabel} />
+              {user.warningLabel && <WarningChip label={user.warningLabel} />}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center">
+                <div className="text-xl font-black text-white leading-none">{formatShowUpRate(user.showUpRate)}</div>
+                <div className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mt-1">Show-Up Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-black text-white leading-none">{user.movesAttended}</div>
+                <div className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mt-1">Showed Up</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-black text-white leading-none">{user.movesMissed}</div>
+                <div className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mt-1">Missed</div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-white/5">
+              <p className="text-[12px] text-gray-400 leading-relaxed">
+                {user.warningLabel
+                  ? RECOVERY_COPY.rebuilding
+                  : user.movesMissed > 0
+                  ? RECOVERY_COPY.oneMiss
+                  : RECOVERY_COPY.good}
+              </p>
+            </div>
+
+            {/* Self note for a recent miss */}
+            <div className="mt-3">
+              {!noteOpen && !user.missNote && (
+                <button
+                  onClick={() => setNoteOpen(true)}
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors"
+                >
+                  <Pencil className="w-3 h-3" /> Add context to a recent miss
+                </button>
+              )}
+              {(noteOpen || user.missNote) && (
+                <div className="bg-black/20 border border-white/5 rounded-xl p-3">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Your note</p>
+                  {noteOpen ? (
+                    <>
+                      <textarea
+                        value={noteDraft}
+                        onChange={e => setNoteDraft(e.target.value)}
+                        placeholder="Life happens. Add a quick note about a recent miss — just for you."
+                        className="w-full bg-transparent text-sm text-gray-200 placeholder:text-gray-600 resize-none outline-none min-h-[48px]"
+                      />
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          onClick={() => { setMissNote(noteDraft); setNoteOpen(false); }}
+                          className="h-8 px-3 bg-primary hover:bg-primary/90 text-black font-bold rounded-lg text-xs"
+                        >
+                          Save note
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => { setNoteDraft(user.missNote ?? ""); setNoteOpen(false); }}
+                          className="h-8 px-3 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-lg text-xs font-bold"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm text-gray-300 leading-relaxed">{user.missNote}</p>
+                      <button
+                        onClick={() => { setNoteDraft(user.missNote ?? ""); setNoteOpen(true); }}
+                        className="text-gray-500 hover:text-primary shrink-0"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -364,6 +470,7 @@ export default function Profile() {
         </div>
       </div>
 
+      <TrustInfoModal open={trustInfoOpen} onOpenChange={setTrustInfoOpen} />
       <BottomNav />
     </div>
   );

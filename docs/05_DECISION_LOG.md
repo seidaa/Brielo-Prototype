@@ -25,23 +25,38 @@
 21. Current prototype should remain localStorage/mock data until backend is intentionally added.
 22. Do not add backend, WebSockets, real auth, payments, or livestreaming without explicit approval.
 
-## Trust/Reputation Direction To Add Later
+## Show-Up Trust — Phase 1 prototype added
 
-Brielo should eventually penalize flaking fairly.
+Brielo now has a front-end/localStorage-only "Show-Up Trust" prototype that
+discourages flaking fairly. No backend, auth, or persistence beyond `brio_*`
+localStorage keys.
 
 Principle:
-When a user taps "I'm In," they are holding a limited spot that someone else may have wanted.
+When a user taps "I'm In," they are holding a limited spot that someone else may
+have wanted. Trust is about reliability, not judgment.
 
-Future trust/reputation ideas:
+Tone: firm, fair, human — never shaming.
 
-* show-up rate
-* recently missed Moves
-* Would Move Again count
-* Good Vibes count
-* host reliability
-* private safety/report signals
-* warning labels like Low Show-Up Rate or Recently Missed Moves
-* avoid public shaming or harsh labels like "flake" or "bad user"
-* allow reputation recovery through consistent attendance
+Implemented in Phase 1:
 
-Do not implement this yet unless specifically requested.
+* Show-Up Rate (a stat only — never used as a label)
+* commitment prompt on limited-spot direct joins ("Save your spot?")
+* leaving early is explicitly NOT a no-show; spot reopens
+* attendee + host trust labels on Move detail and after-the-move feedback
+* private after-the-move feedback nudges trust signals (no permanent marks)
+* profile Show-Up Trust section with stats, label, recovery copy, self note
+* "How trust works" explainer modal
+* reputation recovery through consistent attendance
+
+Approved trust labels (positive): Shows Up, Reliable, Good Vibes, Trusted Host,
+Would Move Again, New / Limited History.
+
+Approved warning labels: Recently Missed Moves, Host Review Recommended.
+
+Banned labels — never use as a label: "Low Show-Up Rate", "Low Show Rate",
+"flake", "bad user", or any public shaming. "Show-Up Rate" is a stat, not a label.
+
+Icons: Lucide line icons only — no emoji icons.
+
+Future (not yet implemented): server-backed reputation, real safety review
+queue, host reliability scoring beyond the prototype values.

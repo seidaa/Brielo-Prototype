@@ -108,6 +108,17 @@ export type UserProfile = {
   friendsCount: number;
   badges: string[];
   interests: string[];
+  // ── Show-Up Trust (Phase 1 prototype) ──
+  showUpRate: number;          // % of joined Moves attended, 0-100
+  movesAttended: number;
+  movesMissed: number;
+  movesHosted: number;
+  wouldMoveAgainCount: number;
+  goodVibesCount: number;
+  hostReliability: number;     // % of hosted Moves that went ahead, 0-100
+  trustLabel: TrustLabel;
+  warningLabel?: WarningLabel;
+  missNote?: string;           // optional self-note about a recent miss
 };
 
 export const defaultUserProfile: UserProfile = {
@@ -121,6 +132,74 @@ export const defaultUserProfile: UserProfile = {
   friendsCount: 14,
   badges: ["Early Mover", "Shows Up"],
   interests: [],
+  showUpRate: 94,
+  movesAttended: 8,
+  movesMissed: 0,
+  movesHosted: 2,
+  wouldMoveAgainCount: 6,
+  goodVibesCount: 9,
+  hostReliability: 95,
+  trustLabel: "Reliable",
+  warningLabel: undefined,
+  missNote: undefined,
+};
+
+// ── Show-Up Trust types & data (Phase 1 prototype) ───────────────────────────
+// Tone: firm, fair, human. Never use "Low Show-Up Rate" / "Low Show Rate" as a
+// label. "Show-Up Rate" is a stat only. The single warning label is
+// "Recently Missed Moves". Host concern surfaces as "Host Review Recommended".
+export type TrustLabel =
+  | "Shows Up"
+  | "Reliable"
+  | "Good Vibes"
+  | "Trusted Host"
+  | "Would Move Again"
+  | "New / Limited History";
+
+export type WarningLabel = "Recently Missed Moves" | "Host Review Recommended";
+
+export type PersonTrust = {
+  showUpRate: number;          // 0-100, -1 means not enough history yet
+  movesAttended: number;
+  movesMissed: number;
+  wouldMoveAgainCount: number;
+  goodVibesCount: number;
+  trustLabel: TrustLabel;
+  warningLabel?: WarningLabel;
+};
+
+export type TrustPerson = {
+  name: string;
+  initials: string;
+  color: string;
+  level: number;
+};
+
+// Stable pool used to populate "Who's In" attendee lists and feedback targets.
+export const TRUST_PEOPLE: TrustPerson[] = [
+  { name: "Marcus L.",  initials: "ML", color: "bg-orange-500",  level: 7 },
+  { name: "Priya S.",   initials: "PS", color: "bg-pink-500",    level: 3 },
+  { name: "Jordan K.",  initials: "JK", color: "bg-blue-500",    level: 5 },
+  { name: "Alex T.",    initials: "AT", color: "bg-purple-500",  level: 4 },
+  { name: "Sofia R.",   initials: "SR", color: "bg-green-500",   level: 6 },
+  { name: "Devon A.",   initials: "DA", color: "bg-amber-500",   level: 8 },
+  { name: "Camille D.", initials: "CD", color: "bg-cyan-500",    level: 5 },
+  { name: "Riley S.",   initials: "RS", color: "bg-emerald-500", level: 2 },
+  { name: "Jamie K.",   initials: "JK", color: "bg-rose-500",    level: 4 },
+  { name: "Taylor M.",  initials: "TM", color: "bg-indigo-500",  level: 3 },
+];
+
+export const PEOPLE_TRUST: Record<string, PersonTrust> = {
+  "Marcus L.":  { showUpRate: 96, movesAttended: 41, movesMissed: 2,  wouldMoveAgainCount: 28, goodVibesCount: 33, trustLabel: "Reliable" },
+  "Priya S.":   { showUpRate: 98, movesAttended: 22, movesMissed: 0,  wouldMoveAgainCount: 19, goodVibesCount: 24, trustLabel: "Trusted Host" },
+  "Jordan K.":  { showUpRate: 92, movesAttended: 30, movesMissed: 3,  wouldMoveAgainCount: 17, goodVibesCount: 20, trustLabel: "Shows Up" },
+  "Alex T.":    { showUpRate: 88, movesAttended: 15, movesMissed: 2,  wouldMoveAgainCount: 9,  goodVibesCount: 14, trustLabel: "Good Vibes" },
+  "Sofia R.":   { showUpRate: 90, movesAttended: 19, movesMissed: 2,  wouldMoveAgainCount: 16, goodVibesCount: 12, trustLabel: "Would Move Again" },
+  "Devon A.":   { showUpRate: 97, movesAttended: 26, movesMissed: 1,  wouldMoveAgainCount: 21, goodVibesCount: 25, trustLabel: "Trusted Host" },
+  "Camille D.": { showUpRate: 94, movesAttended: 18, movesMissed: 1,  wouldMoveAgainCount: 12, goodVibesCount: 15, trustLabel: "Reliable" },
+  "Riley S.":   { showUpRate: -1, movesAttended: 2,  movesMissed: 0,  wouldMoveAgainCount: 1,  goodVibesCount: 2,  trustLabel: "New / Limited History" },
+  "Jamie K.":   { showUpRate: 91, movesAttended: 14, movesMissed: 1,  wouldMoveAgainCount: 8,  goodVibesCount: 11, trustLabel: "Shows Up" },
+  "Taylor M.":  { showUpRate: 74, movesAttended: 9,  movesMissed: 3,  wouldMoveAgainCount: 3,  goodVibesCount: 4,  trustLabel: "New / Limited History", warningLabel: "Recently Missed Moves" },
 };
 
 // ── Circle Person — the new person-based Circle concept ──────────────────────

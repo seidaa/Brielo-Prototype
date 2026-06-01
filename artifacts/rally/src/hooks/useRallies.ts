@@ -7,7 +7,9 @@ import {
   ActivityHistoryItem, mockActivityHistory, FeedbackLabel,
   CirclePerson,
   defaultMyCircle, defaultWouldMoveAgain, defaultRecentConnections,
+  PersonTrust, PEOPLE_TRUST,
 } from "@/data/mockData";
+import { computeShowUpRate, computeWarning } from "@/lib/trust";
 
 const MOVES_KEY      = "brio_moves";
 const USER_KEY       = "brio_user";
@@ -15,6 +17,7 @@ const ONBOARDING_KEY = "brio_onboarding";
 const MESSAGES_KEY   = "brio_messages";
 const HISTORY_KEY    = "brio_history";
 const CIRCLE_KEY     = "brio_circle_persons";
+const PEOPLE_TRUST_KEY = "brio_people_trust";
 
 export function useRallies() {
   const [rallies, setRallies] = useState<Move[]>([]);
@@ -45,9 +48,11 @@ export function useUser() {
       // Migrate stale badge name
       if (parsed.badges?.includes("Early Brio User")) {
         parsed.badges = parsed.badges.map((b: string) => b === "Early Brio User" ? "Early Mover" : b);
-        localStorage.setItem(USER_KEY, JSON.stringify(parsed));
       }
-      setUser(parsed);
+      // Merge in any newly added defaults (e.g. trust fields) for existing users
+      const merged: UserProfile = { ...defaultUserProfile, ...parsed };
+      localStorage.setItem(USER_KEY, JSON.stringify(merged));
+      setUser(merged);
     } else {
       localStorage.setItem(USER_KEY, JSON.stringify(defaultUserProfile));
     }
@@ -55,8 +60,9 @@ export function useUser() {
 
   const saveUser = (u: UserProfile) => { setUser(u); localStorage.setItem(USER_KEY, JSON.stringify(u)); };
   const updateInterests = (interests: string[]) => saveUser({ ...user, interests });
+  const setMissNote = (note: string) => saveUser({ ...user, missNote: note.trim() || undefined });
 
-  return { user, saveUser, updateInterests };
+  return { user, saveUser, updateInterests, setMissNote };
 }
 
 export function useOnboarding() {
@@ -183,4 +189,48 @@ export function useActivityHistory() {
     hostedCount:   history.filter(h => h.role === "hosted").length,
     circleCount:   history.filter(h => h.tags.includes("Circle Move")).length,
   };
+}
+
+// ── Show-Up Trust for other people (Phase 1 prototype) ───────────────────────
+// Reads from the shared PEOPLE_TRUST defaults, layering any locally-stored
+// overrides created by After-the-Move feedback. Feedback the user gives is
+// private and only nudges trust signals — it never permanently marks anyone.
+export type FeedbackImpact = "no-show" | "would-again" | "good-vibes";
+
+export function usePeopleTrust() {
+  const [overrides, setOverrides] = useState<Record<string, PersonTrust>>({});
+
+  useEffect(() => {
+    const stored = localStorage.getItem(PEOPLE_TRUST_KEY);
+    if (stored) setOverrides(JSON.parse(stored));
+  }, []);
+
+  const getTrust = (name: string): PersonTrust | undefined =>
+    overrides[name] ?? PEOPLE_TRUST[name];
+
+  // `apply` true adds the signal; false reverts it. Keeping this symmetric means
+  // toggling feedback off in the UI never leaves a stacked or stranded trust
+  // mutation behind in localStorage.
+  const recordFeedback = (name: string, type: FeedbackImpact, apply = true) => {
+    const base = overrides[name] ?? PEOPLE_TRUST[name];
+    if (!base) return;
+    const dir = apply ? 1 : -1;
+    const next: PersonTrust = { ...base };
+    if (type === "no-show") {
+      next.movesMissed = Math.max(0, base.movesMissed + dir);
+      next.showUpRate  = computeShowUpRate(base.movesAttended, next.movesMissed);
+      // Fairness: one miss is not permanent — the positive trust label stays put;
+      // a warning only surfaces once a pattern of recent misses appears.
+      next.warningLabel = computeWarning(next);
+    } else if (type === "would-again") {
+      next.wouldMoveAgainCount = Math.max(0, base.wouldMoveAgainCount + dir);
+    } else if (type === "good-vibes") {
+      next.goodVibesCount = Math.max(0, base.goodVibesCount + dir);
+    }
+    const updated = { ...overrides, [name]: next };
+    setOverrides(updated);
+    localStorage.setItem(PEOPLE_TRUST_KEY, JSON.stringify(updated));
+  };
+
+  return { getTrust, recordFeedback };
 }

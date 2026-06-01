@@ -1,0 +1,329 @@
+Read docs/06_AGENT_HANDOFF.md, docs/05_DECISION_LOG.md, and docs/02_PRODUCT_SPEC.md before making changes.
+
+Task:
+Add Phase 1 of Brielo’s Show-Up Trust / flaking accountability system.
+
+This should be a front-end/localStorage prototype only.
+
+Do not add:
+
+* backend
+* database
+* real auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* major refactors
+
+Do not rename folders or routes.
+
+Preserve:
+
+* Brielo branding
+* Live More
+* Make a Move
+* Moves
+* I’m In
+* Make It Live
+* Leave Move
+* Move Chat
+* Circle
+* Add to Circle
+* Circle Activity
+* Live Moves Nearby
+* Live Map
+* localStorage/mock data
+* current clickable flows
+
+Core principle:
+When a user taps “I’m In,” they are holding a limited spot that someone else may have wanted. Brielo should make that clear without publicly shaming users.
+
+Tone:
+
+* firm
+* fair
+* human
+* accountability-focused
+* not insulting
+* not harsh
+* not publicly humiliating
+
+Avoid labels like:
+
+* Flake
+* Bad User
+* Creepy
+* Bad Reviews
+* Blacklisted
+* Unreliable
+* Low Show-Up Rate
+* Low Show Rate
+
+Use labels like:
+
+* Shows Up
+* Reliable
+* Good Vibes
+* Trusted Host
+* Would Move Again
+* New / Limited History
+* Recently Missed Moves
+* Host Review Recommended
+
+Important wording rule:
+Use “Show-Up Rate” only as a stat/metric.
+
+Example:
+Show-Up Rate: 92%
+
+Use “Recently Missed Moves” as the warning label.
+
+Example:
+Jordan K.
+Level 2 · 68% show-up rate
+Recently Missed Moves
+
+Do not use “Low Show-Up Rate” or “Low Show Rate” as a label.
+
+PHASE 1 FEATURES TO ADD
+
+1. Join commitment message
+
+When a user taps “I’m In” on a Move with limited spots, show a small confirmation modal or inline commitment message before joining.
+
+Copy:
+
+Title:
+“Save your spot?”
+
+Body:
+“Spots are limited. Only join if you actually plan to show up.”
+
+Secondary copy:
+“If plans change, leave early so someone else can take the spot.”
+
+Buttons:
+
+* Cancel
+* I’m In
+
+After joining, show a toast:
+“You’re in. Your spot is saved.”
+
+2. Move Detail spot accountability copy
+
+Near the spots left / attendee count area, add subtle copy:
+
+“Limited spots. Please only join if you plan to show.”
+
+Keep it small and non-annoying.
+
+3. Leave Move copy update
+
+Keep the existing Leave Move behavior:
+
+* user leaves Move
+* attendee count updates
+* Move Chat disappears from chat list
+
+Update the Leave Move confirmation modal copy:
+
+Title:
+“Leave this Move?”
+
+Body:
+“Leaving early is better than no-showing. We’ll free your spot so someone else can join.”
+
+Buttons:
+
+* Stay In
+* Leave Move
+
+After confirming:
+“You left the Move. Your spot is open again.”
+
+Leaving a Move should NOT automatically count as a no-show.
+
+4. Add mock trust/reputation data
+
+Add lightweight mock trust data to user profiles and attendees.
+
+Example trust fields:
+
+* showUpRate
+* movesAttended
+* movesMissed
+* movesHosted
+* wouldMoveAgainCount
+* goodVibesCount
+* hostReliability
+* trustLabel
+* warningLabel if needed
+
+Example users:
+
+* Marcus L. — Shows Up — 92% show-up rate
+* Priya S. — Good Vibes — 96% show-up rate
+* Jordan K. — Recently Missed Moves — 68% show-up rate
+* Taylor R. — New / Limited History
+
+5. Profile Trust section
+
+Add a Trust section to the Profile screen.
+
+Show:
+
+* Trust Status
+* Show-Up Rate
+* Moves Attended
+* Missed Moves
+* Would Move Again
+* Good Vibes
+
+Example:
+
+Trust Status: Shows Up
+Show-Up Rate: 92%
+Moves Attended: 14
+Missed Moves: 1
+Would Move Again: 9
+Good Vibes: 12
+
+Add this copy:
+
+“Your spot matters. Show up when you’re in, or leave early so someone else can take it.”
+
+Add small recovery copy:
+
+“Recent behavior matters most. Show up consistently to improve your trust status.”
+
+6. Trust labels on Move Detail attendees
+
+In the “Who’s In” section, show lightweight trust indicators on attendee cards.
+
+Example:
+Marcus L.
+Level 4 · Shows Up · 92% show-up rate
+
+If warning:
+Jordan K.
+Level 2 · 68% show-up rate
+Recently Missed Moves
+
+Do not make warning labels huge or shame-y. They should be visible but fair.
+
+7. Host trust preview
+
+On Move Detail, show host trust context.
+
+Example:
+Hosted 6 Moves · 94% host reliability · Trusted Host
+
+If mock host has poor reliability:
+Recently canceled multiple Moves
+
+Keep this subtle.
+
+8. After the Move? feedback impact
+
+Update or extend the post-Move feedback flow so feedback can affect mock reputation.
+
+Feedback options:
+
+* Good Vibes
+* Would Move Again
+* Great Host
+* Low Pressure
+* Didn’t Show
+* Felt Off
+* Report
+
+If “Didn’t Show” is selected for an attendee:
+
+* increase missed Moves count in mock/localStorage
+* lower show-up rate in mock data
+* apply warning label if threshold is met:
+    “Recently Missed Moves”
+
+If “Would Move Again” is selected:
+
+* increase wouldMoveAgainCount
+* improve trust label if applicable
+
+If “Good Vibes” is selected:
+
+* increase goodVibesCount
+
+If “Felt Off” or “Report” is selected:
+show safety follow-up:
+“Tell us what happened.”
+
+Options:
+
+* No-show
+* Creepy behavior
+* Harassment
+* Fake Move
+* Spam/scam
+* Other
+
+After submitting:
+“Thanks. We’ll review this.”
+
+9. No-show user message
+
+If the current user is marked as a no-show in mock flow, show a mock notification or profile trust note:
+
+“You missed this Move without leaving. Someone else may have wanted that spot.”
+
+Then:
+“Repeated no-shows can lower your trust status.”
+
+10. Add Trust info modal
+
+Add a small “How trust works” link or info icon in the Profile Trust section.
+
+Modal copy:
+
+“Brielo rewards people who show up. If you join a Move, you’re holding a spot someone else may have wanted. Leaving early is better than no-showing. Repeated missed Moves can lower your trust status, but consistent attendance helps you recover.”
+
+11. Preserve fairness
+
+Rules:
+
+* One missed Move should not permanently damage a user.
+* Leaving a Move before it starts should not count as a no-show.
+* Negative feedback should not be publicly displayed as reviews.
+* Reports and Felt Off signals should feel private/safety-oriented.
+* Warnings should be based on repeated behavior, not one-off mistakes.
+* Use “Recently Missed Moves” for warning language, not “Low Show-Up Rate.”
+
+12. Update docs lightly
+
+Update docs/05_DECISION_LOG.md to move trust/reputation from “future direction” to “Phase 1 prototype added.”
+
+Add:
+
+“Phase 1 Show-Up Trust added: limited spot commitment copy, Leave Move accountability copy, profile trust section, mock show-up rates, attendee trust labels, Recently Missed Moves warning label, and post-Move feedback impact.”
+
+Do not remove the existing warnings about avoiding public shaming.
+
+Quality check:
+After changes, confirm:
+
+* app still runs
+* posting a Move still works
+* joining a Move still works
+* Leave Move still removes chat
+* Move Chat still appears only for joined Moves
+* Discover still loads
+* Profile still loads
+* localStorage still works
+* no old Rally/Brio/Plan/Crew language is reintroduced
+* no emoji icons are added
+* “Low Show-Up Rate” and “Low Show Rate” do not appear anywhere user-facing
+
+Final goal:
+Brielo should make reliability visible and make no-showing feel socially costly, without turning the app into a punishment system. Users should understand that joining a Move means holding a real spot someone else may have wanted.

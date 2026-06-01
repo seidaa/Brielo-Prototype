@@ -6,8 +6,11 @@ import {
   Gamepad2, Handshake, Palette, CheckCheck, Footprints, UsersRound,
 } from "lucide-react";
 import { useRallies, useCirclePersons } from "@/hooks/useRallies";
+import { useToast } from "@/hooks/use-toast";
 import { BottomNav } from "@/components/BottomNav";
-import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
+import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
+import { CAT_CONFIG, defaultCatConfig, Move } from "@/data/mockData";
+import { isLimitedSpots } from "@/lib/trust";
 import { cn } from "@/lib/utils";
 
 const PIN_POSITIONS: Record<string, { top: string; left: string }> = {
@@ -41,9 +44,11 @@ type MapFilter = "all" | "live" | "circle";
 export default function Map() {
   const { rallies, joinRally } = useRallies();
   const { myCircle } = useCirclePersons();
+  const { toast } = useToast();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<MapFilter>("all");
   const [joinedId, setJoinedId] = useState<string | null>(null);
+  const [pendingMove, setPendingMove] = useState<Move | null>(null);
 
   const circleHostNames = new Set(myCircle.map(p => p.name));
 
@@ -57,10 +62,21 @@ export default function Map() {
   const activeMove = selectedId ? rallies.find(r => r.id === selectedId) : null;
   const nowMoves = rallies.filter(r => r.time === "Now");
 
-  const handleJoin = (id: string) => {
+  const doJoin = (id: string, savedSpot: boolean) => {
     joinRally(id);
+    setPendingMove(null);
     setJoinedId(id);
     setTimeout(() => setJoinedId(null), 2000);
+    if (savedSpot) toast({ title: "You're in. Your spot is saved." });
+  };
+
+  const handleJoin = (id: string) => {
+    const move = rallies.find(r => r.id === id);
+    if (move && !move.requiresApproval && isLimitedSpots(move)) {
+      setPendingMove(move);
+      return;
+    }
+    doJoin(id, false);
   };
 
   return (
@@ -277,6 +293,13 @@ export default function Map() {
           );
         })()}
       </div>
+
+      <JoinCommitmentModal
+        open={!!pendingMove}
+        onOpenChange={o => { if (!o) setPendingMove(null); }}
+        move={pendingMove}
+        onConfirm={() => pendingMove && doJoin(pendingMove.id, true)}
+      />
 
       <BottomNav />
     </div>

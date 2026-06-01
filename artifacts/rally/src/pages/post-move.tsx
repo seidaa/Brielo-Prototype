@@ -8,8 +8,10 @@ import {
   Gamepad2, Handshake, Palette, CheckCheck, Footprints,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRallies, useCirclePersons } from "@/hooks/useRallies";
+import { useRallies, useCirclePersons, usePeopleTrust } from "@/hooks/useRallies";
+import { TrustChip, WarningChip } from "@/components/TrustLabel";
 import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
+import { formatShowUpRate } from "@/lib/trust";
 import { cn } from "@/lib/utils";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -75,6 +77,7 @@ export default function PostMove() {
   const [, navigate] = useLocation();
   const { rallies } = useRallies();
   const { addToCircle, markWouldMoveAgain } = useCirclePersons();
+  const { getTrust, recordFeedback } = usePeopleTrust();
   const { toast } = useToast();
 
   const move = rallies.find(r => r.id === id);
@@ -97,22 +100,32 @@ export default function PostMove() {
 
   const toggleAttendeeFeedback = (attendeeId: string, feedbackId: string) => {
     if (feedbackId === "report") { setReportTarget(attendeeId); return; }
-    setAttendeeFeedback(prev => {
-      const current = prev[attendeeId] ?? [];
-      const updated = current.includes(feedbackId)
-        ? current.filter(f => f !== feedbackId)
-        : [...current, feedbackId];
+    const current = attendeeFeedback[attendeeId] ?? [];
+    const isAdding = !current.includes(feedbackId);
+    const updated = isAdding
+      ? [...current, feedbackId]
+      : current.filter(f => f !== feedbackId);
 
-      if (feedbackId === "add-circle") {
-        const attendee = MOCK_ATTENDEES.find(a => a.id === attendeeId);
-        if (attendee && !current.includes("add-circle")) addToCircle(attendee.personId);
-      }
+    const attendee = MOCK_ATTENDEES.find(a => a.id === attendeeId);
+    if (attendee) {
+      if (feedbackId === "add-circle" && isAdding) addToCircle(attendee.personId);
       if (feedbackId === "would-again") {
-        const attendee = MOCK_ATTENDEES.find(a => a.id === attendeeId);
-        if (attendee && !current.includes("would-again")) markWouldMoveAgain(attendee.personId);
+        if (isAdding) markWouldMoveAgain(attendee.personId);
+        recordFeedback(attendee.name, "would-again", isAdding);
       }
-      return { ...prev, [attendeeId]: updated };
-    });
+      if (feedbackId === "good-vibes") recordFeedback(attendee.name, "good-vibes", isAdding);
+      if (feedbackId === "no-show") {
+        recordFeedback(attendee.name, "no-show", isAdding);
+        if (isAdding) {
+          toast({
+            title: "Noted — thank you.",
+            description: "One miss won't define them. A heads-up only appears if no-shows become a pattern.",
+            duration: 3500,
+          });
+        }
+      }
+    }
+    setAttendeeFeedback(prev => ({ ...prev, [attendeeId]: updated }));
   };
 
   const handleReportSubmit = (reason: string) => {
@@ -216,14 +229,23 @@ export default function PostMove() {
               {MOCK_ATTENDEES.map(attendee => {
                 const fb = attendeeFeedback[attendee.id] ?? [];
                 const reported = reportSubmitted.has(attendee.id);
+                const trust = getTrust(attendee.name);
                 return (
                   <div key={attendee.id} className="bg-[#161616] border border-white/5 rounded-2xl p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0", attendee.color)}>
                         {attendee.initials}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-white text-sm">{attendee.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-bold text-white text-sm">{attendee.name}</p>
+                          {trust && (trust.warningLabel
+                            ? <WarningChip label={trust.warningLabel} size="xs" />
+                            : <TrustChip label={trust.trustLabel} size="xs" />)}
+                        </div>
+                        {trust && trust.showUpRate >= 0 && (
+                          <p className="text-[10px] text-gray-600">Show-Up Rate {formatShowUpRate(trust.showUpRate)}</p>
+                        )}
                         {fb.includes("add-circle") && (
                           <p className="text-[11px] text-primary font-bold flex items-center gap-1">
                             <Check className="w-3 h-3" /> Added to your Circle
