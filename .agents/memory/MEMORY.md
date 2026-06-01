@@ -1,0 +1,1 @@
+- [api-server resilience](api-server-resilience.md) — api-server uses a supervise.mjs wrapper to survive idle SIGTERM; restart logic must NOT treat child exit-0 as intentional. "Reset api" = restart the api-server workflow only.
