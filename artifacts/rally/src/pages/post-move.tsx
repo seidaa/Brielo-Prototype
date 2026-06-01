@@ -58,7 +58,7 @@ const PERSON_FEEDBACK = [
 type ReportOption = { label: string; Icon: React.ElementType };
 const REPORT_OPTIONS: ReportOption[] = [
   { label: "No-show",         Icon: UserX          },
-  { label: "Creepy behavior", Icon: AlertCircle    },
+  { label: "Made me uncomfortable", Icon: AlertCircle    },
   { label: "Harassment",      Icon: ShieldAlert    },
   { label: "Fake Move",       Icon: AlertTriangle  },
   { label: "Spam / scam",     Icon: Trash2         },

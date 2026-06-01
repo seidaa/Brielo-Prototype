@@ -1,0 +1,230 @@
+Read docs/06_AGENT_HANDOFF.md, docs/05_DECISION_LOG.md, docs/02_PRODUCT_SPEC.md, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Do a focused cleanup and QA pass after the Phase 1 Show-Up Trust / flaking accountability update.
+
+This is cleanup only.
+
+Do not add new features.
+Do not add backend, database, real auth, WebSockets, push notifications, payments, livestreaming, AI matching, or venue tools.
+Do not rename folders.
+Do not rename routes.
+Do not refactor the whole app.
+Do not change server/workflow setup unless absolutely required to keep the existing app running.
+
+Preserve:
+
+* Brielo branding
+* Live More
+* Make a Move
+* Moves
+* I’m In
+* Make It Live
+* Leave Move
+* Move Chat
+* Circle
+* Add to Circle
+* Circle Activity
+* Live Moves Nearby
+* Live Map
+* After the Move?
+* localStorage/mock data
+* current clickable flows
+
+CLEANUP GOALS
+
+1. Verify Show-Up Trust language
+
+Search user-facing UI and docs for banned or outdated warning labels.
+
+Do not use:
+
+* Low Show-Up Rate
+* Low Show Rate
+* Flake
+* Bad User
+* Creepy
+* Bad Reviews
+* Blacklisted
+* Unreliable
+
+Use:
+
+* Show-Up Rate only as a stat/metric
+* Recently Missed Moves as the warning label
+* Shows Up
+* Reliable
+* Good Vibes
+* Trusted Host
+* Would Move Again
+* New / Limited History
+* Host Review Recommended
+
+Correct examples:
+
+* Show-Up Rate: 92%
+* Jordan K. · 68% show-up rate · Recently Missed Moves
+
+Incorrect examples:
+
+* Low Show-Up Rate
+* Low Show Rate
+* Flake warning
+
+2. Verify trust copy tone
+
+Make sure the trust system feels firm but fair.
+
+Keep copy aligned with:
+“Your spot matters.”
+“Leaving early is better than no-showing.”
+“If you join a Move, you’re holding a spot someone else may have wanted.”
+“Recent behavior matters most. Show up consistently to improve your trust status.”
+
+Avoid public shaming or harsh punishment language.
+
+3. Verify Join flow
+
+Test or inspect the I’m In flow.
+
+Expected behavior:
+
+* Tapping I’m In opens the “Save your spot?” commitment modal.
+* Modal explains limited spots and that someone else may want the spot.
+* Confirming joins the Move.
+* Attendee count updates.
+* Move Chat appears for the joined Move.
+* Toast or confirmation copy appears.
+
+Make sure this does not break Move cards, Move Detail, Discover, or localStorage.
+
+4. Verify Leave Move flow
+
+Expected behavior:
+
+* Joined Moves show Leave Move.
+* Leave Move opens confirmation copy:
+    “Leaving early is better than no-showing. We’ll free your spot so someone else can join.”
+* Confirming Leave Move removes the user from the Move.
+* Attendee count updates.
+* Move Chat disappears from chat list.
+* Leaving a Move does NOT count as a no-show.
+* Toast/copy says:
+    “You left the Move. Your spot is open again.”
+
+5. Verify post-Move feedback fairness
+
+Check the feedback system for reversible logic.
+
+Important:
+Any toggleable trust feedback must be symmetric:
+
+* selecting “Didn’t Show” applies the missed Move impact
+* unselecting “Didn’t Show” reverses that impact
+* selecting “Would Move Again” increases that count
+* unselecting it reverses that count
+* selecting “Good Vibes” increases that count
+* unselecting it reverses that count
+
+Do not allow repeated toggling to stack penalties or inflate positive stats.
+
+6. Verify Profile Trust section
+
+Profile should include a Trust section showing:
+
+* Trust Status
+* Show-Up Rate
+* Moves Attended
+* Missed Moves
+* Would Move Again
+* Good Vibes
+* “Your spot matters” copy
+* “How trust works” modal/link
+
+Make sure this section does not feel too crowded or overly punitive.
+
+7. Verify Move Detail trust display
+
+On Move Detail:
+
+* Host trust context should appear subtly.
+* “Who’s In” attendee cards should show lightweight trust indicators.
+* Warning labels should be visible but not huge or shame-y.
+* Move Detail should still show Move info, time/location, spots, vibe tags, Who’s In, After the Move?, Report Move, and Move Chat access.
+
+8. Verify Circle concept was not changed
+
+Circles must remain people-based social connections, not recurring groups.
+
+Make sure trust updates did not accidentally turn Circles back into:
+
+* recurring groups
+* themed clubs
+* Crews
+* Meetup-style groups
+
+Correct language:
+
+* Your Circle
+* Add to Circle
+* In Your Circle
+* Circle Activity
+* people you’d move with again
+* people you’ve moved with before
+
+9. Verify old language is not reintroduced
+
+Search user-facing UI for:
+
+* Rally
+* Rallies
+* Brio
+* Plan
+* Plans
+* Crew
+* Crews
+* RSVP
+
+Replace user-facing instances with current Brielo language where appropriate.
+
+Do not rename internal files/folders/routes during this cleanup pass unless absolutely necessary.
+
+10. Verify icon consistency
+
+Search for native emoji icons in user-facing UI.
+
+Replace remaining emoji icons with clean line icons consistent with the Brielo style.
+
+Use Lucide/line icons only.
+Do not add new emoji icons.
+Do not add spark/sun/checkered/racing visuals.
+
+11. Verify app behavior
+
+Confirm:
+
+* app runs
+* onboarding works
+* interest selection works
+* Discover loads
+* posting a Move still works
+* created Moves appear in Discover
+* joining a Move works
+* Leave Move works
+* Move Chat appears only for joined Moves
+* Move Chat disappears after leaving
+* Live Map loads
+* Profile loads
+* Activity History loads
+* theme switching still works
+* localStorage still works
+
+12. Update docs only if needed
+
+If cleanup changes the trust implementation or wording, update docs/05_DECISION_LOG.md and/or the Show-Up Trust note.
+
+Do not over-document.
+Only update docs if something materially changed.
+
+Final goal:
+The Phase 1 Show-Up Trust system should feel clean, fair, and stable. Brielo should make reliability visible and make no-showing feel socially costly without turning the app into a punishment system.

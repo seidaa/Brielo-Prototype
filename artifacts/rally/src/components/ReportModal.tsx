@@ -16,7 +16,7 @@ export function ReportModal({ open, onOpenChange, context = "move" }: ReportModa
 
   const options = [
     { label: "No-show",         icon: UserX },
-    { label: "Creepy behavior", icon: EyeOff },
+    { label: "Made me uncomfortable", icon: EyeOff },
     { label: "Harassment",      icon: Ban },
     { label: "Fake Move",       icon: AlertTriangle },
     { label: "Spam / scam",     icon: Trash2 },

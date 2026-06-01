@@ -45,7 +45,7 @@ export function JoinCommitmentModal({ open, onOpenChange, move, onConfirm }: {
           </Button>
         </div>
         <p className="text-[11px] text-gray-600 text-center mt-1 leading-relaxed">
-          Plans change — leave anytime before it starts and your spot opens back up. Leaving early
+          Things come up — leave anytime before it starts and your spot opens back up. Leaving early
           isn't a no-show.
         </p>
       </DialogContent>
