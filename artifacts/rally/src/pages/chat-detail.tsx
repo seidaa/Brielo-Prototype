@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useParams } from "wouter";
-import { ChevronLeft, Send, Users, Info } from "lucide-react";
+import { ChevronLeft, Send, Users, Info, Lock, MessageCircle } from "lucide-react";
 import { useRallies, useMessages } from "@/hooks/useRallies";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -66,14 +66,14 @@ export default function ChatDetail() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto pt-16 pb-20 px-4 space-y-3">
         <div className="flex justify-center my-2">
-          <span className="text-[10px] text-gray-600 bg-white/3 border border-white/5 px-3 py-1.5 rounded-full">
-            🔒 Move Chat expires when the move ends
+          <span className="flex items-center gap-1 text-[10px] text-gray-600 bg-white/3 border border-white/5 px-3 py-1.5 rounded-full">
+            <Lock className="w-3 h-3" /> Move Chat expires when the move ends
           </span>
         </div>
 
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="text-3xl mb-3">👋</div>
+            <MessageCircle className="w-8 h-8 mb-3 text-gray-600" strokeWidth={1.75} />
             <p className="text-sm font-bold text-white mb-1">Start the conversation</p>
             <p className="text-xs text-gray-500">Let everyone know you're in!</p>
           </div>

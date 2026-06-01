@@ -111,7 +111,7 @@ export type UserProfile = {
 };
 
 export const defaultUserProfile: UserProfile = {
-  username: "you_brio",
+  username: "you_brielo",
   level: 3,
   xp: 340,
   xpToNext: 500,
@@ -170,7 +170,7 @@ export type Circle = {
 
 export const defaultCircles: Circle[] = [
   { id: "c1", name: "Sunday Coffee Circle",     category: "Coffee",    membersCount: 8,  nextMoveTime: "Sun 9:00 AM",  schedule: "Every Sunday",    isPublic: true,  emoji: "☕", description: "Weekly coffee ritual. Good people, no agenda." },
-  { id: "c2", name: "Chicago Gym Circle",       category: "Fitness",   membersCount: 12, nextMoveTime: "Mon 6:30 PM",  schedule: "Mon / Wed / Fri", isPublic: false, emoji: "💪", description: "Accountability crew for the gym. Push each other." },
+  { id: "c2", name: "Chicago Gym Circle",       category: "Fitness",   membersCount: 12, nextMoveTime: "Mon 6:30 PM",  schedule: "Mon / Wed / Fri", isPublic: false, emoji: "💪", description: "Accountability group for the gym. Push each other." },
   { id: "c3", name: "Trivia Circle",            category: "Nightlife", membersCount: 4,  nextMoveTime: "Thu 7:30 PM",  schedule: "Every Thursday",  isPublic: false, emoji: "🧠", description: "Weekly pub trivia team at Longman & Eagle." },
   { id: "c4", name: "Concert Circle",           category: "Concerts",  membersCount: 21, nextMoveTime: "TBD",          schedule: "As shows come up", isPublic: true, emoji: "🎵", description: "People who actually go to shows, not just save Spotify." },
   { id: "c5", name: "Pickup Basketball Circle", category: "Sports",    membersCount: 15, nextMoveTime: "Sat 10:00 AM", schedule: "Every Saturday",  isPublic: true,  emoji: "🏀", description: "Full-court pickup at Grant Park. All skill levels." },

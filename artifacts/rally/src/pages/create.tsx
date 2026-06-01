@@ -70,7 +70,7 @@ export default function CreateMove() {
       requiresApproval,
       joined: true,
     });
-    toast({ title: "⚡ Move is live!", description: "You're hosting. Move Chat is open." });
+    toast({ title: "Move is live!", description: "You're hosting. Move Chat is open." });
     setLoc("/discover");
   };
 

@@ -1,11 +1,27 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { ChevronLeft, Users, Check, ChevronRight, Plus, UserPlus, Repeat, Globe, Lock, Calendar } from "lucide-react";
+import { ChevronLeft, Users, Check, ChevronRight, Plus, UserPlus, Repeat, Globe, Lock, Calendar, MapPin, Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2, Gamepad2, Handshake, Palette, CheckCheck, Footprints } from "lucide-react";
 import { useCirclePersons, useCircles } from "@/hooks/useRallies";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { CAT_CONFIG, defaultCatConfig, CirclePerson } from "@/data/mockData";
 import { cn } from "@/lib/utils";
+
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
 
 type TabType = "my-circle" | "groups";
 
@@ -73,7 +89,7 @@ export default function Circles() {
               </div>
               {myCircle.length === 0 ? (
                 <div className="text-center py-8 text-gray-600 text-sm">
-                  <div className="text-3xl mb-2">🫂</div>
+                  <Users className="w-8 h-8 mx-auto mb-2 text-gray-600" strokeWidth={1.75} />
                   <p>Add people after a Move to build your Circle.</p>
                 </div>
               ) : (
@@ -140,13 +156,14 @@ export default function Circles() {
             </p>
             {circles.map(circle => {
               const cat = CAT_CONFIG[circle.category] ?? defaultCatConfig;
+              const CatIcon = CAT_ICONS[circle.category] ?? MapPin;
               return (
                 <Link key={circle.id} href={`/circles/${circle.id}`}>
                   <div className="bg-[#161616] rounded-2xl border border-white/5 hover:border-white/10 transition-all active:scale-[0.99] overflow-hidden">
                     <div className="p-4">
                       <div className="flex items-start gap-3.5">
-                        <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0", cat.color)}>
-                          {circle.emoji}
+                        <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0", cat.color)}>
+                          <CatIcon className={cn("w-6 h-6", cat.text)} strokeWidth={1.75} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-1">
@@ -183,7 +200,7 @@ export default function Circles() {
 
             {/* Create CTA */}
             <div className="rounded-2xl border border-dashed border-white/10 p-5 flex flex-col items-center text-center gap-3 mt-2">
-              <div className="text-3xl">🫂</div>
+              <Users className="w-8 h-8 text-gray-500" strokeWidth={1.75} />
               <div>
                 <p className="text-sm font-bold text-white mb-1">Start a new group circle</p>
                 <p className="text-xs text-gray-500">Create a recurring group around something you love doing.</p>

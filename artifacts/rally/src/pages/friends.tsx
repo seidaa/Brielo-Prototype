@@ -104,7 +104,7 @@ export default function Friends() {
           <p className="text-xs text-gray-600 mb-3 -mt-1">People you've crossed paths with</p>
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
-              <div className="text-3xl mb-3">🔍</div>
+              <Search className="w-8 h-8 mb-3 text-gray-600" strokeWidth={1.75} />
               <p className="text-sm font-bold text-white mb-1">No results for "{search}"</p>
               <p className="text-xs text-gray-500">Try a different name or move</p>
             </div>

@@ -1,10 +1,26 @@
 import { Link, useParams } from "wouter";
-import { ChevronLeft, Plus, Users, Calendar, Lock, Globe, Star, Repeat } from "lucide-react";
+import { ChevronLeft, Plus, Users, Calendar, Lock, Globe, Star, Repeat, MapPin, Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2, Gamepad2, Handshake, Palette, CheckCheck, Footprints } from "lucide-react";
 import { useCircles } from "@/hooks/useRallies";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/BottomNav";
 import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
 import { cn } from "@/lib/utils";
+
+const CAT_ICONS: Record<string, React.ElementType> = {
+  Fitness:    Dumbbell,
+  Coffee:     Coffee,
+  Food:       Utensils,
+  Study:      BookOpen,
+  Sports:     Trophy,
+  Nightlife:  Music,
+  Outdoors:   Leaf,
+  Concerts:   Mic2,
+  Gaming:     Gamepad2,
+  Networking: Handshake,
+  Creative:   Palette,
+  Errands:    CheckCheck,
+  Walking:    Footprints,
+};
 
 const MEMBER_COLORS = ["bg-orange-500", "bg-blue-500", "bg-emerald-500", "bg-purple-500", "bg-pink-500", "bg-amber-500"];
 
@@ -27,7 +43,7 @@ export default function CircleDetail() {
   if (!circle) return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
       <div className="text-center">
-        <div className="text-4xl mb-3">🫂</div>
+        <Users className="w-10 h-10 mx-auto mb-3 text-gray-600" strokeWidth={1.75} />
         <p className="text-white font-bold mb-2">Circle not found</p>
         <Link href="/circles"><span className="text-primary text-sm">← Back to Circles</span></Link>
       </div>
@@ -35,6 +51,7 @@ export default function CircleDetail() {
   );
 
   const cat = CAT_CONFIG[circle.category] ?? defaultCatConfig;
+  const CatIcon = CAT_ICONS[circle.category] ?? MapPin;
   const members = CIRCLE_MEMBERS[id] ?? [];
 
   return (
@@ -50,8 +67,8 @@ export default function CircleDetail() {
       <div className="p-4 space-y-5">
         {/* Hero */}
         <div className="flex flex-col items-center text-center pt-2">
-          <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center text-4xl mb-3 border border-white/8", cat.color)}>
-            {circle.emoji}
+          <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center mb-3 border border-white/8", cat.color)}>
+            <CatIcon className={cn("w-9 h-9", cat.text)} strokeWidth={1.75} />
           </div>
           <h2 className="text-2xl font-black text-white mb-1">{circle.name}</h2>
           <p className="text-sm text-gray-400 mb-3 max-w-[240px]">{circle.description}</p>

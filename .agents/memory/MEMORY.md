@@ -1,1 +1,2 @@
 - [api-server resilience](api-server-resilience.md) — api-server uses a supervise.mjs wrapper to survive idle SIGTERM; restart logic must NOT treat child exit-0 as intentional. "Reset api" = restart the api-server workflow only.
+- [Rally frontend serving](rally-frontend-serving.md) — Brielo lives in artifacts/rally; static build served by api-server. After frontend edits: rebuild then restart api-server, never restart rally:web. Brand rules + preserved internal names.

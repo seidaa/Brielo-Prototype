@@ -299,7 +299,7 @@ export default function PostMove() {
                   </div>
                   <div className="flex-1">
                     <p className="font-black text-white text-sm">Invite Them to a Move</p>
-                    <p className="text-[11px] text-gray-400">Make a move and share it with the crew</p>
+                    <p className="text-[11px] text-gray-400">Make a move and share it with your Circle</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-600 shrink-0" />
                 </div>
