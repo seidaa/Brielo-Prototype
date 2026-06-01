@@ -55,7 +55,7 @@ const CAT_ICONS: Record<string, React.ElementType> = {
 
 export default function MoveDetail() {
   const { id } = useParams<{ id: string }>();
-  const { rallies, joinRally, leaveRally } = useRallies();
+  const { rallies, joinRally, leaveRally, cancelMove } = useRallies();
   const { user } = useUser();
   const { getTrust } = usePeopleTrust();
   const { toast } = useToast();
@@ -117,8 +117,9 @@ export default function MoveDetail() {
 
   const handleCancelConfirm = () => {
     setCancelOpen(false);
-    toast({ title: "Move cancelled.", description: "Attendees will be notified." });
     navigate("/discover");
+    cancelMove(move.id);
+    toast({ title: "Move canceled. The chat is closed." });
   };
 
   return (
@@ -413,8 +414,8 @@ export default function MoveDetail() {
         <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
           <DialogHeader>
             <DialogTitle className="text-white">Cancel this Move?</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Everyone who joined will be notified that the Move is cancelled.
+            <DialogDescription className="text-gray-400 leading-relaxed">
+              This will close the Move and remove the Move Chat for everyone in the prototype.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-2 mt-2">
@@ -423,7 +424,7 @@ export default function MoveDetail() {
               className="flex-1 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-xl"
               onClick={() => setCancelOpen(false)}
             >
-              Keep it
+              Keep Move
             </Button>
             <Button
               className="flex-1 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 font-bold rounded-xl"

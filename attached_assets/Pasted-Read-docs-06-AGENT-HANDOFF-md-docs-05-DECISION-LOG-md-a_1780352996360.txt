@@ -1,0 +1,118 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Fix the hosted Move cancellation behavior.
+
+This is a focused bug fix only.
+
+Do not add:
+
+* backend
+* database
+* auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* new major screens
+* major refactors
+
+Do not rename folders or routes.
+
+Preserve:
+
+* Brielo branding
+* Moves language
+* I’m In
+* Leave Move
+* Move Chat
+* Show-Up Trust
+* localStorage/mock data
+* current clickable flows
+
+Problem:
+When the current user cancels a Move they are hosting, the Move still appears under Active Moves and the Move Chat still remains. That should not happen.
+
+Expected behavior:
+Canceling a hosted Move should fully close the Move in the prototype.
+
+When a host taps Cancel Move and confirms:
+
+* the Move should no longer appear in Active Moves
+* the Move should no longer appear in Discover as active/joinable
+* the Move should no longer appear in Live Moves Nearby
+* the Move should no longer appear on the Live Map as active
+* the Move Chat should disappear from the Move Chats list
+* the chat badge/count should update if the canceled Move Chat was included
+* the user should be redirected away from the canceled Move detail screen
+* show a toast/confirmation message:
+  “Move canceled. The chat is closed.”
+
+Important distinction:
+
+* Leave Move = attendee leaves a Move they joined
+* Cancel Move = host closes a Move they created
+
+Do not treat canceling a hosted Move as:
+
+* a no-show
+* a missed Move
+* a Leave Move
+* a trust penalty for the host in this prototype
+
+Preferred implementation behavior:
+Use the existing localStorage/mock data system.
+
+A canceled hosted Move can either:
+
+1. be removed from the active Moves list, or
+2. be marked with a canceled/closed status and filtered out of all active displays.
+
+Either approach is fine as long as user-facing behavior works.
+
+If using a canceled/closed status, make sure all active surfaces filter it out:
+
+* Discover
+* Live Moves Nearby
+* Live Map
+* Profile Active Moves
+* Move Chat list
+* any “You’re In” or active joined sections
+
+Do not remove past Activity History unless the app already does that naturally. Canceled Moves should just stop appearing as active/joinable.
+
+Update Cancel Move modal copy if needed:
+
+Title:
+“Cancel this Move?”
+
+Body:
+“This will close the Move and remove the Move Chat for everyone in the prototype.”
+
+Buttons:
+
+* Keep Move
+* Cancel Move
+
+After confirmation:
+“Move canceled. The chat is closed.”
+
+Quality check:
+After changes, test:
+
+* create or open a hosted Move
+* cancel the hosted Move
+* confirm it disappears from Active Moves
+* confirm it disappears from Discover active sections
+* confirm it disappears from Move Chats
+* confirm chat badge/count updates
+* confirm Leave Move still works for joined Moves
+* confirm joining a Move still works
+* confirm Profile Show-Up Trust still displays correctly
+* confirm localStorage still works after refresh
+* confirm no old Rally/Brio/Plan/Crew language is reintroduced
+* confirm no emoji icons are added
+
+Final goal:
+A host canceling a Move should clearly close that Move and remove its chat, while an attendee leaving a Move should simply free their spot.

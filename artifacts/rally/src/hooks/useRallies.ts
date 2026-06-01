@@ -46,8 +46,14 @@ export function useRallies() {
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: true, going: r.going + 1 } : r));
   const leaveRally = (id: string) =>
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: false, going: Math.max(0, r.going - 1) } : r));
+  // Host closes a Move they created: fully remove it so it stops appearing on every
+  // active surface (Discover, Live Moves Nearby, Live Map, Profile, Move Chat list,
+  // chat badge). This is NOT a no-show or trust penalty — past Activity History lives
+  // in a separate store (HISTORY_KEY) and is untouched.
+  const cancelMove = (id: string) =>
+    saveMoves(rallies.filter(r => r.id !== id));
 
-  return { rallies, addRally, joinRally, leaveRally };
+  return { rallies, addRally, joinRally, leaveRally, cancelMove };
 }
 
 export function useUser() {
