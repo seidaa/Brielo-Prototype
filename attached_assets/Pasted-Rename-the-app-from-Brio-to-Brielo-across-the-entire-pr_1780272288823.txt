@@ -1,0 +1,84 @@
+Rename the app from Brio to Brielo across the entire prototype.
+
+This is a simple brand-name update only. Do not rebuild the app. Do not change the layout, product logic, features, flows, colors, typography, or core product language.
+
+Reason for change:
+Brielo feels more ownable and less crowded than Brio, while keeping the same energy/life/social momentum brand direction.
+
+Replace:
+
+* Brio → Brielo
+* Brio app → Brielo app
+* Early Brio User → Early Brielo User
+* Brio Livestreams → Brielo Livestreams
+* Brio branding references → Brielo branding references
+
+Keep all current product language:
+
+* Live More
+* Make a Move
+* Moves
+* I’m In
+* Make It Live
+* Move Chat
+* Leave Move
+* After the Move?
+* Circle
+* Add to Circle
+* In Your Circle
+* Circle Activity
+* Live Moves Nearby
+* Live Map
+* Activity History
+
+Keep the same brand identity:
+
+* clean wordmark-first logo
+* simple black/white wordmark
+* small yellow custom dot above the “i”
+* app icon based on the yellow i-dot/circle symbol
+* yellow action/energy accent
+* dark mode and light mode
+* modern, warm, social, energetic, simple
+
+Important logo update:
+Update the wordmark text from “Brio” to “Brielo.”
+Keep the small yellow custom i-dot above the “i.”
+Do not customize the “o.”
+Do not add sparks, suns, lightning-heavy identity, checkered flags, racing visuals, or giant standalone icons.
+
+Update all screens:
+
+* onboarding/welcome
+* interest selection if app name appears
+* Discover / What’s the Move?
+* Make a Move
+* Move Detail
+* Move Chat
+* Leave Move flow
+* Live Map
+* Profile
+* Activity History
+* Circle / Circle Activity
+* safety/reporting
+* settings/theme screens
+* empty states
+* badges
+* placeholder/future feature cards
+
+Quality check:
+Search the entire project for “Brio” after the update and replace remaining user-facing instances with “Brielo.”
+
+Do not change:
+
+* core app behavior
+* localStorage functionality
+* clickable flows
+* created Moves appearing in Discover
+* joined Moves appearing in Move Chats
+* Leave Move removing the chat
+* dark/light/auto theme
+* current UI styling
+
+Final goal:
+The prototype should feel exactly the same as the current Brio version, but fully renamed and branded as Brielo.

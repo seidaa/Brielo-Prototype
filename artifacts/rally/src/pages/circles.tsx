@@ -24,7 +24,7 @@ export default function Circles() {
         </Link>
         <div className="flex-1">
           <h1 className="text-base font-black text-white leading-tight">Circles</h1>
-          <p className="text-[10px] text-gray-600">Your trusted Brio people</p>
+          <p className="text-[10px] text-gray-600">Your trusted Brielo people</p>
         </div>
         <div className="flex items-center gap-1 bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
           <Users className="w-3.5 h-3.5 text-primary" />

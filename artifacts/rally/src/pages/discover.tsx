@@ -23,7 +23,7 @@ const LOW_PRESSURE_TAGS = ["Low Pressure", "First Timers Welcome", "Beginner Fri
 
 type FilterType = "all" | "nearby" | "circle";
 
-// ── Category icon map (line icons, consistent with Brio style) ────────────────
+// ── Category icon map (line icons, consistent with Brielo style) ──────────────
 const CAT_ICONS: Record<string, React.ElementType> = {
   Fitness:    Dumbbell,
   Coffee:     Coffee,
@@ -383,14 +383,14 @@ export default function Discover() {
           </section>
         )}
 
-        {/* ── G: Brio Livestreams — subtle future teaser ───────────── */}
+        {/* ── G: Brielo Livestreams — subtle future teaser ─────────── */}
         {filter === "all" && (
           <div className="mx-4 mb-6 flex items-center gap-3 bg-white/3 border border-white/5 rounded-2xl px-4 py-3">
             <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
               <Radio className="w-4 h-4 text-gray-500" strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-400">Brio Livestreams</p>
+              <p className="text-xs font-bold text-gray-400">Brielo Livestreams</p>
               <p className="text-[11px] text-gray-600">Preview the vibe before you pull up.</p>
             </div>
             <span className="text-[9px] font-black bg-white/5 text-gray-600 border border-white/8 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">Soon</span>

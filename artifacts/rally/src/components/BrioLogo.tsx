@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * BrioLogo — "Brio" wordmark with the natural i-dot replaced by a yellow ring.
+ * BrioLogo — "Brielo" wordmark with the natural i-dot replaced by a yellow ring.
  *
  * The ring is positioned via runtime DOM measurement so it works correctly on
  * every device and font (Safari / SF Pro, Chrome / Roboto, etc.) without any
@@ -93,7 +93,7 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
     <span
       ref={wrapRef}
       className={cn("relative inline-flex items-baseline select-none", className)}
-      aria-label="Brio"
+      aria-label="Brielo"
     >
       {/* "Br" */}
       <span className={cn("font-black text-white tracking-tight leading-none", fs)}>
@@ -108,9 +108,9 @@ export function BrioLogo({ size = "md", className }: BrioLogoProps) {
         ı
       </span>
 
-      {/* "o" */}
+      {/* "elo" */}
       <span className={cn("font-black text-white tracking-tight leading-none", fs)}>
-        o
+        elo
       </span>
 
       {/* Yellow ring — positioned after runtime measurement */}

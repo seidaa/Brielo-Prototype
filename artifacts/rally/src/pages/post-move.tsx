@@ -119,7 +119,7 @@ export default function PostMove() {
     if (reportTarget) {
       setReportSubmitted(prev => new Set(prev).add(reportTarget));
       setReportTarget(null);
-      toast({ title: "Thanks. We'll review this.", description: "Your feedback is private and helps keep Brio safe.", duration: 3000 });
+      toast({ title: "Thanks. We'll review this.", description: "Your feedback is private and helps keep Brielo safe.", duration: 3000 });
     }
   };
 
@@ -160,7 +160,7 @@ export default function PostMove() {
           <div>
             <div className="mb-6">
               <h2 className="text-xl font-black text-white mb-1">How was the move?</h2>
-              <p className="text-sm text-gray-500">Help Brio keep the right people moving together.</p>
+              <p className="text-sm text-gray-500">Help Brielo keep the right people moving together.</p>
             </div>
 
             {/* Move preview */}
@@ -312,7 +312,7 @@ export default function PostMove() {
                   </div>
                   <div className="flex-1">
                     <p className="font-black text-white text-sm">Add People to Your Circle</p>
-                    <p className="text-[11px] text-gray-400">Build your trusted Brio people</p>
+                    <p className="text-[11px] text-gray-400">Build your trusted Brielo people</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-600 shrink-0" />
                 </div>
