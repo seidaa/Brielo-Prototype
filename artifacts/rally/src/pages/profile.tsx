@@ -207,7 +207,7 @@ export default function Profile() {
               </div>
               <div className="text-center">
                 <div className="text-xl font-black text-white leading-none">{user.movesAttended}</div>
-                <div className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mt-1">Showed Up</div>
+                <div className="text-[9px] font-bold text-gray-600 uppercase tracking-wider mt-1">Attended</div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-black text-white leading-none">{user.movesMissed}</div>
@@ -228,12 +228,16 @@ export default function Profile() {
             {/* Self note for a recent miss */}
             <div className="mt-3">
               {!noteOpen && !user.missNote && (
-                <button
-                  onClick={() => setNoteOpen(true)}
-                  className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors"
-                >
-                  <Pencil className="w-3 h-3" /> Add context to a recent miss
-                </button>
+                user.movesMissed > 0 ? (
+                  <button
+                    onClick={() => setNoteOpen(true)}
+                    className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors"
+                  >
+                    <Pencil className="w-3 h-3" /> Add context to a recent miss
+                  </button>
+                ) : (
+                  <p className="text-[11px] font-bold text-gray-600">No recent misses</p>
+                )
               )}
               {(noteOpen || user.missNote) && (
                 <div className="bg-black/20 border border-white/5 rounded-xl p-3">

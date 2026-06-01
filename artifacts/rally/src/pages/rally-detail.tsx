@@ -306,8 +306,8 @@ export default function MoveDetail() {
               </div>
               {!move.joined && spotsLeft > 0 && (
                 <p className="text-[11px] text-gray-600 leading-relaxed pt-0.5">
-                  Spots are limited. Only tap I'm In if you plan to show — your seat is held for you and
-                  counts against someone else joining.
+                  Spots are limited. Only tap I'm In if you plan to show — your spot is held for you and
+                  could have gone to someone else.
                 </p>
               )}
             </div>
@@ -396,7 +396,7 @@ export default function MoveDetail() {
               className="flex-1 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-xl"
               onClick={() => setLeaveOpen(false)}
             >
-              Cancel
+              Stay In
             </Button>
             <Button
               className="flex-1 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 font-bold rounded-xl"

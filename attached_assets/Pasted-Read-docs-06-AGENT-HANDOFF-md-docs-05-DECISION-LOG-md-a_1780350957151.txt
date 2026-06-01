@@ -1,0 +1,144 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Make a small polish pass on the Phase 1 Show-Up Trust UI.
+
+This is not a feature expansion.
+
+Do not add:
+
+* backend
+* database
+* auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* new major screens
+* major refactors
+
+Do not rename folders or routes.
+
+Preserve:
+
+* current Brielo branding
+* Moves language
+* I’m In
+* Leave Move
+* Move Chat
+* Show-Up Trust
+* localStorage/mock data
+* current clickable flows
+
+Small changes to make:
+
+1. Replace “seat” with “spot”
+
+In the Move Detail spots/accountability copy, replace:
+
+“your seat is held for you”
+
+with:
+
+“your spot is held for you”
+
+Keep the rest of the copy consistent with Brielo’s language.
+
+Preferred final copy:
+
+“Spots are limited. Only tap I’m In if you plan to show — your spot is held for you and could have gone to someone else.”
+
+2. Update Leave Move modal button copy
+
+In the Leave Move confirmation modal, change the secondary/cancel button from:
+
+“Cancel”
+
+to:
+
+“Stay In”
+
+Keep the primary destructive button as:
+
+“Leave Move”
+
+3. Hide “Add context to a recent miss” when Missed = 0
+
+On the Profile Show-Up Trust section:
+
+If the user has 0 missed Moves, do not show:
+
+“Add context to a recent miss”
+
+Instead show either nothing there, or show a softer positive line:
+
+“No recent misses”
+
+If the user has 1 or more missed Moves, then it is okay to show:
+
+“Add context to a recent miss”
+
+4. Rename the stat label “Showed Up”
+
+In the Profile Show-Up Trust stats, change:
+
+“Showed Up”
+
+to:
+
+“Attended”
+
+The trust stats should read more like:
+
+* Show-Up Rate
+* Attended
+* Missed
+
+5. Verify Leave Move chat behavior
+
+After leaving a Move:
+
+* attendee count should update
+* the Move Chat should disappear from the chat list
+* the chat badge should update if that Move Chat was included in the count
+* leaving should not count as a missed Move or no-show
+
+6. Keep tone consistent
+
+Do not use:
+
+* flake
+* low show rate
+* low show-up rate
+* bad user
+* unreliable
+* creepy
+* blacklist
+* bad reviews
+
+Use:
+
+* Show-Up Rate as the metric
+* Recently Missed Moves as the warning label
+* Shows Up
+* Reliable
+* Good Vibes
+* Trusted Host
+* Would Move Again
+
+Quality check:
+After changes, confirm:
+
+* app still runs
+* Move Detail still loads
+* I’m In still works
+* Leave Move still works
+* Move Chat still appears only for joined Moves
+* Profile still loads
+* Show-Up Trust section still displays correctly
+* no old Rally/Brio/Plan/Crew language is reintroduced
+* no emoji icons are added
+
+Final goal:
+Keep the Show-Up Trust system clear, fair, and polished without adding new complexity.
