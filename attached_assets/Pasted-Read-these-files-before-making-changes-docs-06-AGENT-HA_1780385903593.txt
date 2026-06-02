@@ -1,0 +1,303 @@
+Read these files before making changes:
+
+- docs/06_AGENT_HANDOFF.md
+- docs/05_DECISION_LOG.md
+- docs/02_PRODUCT_SPEC.md
+- docs/10_BACKEND_PLAN.md
+- docs/11_MVP_CHECKLIST.md
+- docs/12_CODEX_BACKEND_HANDOFF.md
+- the Brielo Show-Up Trust project note
+
+Task:
+Run a full Brielo MVP v0.1 QA pass and fix only small prototype bugs, broken clickable elements, copy issues, or inconsistencies that prevent the app from matching docs/11_MVP_CHECKLIST.md.
+
+This is a QA and polish pass only.
+
+Do not add:
+- backend
+- database
+- real auth
+- API routes
+- WebSockets
+- real push notifications
+- payments
+- livestreaming
+- AI matching
+- venue tools
+- new major screens
+- major refactors
+
+Do not rename folders or routes.
+Do not start backend implementation.
+Do not install packages unless absolutely required to keep the current prototype running.
+
+Preserve:
+- Brielo branding
+- Live More
+- Make a Move
+- Make It Live
+- Moves
+- I’m In
+- Request to Join
+- Ask Host
+- Leave Move
+- Cancel Move
+- Move Chat
+- Circle
+- Add to Circle
+- In Your Circle
+- Circle Activity
+- After the Move?
+- Show-Up Trust
+- Something feels off
+- localStorage/mock data
+- current clickable flows
+
+Goal:
+Make the current Brielo prototype feel stable, polished, and demo-ready before backend work begins.
+
+QA FLOW TO CHECK AND FIX IF BROKEN
+
+1. Onboarding / Welcome
+- Brielo logo shows correctly
+- Live More tagline appears
+- “Less scrolling. More doing.” appears
+- CTA works
+- no old Rally/Brio language appears
+
+2. Interest Selection
+- user can select interests
+- selected interests visually activate/glow
+- CTA activates after selection
+- clean line icons only
+- no emoji icons
+
+3. Discover / What’s the Move?
+- Discover loads
+- location displays
+- notification bell opens drawer
+- red notification dot clears when drawer opens
+- profile shortcut works
+- Make a Move card works
+- Live Moves Nearby displays active Moves
+- From Circle / Circle-related section uses correct wording
+- bottom nav is anchored cleanly on mobile web
+- no dead-looking tappable elements
+
+4. Make a Move
+- user can enter title/category/time/location/details/max spots/vibe tags
+- host approval toggle works
+- CTA says Make It Live
+- created Move appears in Discover
+- created Move persists after refresh through localStorage
+- notification added:
+  “Your Move is live: [Move Name].”
+
+5. Move Detail
+- Move detail loads
+- title, category, time, location, host, details, spots, and vibe tags display correctly
+- host trust context appears
+- Who’s In appears
+- attendee trust labels appear
+- normal Moves show I’m In
+- host-approval Moves show Request to Join
+- Ask Host is separate
+- pre-Move safety says Something feels off
+
+6. I’m In flow
+- tapping I’m In opens Save your spot modal
+- modal uses:
+  “3 spots left for [Move Name].”
+  “Only join if you plan to show. When you save a spot, someone else may miss out.”
+- no “spots left on”
+- no “seat” or “seats”
+- confirming joins the Move
+- going count increases
+- spots left decreases
+- Move Chat appears
+- notification added:
+  “Your spot is saved for [Move Name].”
+- toast auto-dismisses around 4 seconds
+
+7. Request to Join flow
+- host-approval Moves use Request to Join
+- Request to Join does NOT auto-add the user
+- going count does NOT increase immediately
+- spots left does NOT decrease immediately
+- Move Chat does NOT appear while request is pending
+- button changes to Request Sent
+- notification added:
+  “Request sent for [Move Name].”
+
+8. Ask Host flow
+- Ask Host does not join the Move
+- Ask Host does not request to join
+- Ask Host does not unlock Move Chat
+- opens question modal/sheet
+- Send shows toast:
+  “Question sent to host.”
+- notification added:
+  “Question sent to host for [Move Name].”
+
+9. Move Chat
+- joined Moves appear in Move Chat list
+- Move Chat opens
+- user can send mock messages
+- messages persist through localStorage
+- Move Chat disappears after Leave Move
+- Move Chat disappears after hosted Cancel Move
+- chat badge/count updates correctly
+
+10. Leave Move
+- Leave Move modal opens
+- copy explains leaving ahead of time is not a no-show
+- optional reason section appears
+- user can leave without a reason
+- user can leave with selected reason/details
+- leaving removes user from Move
+- spots left updates
+- Move Chat disappears
+- leaving does not count as no-show
+- if no reason:
+  “You left [Move Name]. Your spot is open again.”
+- if reason provided:
+  “Your reason for leaving [Move Name] was sent for review.”
+- leave reason is private/mock localStorage only
+
+11. Cancel hosted Move
+- host can cancel their own Move
+- Cancel Move is distinct from Leave Move
+- canceling removes Move from:
+  - Discover
+  - Live Moves Nearby
+  - Live Map
+  - Profile Active Moves
+  - Move Chat list
+- chat closes
+- no trust penalty in prototype
+- notification added:
+  “[Move Name] was canceled. The chat is closed.”
+
+12. After the Move?
+- user can react after a Move
+- Good Vibes works
+- Would Move Again works
+- Add to Circle works
+- Didn’t Show affects mock trust only where appropriate
+- Felt Off opens safety follow-up
+- Report opens post-Move report flow
+- feedback toggles do not stack repeatedly
+- negative feedback is not public
+
+13. Circle / Your Circle
+- Circle means people, not recurring groups
+- cards say “Met through [Move Name]”
+- Add to Circle works
+- In Your Circle state works
+- Circle Activity uses people-based language
+- no Crew/Crews language
+
+14. Show-Up Trust
+- Profile includes Show-Up Trust
+- shows Trust Status
+- shows Show-Up Rate
+- shows Attended
+- shows Missed
+- shows No recent misses when missed count is 0
+- How trust works modal opens
+- uses Recently Missed Moves only as warning label
+- does not use Low Show Rate or Low Show-Up Rate
+- does not use flake/bad user/unreliable language
+
+15. Safety / Reporting
+- pre-Move action says Something feels off
+- pre-Move modal asks what feels wrong
+- user can add details
+- submit says Send for Review
+- toast says:
+  “Thanks. We’ll review this.”
+- post-Move reporting uses stronger private report language
+- reports are private/moderation-facing
+- no public shaming language
+
+16. Notifications
+- notification drawer opens
+- newest notifications show first
+- red dot clears when opened
+- notifications update from:
+  - join
+  - leave
+  - create Move
+  - cancel Move
+  - request to join
+  - ask host
+  - feedback submitted
+  - safety note submitted
+  - leave reason submitted
+- empty state says:
+  “You’re all caught up.”
+- no real notification permissions
+
+17. Profile / Settings
+- Profile loads
+- stats display
+- badges display
+- Show-Up Trust displays
+- Active Moves display correctly
+- settings gear opens settings sheet/modal
+- settings rows either work or show:
+  “Coming soon in the prototype.”
+
+18. Live Map
+- active nearby Moves display
+- canceled Moves do not appear
+- map pins/cards are clickable/prototype-safe
+
+19. Theme / Appearance
+- dark mode works
+- light mode works if present
+- auto theme works if present
+- yellow action accent remains consistent
+- no layout breaks across theme changes
+
+20. Browser metadata
+- browser title says:
+  Brielo — Live More
+- metadata says Brielo, not Rally
+- no user-facing metadata says Rally or Brio
+
+IMPORTANT FIX RULES
+
+Fix only:
+- broken buttons
+- incorrect copy
+- dead clickable elements
+- inconsistent labels
+- localStorage prototype bugs
+- small UI polish issues
+- MVP checklist mismatches
+
+Do not build new large features.
+Do not expand product scope.
+Do not start backend.
+
+If something is too risky to fix in this pass, leave a short note in the final summary instead of changing it.
+
+Quality check:
+After changes, confirm:
+- app runs
+- localStorage survives refresh
+- no old Rally/Brio/Plan/Crew language appears user-facing
+- no emoji icons are added
+- bottom nav still works
+- core loop works:
+  Make a Move → Join or Request to Join → Move Chat → Leave/Cancel correctly → After the Move → Add to Circle → Trust updates
+
+Final goal:
+Brielo should feel like a polished, clickable MVP v0.1 prototype that is stable enough to demo before backend work begins.
+
+After finishing, summarize:
+- files changed
+- issues fixed
+- any issues found but not fixed
+- recommended next step
