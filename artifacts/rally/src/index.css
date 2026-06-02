@@ -4,6 +4,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Anchors fixed bottom bars (nav, chat input) flush to the bottom safe area.
+   Falls back to 0 on devices/browsers without a home-indicator inset, so there's
+   no gap in the Replit preview or desktop Chrome/Safari. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -97,7 +104,14 @@
     @apply border-border;
   }
 
+  html {
+    /* Keep the safe-area / overscroll region dark so no light strip ever
+       shows behind the bottom nav or above the status bar. */
+    background-color: #0d0d0d;
+  }
+
   body {
     @apply font-sans antialiased bg-[#0d0d0d] text-white;
+    min-height: 100dvh;
   }
 }

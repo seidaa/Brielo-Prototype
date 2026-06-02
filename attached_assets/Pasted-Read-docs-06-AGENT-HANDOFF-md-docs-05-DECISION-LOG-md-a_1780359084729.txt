@@ -1,0 +1,77 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Fix the mobile/web bottom navigation spacing so the tab bar feels intentionally anchored and app-like.
+
+This is a focused UI polish fix only.
+
+Do not add:
+
+* backend
+* database
+* auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* new major screens
+* major refactors
+
+Do not rename folders or routes.
+
+Problem:
+When viewing Brielo in a normal mobile web browser, the bottom tab bar does not sit cleanly at the bottom of the viewport. There is an awkward gap/empty strip underneath it, which makes the app feel unfinished.
+
+Expected behavior:
+The bottom navigation should feel anchored to the bottom of the screen, like a polished mobile app/PWA.
+
+Fix the bottom nav so:
+
+* it sits flush with the bottom safe area
+* it accounts for iOS/browser safe-area insets
+* there is no awkward visual gap underneath the nav
+* the background behind the nav fills the bottom area cleanly
+* the large center “+” action button still floats nicely and stays centered
+* the nav remains fixed/sticky at the bottom while scrolling
+* page content has enough bottom padding so cards/buttons are not hidden behind the nav
+* the layout still works inside Replit preview and normal Safari/Chrome mobile browser views
+
+Use CSS safe-area handling where appropriate, such as:
+
+* `env(safe-area-inset-bottom)`
+* bottom padding on the nav wrapper
+* matching background color behind the nav/safe-area
+* body/root min-height handling if needed
+
+Visual direction:
+
+* Keep the current dark Brielo bottom nav style
+* Keep the yellow active state
+* Keep the center plus button
+* Do not redesign the whole navigation
+* Do not convert the mobile layout into desktop layout yet
+
+Quality check:
+After changes, test:
+
+* Discover page in mobile browser
+* Profile page in mobile browser
+* Move Detail page
+* Move Chat page
+* scrolling near the bottom of long pages
+* center plus button positioning
+* iOS Safari/mobile browser safe-area behavior
+* Replit preview behavior
+
+Confirm:
+
+* no bottom gap under the tab bar
+* no content is hidden behind the tab bar
+* tab bar remains usable
+* app still runs
+* no old Rally/Brio/Plan/Crew language is reintroduced
+* no emoji icons are added
+
+Final goal:
+The bottom navigation should feel intentionally anchored, polished, and app-like on mobile web instead of floating above an awkward empty gap.
