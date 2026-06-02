@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import {
-  MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, UsersRound, Radio,
+  MapPin, Bell, Zap, ChevronRight, Users, ArrowRight, UsersRound, Radio, Check,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints, Clock,
 } from "lucide-react";
@@ -229,7 +229,7 @@ export default function Discover() {
                     <Link key={move.id} href={`/rally/${move.id}`}>
                       <div className="shrink-0 w-44 bg-[#181818] border border-white/8 rounded-2xl p-3.5 active:scale-[0.97] transition-transform cursor-pointer relative overflow-hidden">
                         {move.isCircleMove && (
-                          <div className="absolute top-2 right-2 bg-primary/15 border border-primary/25 text-primary text-[9px] font-black px-1.5 py-0.5 rounded-full">Circle</div>
+                          <div className="absolute top-2 right-2 bg-primary/15 border border-primary/25 text-primary text-[9px] font-black px-1.5 py-0.5 rounded-full">From Circle</div>
                         )}
                         {/* Icon */}
                         <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center mb-2.5", cat.color)}>
@@ -269,7 +269,7 @@ export default function Discover() {
                               : "bg-primary text-black shadow-[0_0_8px_rgba(250,204,21,0.3)]"
                           )}
                         >
-                          {isJoined ? "You're In ✓" : spotsLeft <= 0 ? "Full" : "I'm In"}
+                          {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3 h-3" strokeWidth={3} />You're In</span> : spotsLeft <= 0 ? "Full" : "I'm In"}
                         </button>
                       </div>
                     </Link>
@@ -354,7 +354,7 @@ export default function Discover() {
                           : "bg-primary/15 border border-primary/25 text-primary"
                       )}
                     >
-                      {isInCircle ? "In Your Circle ✓" : "Add to Circle"}
+                      {isInCircle ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3 h-3" strokeWidth={3} />In Your Circle</span> : "Add to Circle"}
                     </button>
                   </div>
                 );
@@ -486,7 +486,7 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
               <h4 className="text-sm font-bold text-white leading-snug line-clamp-2">{move.title}</h4>
               <div className="flex items-center gap-1.5 shrink-0">
                 {circleLabel && (
-                  <span className="text-[9px] font-black bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 rounded-full">Circle</span>
+                  <span className="text-[9px] font-black bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 rounded-full">From Circle</span>
                 )}
                 <span className={cn(
                   "text-[10px] mt-0.5 font-bold",
@@ -524,7 +524,7 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
             : "bg-primary text-black shadow-[0_0_10px_rgba(250,204,21,0.2)] active:scale-95"
           )}
         >
-          {isJoined ? "You're In ✓" : isFull ? "Move is Full" : move.requiresApproval ? "Request to Join" : "I'm In"}
+          {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3.5 h-3.5" strokeWidth={3} />You're In</span> : isFull ? "Move is Full" : move.requiresApproval ? "Request to Join" : "I'm In"}
         </button>
         <Link href={`/rally/${move.id}`}>
           <button className="px-3 py-2 rounded-xl bg-white/5 border border-white/8 text-[11px] font-bold text-gray-400 hover:text-gray-200 transition-colors">

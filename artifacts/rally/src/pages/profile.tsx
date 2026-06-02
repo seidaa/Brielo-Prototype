@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import {
-  Settings, Award, Users, ChevronRight, Lock, CheckCircle2, Zap, Star,
+  Settings, Award, Users, ChevronRight, Lock, CheckCircle2, Check, Zap, Star,
   History, ChevronDown, ChevronUp, Repeat, UsersRound, Calendar,
   RefreshCw, Sparkles, UserX, Minus, ShieldCheck, Info, Pencil,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
@@ -90,7 +90,7 @@ function FeedbackPicker({ current, onSelect }: { current?: FeedbackLabel; onSele
             >
               <opt.Icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
               {opt.label}
-              {current === opt.label && <span className="ml-auto text-primary text-[10px]">✓</span>}
+              {current === opt.label && <Check className="ml-auto w-3.5 h-3.5 text-primary" strokeWidth={3} />}
             </button>
           ))}
         </div>

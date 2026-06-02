@@ -24,7 +24,7 @@ export function JoinCommitmentModal({ open, onOpenChange, move, onConfirm }: {
           </div>
           <DialogTitle className="text-white">Save your spot?</DialogTitle>
           <DialogDescription className="text-gray-300 leading-relaxed">
-            Only {left} spot{left === 1 ? "" : "s"} left for{" "}
+            {left} spot{left === 1 ? "" : "s"} left for{" "}
             <span className="text-white font-semibold">{move.title}</span>.
           </DialogDescription>
         </DialogHeader>

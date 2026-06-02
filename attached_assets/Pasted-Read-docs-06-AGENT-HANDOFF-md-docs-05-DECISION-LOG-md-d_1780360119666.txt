@@ -1,0 +1,274 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, `docs/02_PRODUCT_SPEC.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Do a focused Brielo prototype cleanup pass to make the current front-end prototype feel more complete, consistent, and demo-ready.
+
+This is cleanup and polish only.
+
+Do not add:
+- backend
+- database
+- real auth
+- WebSockets
+- real push notifications
+- payments
+- livestreaming
+- AI matching
+- venue tools
+- new major screens
+- major refactors
+
+Do not rename folders or routes.
+
+Preserve:
+- Brielo branding
+- Live More
+- Make a Move
+- Make It Live
+- I’m In
+- Leave Move
+- Cancel Move
+- Move Chat
+- Circle
+- Add to Circle
+- In Your Circle
+- Circle Activity
+- Live Moves Nearby
+- Live Map
+- Show-Up Trust
+- localStorage/mock data
+- current clickable flows
+
+Cleanup goals:
+
+1. Fix browser metadata
+
+Check `artifacts/rally/index.html`.
+
+User-facing metadata should say Brielo, not Rally.
+
+Update:
+- title to `Brielo — Live More`
+- meta description to `Brielo helps people make real-life Moves, meet people through activities, and add good people to their Circle.`
+
+If Open Graph or Twitter metadata exists, update those to Brielo language too.
+
+Do not rename the `artifacts/rally` folder.
+
+2. Polish the “Save your spot?” modal copy
+
+Replace awkward copy like:
+- “Only 3 spots left on…”
+- “Tapping I’m In holds a spot…”
+
+Use this structure:
+
+Title:
+“Save your spot?”
+
+Dynamic body:
+“3 spots left for Leg Day at XSport.”
+
+Secondary body:
+“Only join if you plan to show. When you save a spot, someone else may miss out.”
+
+Primary button:
+“I’m In — Save My Spot”
+
+Secondary button:
+“Not yet”
+
+Footer:
+“Things come up. Leaving before it starts opens your spot back up and does not count as a no-show.”
+
+Keep Move name and spot count dynamic.
+
+Do not use:
+- “spots left on”
+- “seat”
+- “seats”
+- “RSVP”
+
+3. Improve toast/banner behavior
+
+Current confirmation banners stay too long.
+
+Update toast behavior so:
+- toasts auto-dismiss after about 4 seconds
+- user can manually dismiss them if supported
+- swipe-to-dismiss works if the existing toast library supports it
+- toasts do not permanently block the top of the screen
+
+Apply to:
+- “You left the Move. Your spot is open again.”
+- “Move canceled. The chat is closed.”
+- “You’re in. Your spot is saved.”
+- “Your Move is live.”
+- feedback confirmations
+- notification-related confirmations
+
+Do not remove toasts entirely.
+
+4. Make notification bell feel complete
+
+If the top notification bell opens a drawer already, make sure it updates from prototype actions.
+
+Use localStorage/mock state only.
+
+Suggested key:
+`brio_notifications`
+
+Add notifications for:
+- user joins a Move: “Your spot is saved for [Move Name].”
+- user leaves a Move: “You left [Move Name]. Your spot is open again.”
+- user creates/posts a Move: “Your Move is live: [Move Name].”
+- host cancels a Move: “[Move Name] was canceled. The chat is closed.”
+- user submits post-Move feedback: “Thanks for your feedback on [Move Name].”
+
+Notification drawer should:
+- show newest first
+- have title “Notifications”
+- clear red dot when opened
+- show empty state: “You’re all caught up.”
+- use clean line icons only
+- not request real notification permissions
+
+5. Make Profile settings gear functional
+
+If the settings gear still does nothing, make it open a simple prototype settings sheet/modal.
+
+Title:
+“Settings”
+
+Sections:
+
+Account:
+- Edit Profile
+- Privacy
+- Notifications
+
+Appearance:
+- Theme
+- Auto / Light / Dark
+- connect to existing theme behavior if it already exists
+
+Trust & Safety:
+- Show-Up Trust
+- Blocked users
+- Report a problem
+
+About Brielo:
+- Live More
+- Version 0.1 prototype
+
+Rows can show “Coming soon in the prototype” if tapped.
+
+Do not add real account infrastructure.
+
+6. Check all visible tappable elements
+
+Audit visible buttons/icons. If something looks tappable, it should either:
+- work,
+- open a prototype modal/sheet,
+- navigate somewhere,
+- or show a simple “Coming soon in the prototype” toast.
+
+Focus on:
+- notification bell
+- settings gear
+- Ask Host
+- How trust works
+- Report Move
+- theme/settings rows
+- Circle / All links
+- Map links
+- profile buttons
+
+Do not build full systems. Just prevent dead-feeling UI.
+
+7. Keep Circle language clean
+
+Circle must remain people-based.
+
+Correct:
+- Your Circle
+- In Your Circle
+- Add to Circle
+- Circle Activity
+- Met through [Move Name]
+- People you’ve moved with before
+- People you’d move with again
+
+Avoid:
+- Crew
+- Crews
+- recurring group language
+- themed club language
+
+If a badge says “Circle” on Move cards and feels confusing, change it to:
+“From Circle”
+
+8. Verify Show-Up Trust copy
+
+Use:
+- Show-Up Rate as a metric
+- Recently Missed Moves as a warning label
+- Reliable
+- Shows Up
+- Good Vibes
+- Trusted Host
+- Would Move Again
+- New / Limited History
+
+Do not use:
+- Low Show-Up Rate
+- Low Show Rate
+- Flake
+- Bad User
+- Unreliable
+- Blacklisted
+- Creepy
+- Bad Reviews
+
+9. Keep icon style consistent
+
+Search for native emoji icons in user-facing UI.
+
+Replace any remaining emoji icons with clean Lucide/line icons.
+
+Do not add:
+- emoji icons
+- sun icons
+- spark icons
+- checkered flags
+- racing visuals
+
+10. Quality check
+
+After changes, confirm:
+- app runs
+- onboarding works
+- interest selection works
+- Discover loads
+- bottom nav still sits cleanly at the bottom
+- Make a Move works
+- created Moves appear in Discover
+- I’m In works
+- Save your spot modal copy is natural
+- Move Chat appears after joining
+- Leave Move works
+- Move Chat disappears after leaving
+- hosted Cancel Move works
+- canceled hosted Move disappears from active surfaces
+- Profile loads
+- Profile settings gear opens
+- Show-Up Trust section still works
+- notification drawer opens
+- notifications update after prototype actions
+- toasts disappear after about 4 seconds
+- localStorage still works after refresh
+- no user-facing Rally/Brio/Plan/Crew language is reintroduced
+- no emoji icons are added
+
+Final goal:
+Brielo should feel like a polished, clickable mobile-first prototype. The core loop should feel stable: Make a Move → Join → Move Chat → Leave/Cancel correctly → After the Move → Add to Circle → Trust updates.

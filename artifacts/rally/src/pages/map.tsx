@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import {
-  MapPin, Navigation, X, Users, Clock, ChevronRight,
+  MapPin, Navigation, X, Users, Clock, ChevronRight, Check,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints, UsersRound,
 } from "lucide-react";
@@ -281,7 +281,7 @@ export default function Map() {
                       : "bg-primary text-black shadow-[0_0_12px_rgba(250,204,21,0.3)] active:scale-95"
                   )}
                 >
-                  {isJoined ? "You're In ✓" : isFull ? "Move is Full" : "I'm In"}
+                  {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3.5 h-3.5" strokeWidth={3} />You're In</span> : isFull ? "Move is Full" : "I'm In"}
                 </button>
                 <Link href={`/rally/${activeMove.id}`}>
                   <button className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-sm font-bold text-gray-300 active:scale-95 transition-all">

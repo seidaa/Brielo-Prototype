@@ -74,7 +74,7 @@ export const defaultMoves: Move[] = [
   {
     id: "r7", title: "Jazz at the Green Mill", category: "Nightlife", distance: "3.0 mi", time: "9:00 PM", going: 3, maxSpots: 6,
     hostName: "Devon A.", hostLevel: 8, vibeTags: ["Chill", "Social"],
-    description: "Live jazz night at The Green Mill. Cover charge is $10. Getting there early to grab seats. Real Chicago vibes.",
+    description: "Live jazz night at The Green Mill. Cover charge is $10. Getting there early to grab a good spot. Real Chicago vibes.",
     location: "The Green Mill, Uptown", requiresApproval: false, joined: false,
   },
   {
@@ -274,7 +274,7 @@ export const mockMessages: Record<string, ChatMessage[]> = {
   ],
   r2: [
     { id: "m4", moveId: "r2", senderName: "Priya S.", text: "Meet near the front entrance", isMe: false },
-    { id: "m5", moveId: "r2", senderName: "Priya S.", text: "I grabbed the corner table 🙌", isMe: false },
+    { id: "m5", moveId: "r2", senderName: "Priya S.", text: "I grabbed the corner table", isMe: false },
   ],
   r3: [
     { id: "m6", moveId: "r3", senderName: "Jordan K.", text: "Can I bring a friend?", isMe: false },
