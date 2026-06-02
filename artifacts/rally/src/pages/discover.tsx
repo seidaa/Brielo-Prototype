@@ -6,10 +6,11 @@ import {
   Gamepad2, Handshake, Palette, CheckCheck, Footprints, Clock,
 } from "lucide-react";
 import { BrioLogo } from "@/components/BrioLogo";
-import { useRallies, useUser, useCirclePersons, useNotifications } from "@/hooks/useRallies";
+import { useRallies, useUser, useCirclePersons, useNotifications, useJoinRequests, JoinRequestStatus } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { BottomNav } from "@/components/BottomNav";
 import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
+import { AskHostModal } from "@/components/AskHostModal";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { CAT_CONFIG, defaultCatConfig, friendsActivity, Move } from "@/data/mockData";
 import { isLimitedSpots } from "@/lib/trust";
@@ -49,12 +50,14 @@ export default function Discover() {
   const { user } = useUser();
   const { myCircle, wouldMoveAgain, addToCircle } = useCirclePersons();
   const { unreadCount, markAllRead } = useNotifications();
+  const { getStatus, requestToJoin } = useJoinRequests();
   const { toast } = useToast();
 
   const [tickerIdx, setTickerIdx]       = useState(0);
   const [tickerVisible, setTickerVisible] = useState(true);
   const [joinedId, setJoinedId]         = useState<string | null>(null);
   const [pendingMove, setPendingMove]   = useState<Move | null>(null);
+  const [askHostMove, setAskHostMove]   = useState<Move | null>(null);
   const [filter, setFilter]             = useState<FilterType>("all");
   const [notifOpen, setNotifOpen]       = useState(false);
 
@@ -91,7 +94,14 @@ export default function Discover() {
 
   const handleJoin = (id: string) => {
     const move = rallies.find(r => r.id === id);
-    if (move && !move.requiresApproval && isLimitedSpots(move)) {
+    if (!move) return;
+    // Approval-required Moves request instead of joining — no join, no count/spot
+    // change, no Move Chat.
+    if (move.requiresApproval) {
+      if (requestToJoin(move)) toast({ title: "Request sent. The host will review it." });
+      return;
+    }
+    if (isLimitedSpots(move)) {
       setPendingMove(move);
       return;
     }
@@ -225,6 +235,8 @@ export default function Discover() {
                   const CatIcon = CAT_ICONS[move.category];
                   const spotsLeft = move.maxSpots - move.going;
                   const isJoined = move.joined || joinedId === move.id;
+                  const approval = move.requiresApproval;
+                  const isPending = getStatus(move.id) === "pending";
                   return (
                     <Link key={move.id} href={`/rally/${move.id}`}>
                       <div className="shrink-0 w-44 bg-[#181818] border border-white/8 rounded-2xl p-3.5 active:scale-[0.97] transition-transform cursor-pointer relative overflow-hidden">
@@ -260,16 +272,20 @@ export default function Discover() {
                         {/* Button */}
                         <button
                           onClick={e => { e.preventDefault(); handleJoin(move.id); }}
+                          disabled={isJoined || isPending || (spotsLeft <= 0 && !approval)}
                           className={cn(
                             "w-full text-[11px] font-black rounded-lg py-1.5 transition-all",
-                            isJoined
+                            isJoined || isPending
                               ? "bg-white/8 text-gray-400 border border-white/8"
-                              : spotsLeft <= 0
+                              : spotsLeft <= 0 && !approval
                               ? "bg-white/5 text-gray-600"
                               : "bg-primary text-black shadow-[0_0_8px_rgba(250,204,21,0.3)]"
                           )}
                         >
-                          {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3 h-3" strokeWidth={3} />You're In</span> : spotsLeft <= 0 ? "Full" : "I'm In"}
+                          {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3 h-3" strokeWidth={3} />You're In</span>
+                            : isPending ? "Request Sent"
+                            : approval ? "Request to Join"
+                            : spotsLeft <= 0 ? "Full" : "I'm In"}
                         </button>
                       </div>
                     </Link>
@@ -296,7 +312,7 @@ export default function Discover() {
             </div>
             <div className="px-4 space-y-2.5">
               {circleMoves.slice(0, 3).map(move => (
-                <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} circleLabel />
+                <MoveCard key={move.id} move={move} onJoin={handleJoin} onAskHost={setAskHostMove} requestStatus={getStatus(move.id)} highlight={joinedId === move.id} circleLabel />
               ))}
             </div>
           </section>
@@ -310,7 +326,7 @@ export default function Discover() {
             </div>
             <div className="px-4 space-y-2.5">
               {forYou.slice(0, 5).map(move => (
-                <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
+                <MoveCard key={move.id} move={move} onJoin={handleJoin} onAskHost={setAskHostMove} requestStatus={getStatus(move.id)} highlight={joinedId === move.id} />
               ))}
             </div>
           </section>
@@ -372,7 +388,7 @@ export default function Discover() {
             </div>
             <div className="px-4 space-y-2.5">
               {lowPressure.slice(0, 3).map(move => (
-                <MoveCard key={move.id} move={move} onJoin={handleJoin} highlight={joinedId === move.id} />
+                <MoveCard key={move.id} move={move} onJoin={handleJoin} onAskHost={setAskHostMove} requestStatus={getStatus(move.id)} highlight={joinedId === move.id} />
               ))}
             </div>
           </section>
@@ -447,6 +463,12 @@ export default function Discover() {
         onConfirm={() => pendingMove && doJoin(pendingMove.id, true)}
       />
 
+      <AskHostModal
+        open={!!askHostMove}
+        onOpenChange={o => { if (!o) setAskHostMove(null); }}
+        moveName={askHostMove?.title ?? ""}
+      />
+
       <NotificationsSheet open={notifOpen} onOpenChange={setNotifOpen} />
 
       <BottomNav />
@@ -455,14 +477,12 @@ export default function Discover() {
 }
 
 // ── Inline Move Card ──────────────────────────────────────────────────────────
-function MoveCard({ move, onJoin, highlight, circleLabel }: {
-  move: {
-    id: string; title: string; category: string; time: string; distance: string;
-    going: number; maxSpots: number; hostName: string; hostLevel: number;
-    vibeTags: string[]; requiresApproval: boolean; joined: boolean;
-  };
+function MoveCard({ move, onJoin, onAskHost, highlight, requestStatus, circleLabel }: {
+  move: Move;
   onJoin: (id: string) => void;
+  onAskHost: (move: Move) => void;
   highlight: boolean;
+  requestStatus?: JoinRequestStatus;
   circleLabel?: boolean;
 }) {
   const cat = CAT_CONFIG[move.category] ?? defaultCatConfig;
@@ -470,6 +490,8 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
   const spotsLeft = move.maxSpots - move.going;
   const isFull    = spotsLeft <= 0;
   const isJoined  = move.joined || highlight;
+  const approval  = move.requiresApproval;
+  const isPending = requestStatus === "pending";
 
   return (
     <div className="bg-[#161616] border border-white/5 rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
@@ -516,21 +538,25 @@ function MoveCard({ move, onJoin, highlight, circleLabel }: {
       <div className="px-4 pb-3.5 flex gap-2">
         <button
           onClick={() => onJoin(move.id)}
-          disabled={isFull || isJoined}
+          disabled={isJoined || isPending || (isFull && !approval)}
           className={cn(
             "flex-1 font-bold text-sm rounded-xl py-2 transition-all",
-            isJoined ? "bg-white/5 text-gray-400 border border-white/8"
-            : isFull  ? "bg-white/3 text-gray-600 cursor-not-allowed"
+            isJoined || isPending ? "bg-white/5 text-gray-400 border border-white/8"
+            : isFull && !approval  ? "bg-white/3 text-gray-600 cursor-not-allowed"
             : "bg-primary text-black shadow-[0_0_10px_rgba(250,204,21,0.2)] active:scale-95"
           )}
         >
-          {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3.5 h-3.5" strokeWidth={3} />You're In</span> : isFull ? "Move is Full" : move.requiresApproval ? "Request to Join" : "I'm In"}
+          {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3.5 h-3.5" strokeWidth={3} />You're In</span>
+            : isPending ? "Request Sent"
+            : approval ? "Request to Join"
+            : isFull ? "Move is Full" : "I'm In"}
         </button>
-        <Link href={`/rally/${move.id}`}>
-          <button className="px-3 py-2 rounded-xl bg-white/5 border border-white/8 text-[11px] font-bold text-gray-400 hover:text-gray-200 transition-colors">
-            Ask Host
-          </button>
-        </Link>
+        <button
+          onClick={() => onAskHost(move)}
+          className="px-3 py-2 rounded-xl bg-white/5 border border-white/8 text-[11px] font-bold text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          Ask Host
+        </button>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import {
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints, UsersRound,
 } from "lucide-react";
-import { useRallies, useCirclePersons } from "@/hooks/useRallies";
+import { useRallies, useCirclePersons, useJoinRequests } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { BottomNav } from "@/components/BottomNav";
 import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
@@ -44,6 +44,7 @@ type MapFilter = "all" | "live" | "circle";
 export default function Map() {
   const { rallies, joinRally } = useRallies();
   const { myCircle } = useCirclePersons();
+  const { getStatus, requestToJoin } = useJoinRequests();
   const { toast } = useToast();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<MapFilter>("all");
@@ -72,7 +73,14 @@ export default function Map() {
 
   const handleJoin = (id: string) => {
     const move = rallies.find(r => r.id === id);
-    if (move && !move.requiresApproval && isLimitedSpots(move)) {
+    if (!move) return;
+    // Approval-required Moves request instead of joining — no join, no count/spot
+    // change, no Move Chat.
+    if (move.requiresApproval) {
+      if (requestToJoin(move)) toast({ title: "Request sent. The host will review it." });
+      return;
+    }
+    if (isLimitedSpots(move)) {
       setPendingMove(move);
       return;
     }
@@ -216,6 +224,8 @@ export default function Map() {
           const spotsLeft = activeMove.maxSpots - activeMove.going;
           const isJoined = activeMove.joined || joinedId === activeMove.id;
           const isFull = spotsLeft <= 0;
+          const approval = activeMove.requiresApproval;
+          const isPending = getStatus(activeMove.id) === "pending";
 
           return (
             <div className="bg-[#161616] rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
@@ -270,18 +280,21 @@ export default function Map() {
               {/* Action buttons */}
               <div className="flex gap-2 px-4 pb-4">
                 <button
-                  onClick={() => !isJoined && !isFull && handleJoin(activeMove.id)}
-                  disabled={isJoined || isFull}
+                  onClick={() => handleJoin(activeMove.id)}
+                  disabled={isJoined || isPending || (isFull && !approval)}
                   className={cn(
                     "flex-1 font-black text-sm rounded-xl py-2.5 transition-all",
-                    isJoined
+                    isJoined || isPending
                       ? "bg-white/8 text-gray-400 border border-white/8"
-                      : isFull
+                      : isFull && !approval
                       ? "bg-white/3 text-gray-600 cursor-not-allowed"
                       : "bg-primary text-black shadow-[0_0_12px_rgba(250,204,21,0.3)] active:scale-95"
                   )}
                 >
-                  {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3.5 h-3.5" strokeWidth={3} />You're In</span> : isFull ? "Move is Full" : "I'm In"}
+                  {isJoined ? <span className="inline-flex items-center justify-center gap-1"><Check className="w-3.5 h-3.5" strokeWidth={3} />You're In</span>
+                    : isPending ? "Request Sent"
+                    : approval ? "Request to Join"
+                    : isFull ? "Move is Full" : "I'm In"}
                 </button>
                 <Link href={`/rally/${activeMove.id}`}>
                   <button className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-sm font-bold text-gray-300 active:scale-95 transition-all">

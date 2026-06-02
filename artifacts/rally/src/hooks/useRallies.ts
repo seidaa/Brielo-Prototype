@@ -22,6 +22,11 @@ const MESSAGES_KEY   = "brio_messages";
 const HISTORY_KEY    = "brio_history";
 const CIRCLE_KEY     = "brio_circle_persons";
 const PEOPLE_TRUST_KEY = "brio_people_trust";
+const JOIN_REQUESTS_KEY = "brio_join_requests";
+
+// Window event so any mounted view (a card's button, the Move detail CTA) updates
+// the moment a request is sent — mirrors the notifications store pattern.
+export const JOIN_REQUESTS_EVENT = "brio:join-requests";
 
 // Safely parse a localStorage value. Returns null when the key is empty or holds
 // corrupted JSON, so a single bad entry can never white-screen the prototype —
@@ -90,6 +95,68 @@ export function useNotifications() {
     unreadCount: notifications.filter(n => !n.read).length,
     markAllRead: markAllNotificationsRead,
   };
+}
+
+// Prototype host-approval flow. On approval-required Moves, "Request to Join" saves
+// a pending request here instead of joining — it does NOT touch the Move's going
+// count, spots, joined flag, or Move Chat. Approval is intentionally not automated
+// in this pass: a request simply stays pending until a future host-review feature.
+export type JoinRequestStatus = "pending" | "approved" | "declined";
+
+export interface JoinRequest {
+  id: string;
+  moveId: string;
+  moveName: string;
+  requesterName: string;
+  status: JoinRequestStatus;
+  createdAt: number;
+}
+
+function readJoinRequests(): JoinRequest[] {
+  return safeParse<JoinRequest[]>(localStorage.getItem(JOIN_REQUESTS_KEY)) ?? [];
+}
+
+export function useJoinRequests() {
+  const [requests, setRequests] = useState<JoinRequest[]>([]);
+
+  useEffect(() => {
+    const refresh = () => setRequests(readJoinRequests());
+    refresh();
+    window.addEventListener(JOIN_REQUESTS_EVENT, refresh);
+    return () => window.removeEventListener(JOIN_REQUESTS_EVENT, refresh);
+  }, []);
+
+  // Prefer an in-flight pending request; otherwise fall back to the newest record
+  // so the CTA never reflects a stale approved/declined entry over a fresh pending.
+  const getStatus = (moveId: string): JoinRequestStatus | undefined => {
+    const matches = requests.filter(r => r.moveId === moveId);
+    if (matches.length === 0) return undefined;
+    const pending = matches.find(r => r.status === "pending");
+    if (pending) return pending.status;
+    return matches.reduce((a, b) => (b.createdAt > a.createdAt ? b : a)).status;
+  };
+
+  // Returns false if a request for this Move is already in flight, so callers can
+  // skip the duplicate toast/notification.
+  const requestToJoin = (move: { id: string; title: string }): boolean => {
+    const existing = readJoinRequests();
+    if (existing.some(r => r.moveId === move.id && r.status === "pending")) return false;
+    const u = safeParse<UserProfile>(localStorage.getItem(USER_KEY));
+    const req: JoinRequest = {
+      id: "jr_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      moveId: move.id,
+      moveName: move.title,
+      requesterName: u?.username ?? "You",
+      status: "pending",
+      createdAt: Date.now(),
+    };
+    localStorage.setItem(JOIN_REQUESTS_KEY, JSON.stringify([...existing, req]));
+    window.dispatchEvent(new Event(JOIN_REQUESTS_EVENT));
+    pushNotification("request", `Request sent for ${move.title}.`);
+    return true;
+  };
+
+  return { requests, getStatus, requestToJoin };
 }
 
 export function useUser() {

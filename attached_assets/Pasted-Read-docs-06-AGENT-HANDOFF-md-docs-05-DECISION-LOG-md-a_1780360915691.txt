@@ -1,0 +1,172 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Fix host-approval Move behavior so “Request to Join” does not automatically add the user to the Move.
+
+This is front-end/localStorage prototype behavior only.
+
+Do not add:
+- backend
+- database
+- real auth
+- WebSockets
+- push notifications
+- payments
+- livestreaming
+- AI matching
+- major refactors
+- new major screens
+
+Do not rename folders or routes.
+
+Problem:
+On Moves that require host approval, the “Request to Join” button should not behave like “I’m In.” It should not automatically add the user to the Move, increase the going count, decrease spots left, or open Move Chat.
+
+Also, “Request to Join” and “Ask Host” currently feel redundant unless their purpose is clearly separated.
+
+Expected behavior:
+
+1. Normal Moves without host approval
+
+Primary CTA:
+“I’m In”
+
+Secondary CTA:
+“Ask Host”
+
+Behavior:
+- tapping I’m In opens the Save Your Spot modal
+- confirming joins the Move
+- going count increases
+- spots left decreases
+- Move Chat appears
+- notification is added:
+  “Your spot is saved for [Move Name].”
+
+2. Host-approval Moves
+
+Primary CTA:
+“Request to Join”
+
+Secondary CTA:
+“Ask Host”
+
+Behavior:
+When the user taps “Request to Join”:
+- do NOT add the user to the Move
+- do NOT increase going count
+- do NOT decrease spots left
+- do NOT create/open Move Chat
+- save a mock request status in localStorage
+- change button state to:
+  “Request Sent”
+- disable the button or make it non-primary after request
+- show toast:
+  “Request sent. The host will review it.”
+- add notification:
+  “Request sent for [Move Name].”
+
+Suggested localStorage key:
+`brio_join_requests`
+
+Suggested request object:
+- id
+- moveId
+- moveName
+- requesterName
+- status: pending
+- createdAt
+
+3. Ask Host behavior
+
+“Ask Host” should not request to join.
+
+When tapped:
+- open a lightweight prototype modal/sheet titled:
+  “Ask Host”
+- include copy:
+  “Send a quick question before joining.”
+- include a simple text input if easy
+- buttons:
+  “Cancel”
+  “Send”
+- after Send, show toast:
+  “Question sent to host.”
+- add notification:
+  “Question sent to host for [Move Name].”
+
+If adding text input is too much, a simple modal with preset options is okay:
+- “Is this beginner friendly?”
+- “Can I bring a friend?”
+- “Where should we meet?”
+- “What should I bring?”
+
+Important distinction:
+- “Request to Join” = asks for approval to join the Move
+- “Ask Host” = asks a question before joining
+- “I’m In” = joins instantly if no host approval is required
+
+4. Optional host-side mock review
+
+If simple, add a lightweight prototype way for the host to see pending requests.
+
+Acceptable simple implementation:
+- notification drawer shows:
+  “[Name] requested to join [Move Name].”
+- include buttons:
+  “Approve”
+  “Decline”
+
+If approved:
+- request status becomes approved
+- user is added to the Move
+- going count increases
+- spots left decreases
+- Move Chat becomes available
+- notification added:
+  “You’re in. [Move Name] was approved.”
+
+If declined:
+- request status becomes declined
+- user is not added
+- Move Chat does not appear
+- notification added:
+  “Request declined for [Move Name].”
+
+If this is too much for this pass, only implement pending request behavior and do not auto-approve.
+
+5. Button language and layout
+
+On host-approval cards:
+- make “Request to Join” the main yellow button
+- keep “Ask Host” smaller/secondary
+- after requesting, main button should say “Request Sent”
+- do not show “You’re In” unless the request is approved
+
+On non-approval cards:
+- keep “I’m In” as the main yellow button
+- keep “Ask Host” secondary
+
+6. Quality check
+
+After changes, test:
+
+- normal Move: I’m In still joins correctly
+- normal Move: Move Chat appears after joining
+- normal Move: Leave Move still works
+- host-approval Move: Request to Join does NOT join immediately
+- host-approval Move: going count does NOT increase immediately
+- host-approval Move: spots left does NOT decrease immediately
+- host-approval Move: Move Chat does NOT appear while request is pending
+- host-approval Move: button changes to Request Sent
+- Ask Host opens a question modal/sheet and does not request to join
+- notifications update for request/question actions
+- Profile Show-Up Trust still works
+- Cancel Move still works
+- bottom nav still works
+- localStorage still works after refresh
+- no old Rally/Brio/Plan/Crew language is reintroduced
+- no emoji icons are added
+
+Final goal:
+Brielo should clearly separate instant joining, requesting approval, and asking the host a question. Host-approval Moves should feel intentional, trustworthy, and not automatically add users before approval.

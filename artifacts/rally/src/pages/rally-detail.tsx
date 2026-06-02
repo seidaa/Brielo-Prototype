@@ -4,13 +4,14 @@ import {
   ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2,
   Users, Zap, ChevronRight, LogOut, Heart, Info,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
-  Gamepad2, Handshake, Palette, CheckCheck, Footprints,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints, MessageCircleQuestion,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRallies, useUser, usePeopleTrust } from "@/hooks/useRallies";
+import { useRallies, useUser, usePeopleTrust, useJoinRequests } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { ReportModal } from "@/components/ReportModal";
 import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
+import { AskHostModal } from "@/components/AskHostModal";
 import { TrustInfoModal } from "@/components/TrustInfoModal";
 import { TrustChip, WarningChip } from "@/components/TrustLabel";
 import { CAT_CONFIG, defaultCatConfig } from "@/data/mockData";
@@ -58,12 +59,14 @@ export default function MoveDetail() {
   const { rallies, joinRally, leaveRally, cancelMove } = useRallies();
   const { user } = useUser();
   const { getTrust } = usePeopleTrust();
+  const { getStatus, requestToJoin } = useJoinRequests();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [reportOpen, setReportOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [askHostOpen, setAskHostOpen] = useState(false);
   const [trustInfoOpen, setTrustInfoOpen] = useState(false);
 
   const move = rallies.find(r => r.id === id);
@@ -89,6 +92,7 @@ export default function MoveDetail() {
   const isHost = move.hostName === user.username;
   const hostTrust = getTrust(move.hostName);
   const attendees = deriveAttendees(move).map(a => ({ ...a, trust: getTrust(a.name) ?? a.trust }));
+  const requestStatus = getStatus(move.id);
 
   const confirmJoin = (savedSpot: boolean) => {
     joinRally(move.id);
@@ -105,6 +109,14 @@ export default function MoveDetail() {
       setJoinModalOpen(true);
     } else {
       confirmJoin(false);
+    }
+  };
+
+  // Approval-required Moves: save a pending request instead of joining. Does not
+  // join, bump the going count, free/consume a spot, or open Move Chat.
+  const handleRequest = () => {
+    if (requestToJoin(move)) {
+      toast({ title: "Request sent. The host will review it." });
     }
   };
 
@@ -365,19 +377,51 @@ export default function MoveDetail() {
               </button>
             )}
           </>
-        ) : (
-          <Button
-            onClick={handleJoin}
-            disabled={spotsLeft <= 0}
-            className={cn(
-              "w-full font-black text-base rounded-xl h-14",
-              spotsLeft <= 0
-                ? "bg-white/5 text-gray-500 border border-white/8 cursor-not-allowed"
-                : "bg-primary hover:bg-primary/90 text-black shadow-[0_0_20px_rgba(250,204,21,0.35)]"
+        ) : move.requiresApproval ? (
+          <>
+            {requestStatus === "pending" ? (
+              <Button
+                disabled
+                className="w-full font-black text-base rounded-xl h-14 bg-white/5 text-gray-400 border border-white/8 cursor-not-allowed"
+              >
+                Request Sent
+              </Button>
+            ) : (
+              <Button
+                onClick={handleRequest}
+                className="w-full font-black text-base rounded-xl h-14 bg-primary hover:bg-primary/90 text-black shadow-[0_0_20px_rgba(250,204,21,0.35)]"
+              >
+                Request to Join
+              </Button>
             )}
-          >
-            {spotsLeft <= 0 ? "Move is Full" : move.requiresApproval ? "Request to Join" : "I'm In"}
-          </Button>
+            <button
+              onClick={() => setAskHostOpen(true)}
+              className="w-full flex items-center justify-center gap-2 py-2 text-[12px] font-bold text-gray-500 hover:text-primary transition-colors"
+            >
+              <MessageCircleQuestion className="w-3.5 h-3.5" /> Ask Host
+            </button>
+          </>
+        ) : (
+          <>
+            <Button
+              onClick={handleJoin}
+              disabled={spotsLeft <= 0}
+              className={cn(
+                "w-full font-black text-base rounded-xl h-14",
+                spotsLeft <= 0
+                  ? "bg-white/5 text-gray-500 border border-white/8 cursor-not-allowed"
+                  : "bg-primary hover:bg-primary/90 text-black shadow-[0_0_20px_rgba(250,204,21,0.35)]"
+              )}
+            >
+              {spotsLeft <= 0 ? "Move is Full" : "I'm In"}
+            </Button>
+            <button
+              onClick={() => setAskHostOpen(true)}
+              className="w-full flex items-center justify-center gap-2 py-2 text-[12px] font-bold text-gray-500 hover:text-primary transition-colors"
+            >
+              <MessageCircleQuestion className="w-3.5 h-3.5" /> Ask Host
+            </button>
+          </>
         )}
       </div>
 
@@ -442,6 +486,7 @@ export default function MoveDetail() {
         move={move}
         onConfirm={() => confirmJoin(true)}
       />
+      <AskHostModal open={askHostOpen} onOpenChange={setAskHostOpen} moveName={move.title} />
       <TrustInfoModal open={trustInfoOpen} onOpenChange={setTrustInfoOpen} />
       <ReportModal open={reportOpen} onOpenChange={setReportOpen} />
     </div>

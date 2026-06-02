@@ -3,6 +3,7 @@ import {
 } from "@/components/ui/sheet";
 import {
   BadgeCheck, LogOut, Megaphone, CalendarX, Heart, BellOff,
+  Hourglass, MessageCircleQuestion,
 } from "lucide-react";
 import { useNotifications } from "@/hooks/useRallies";
 import { relativeTime, NotifKind } from "@/lib/notifications";
@@ -14,6 +15,8 @@ const KIND_META: Record<NotifKind, { icon: React.ElementType; color: string }> =
   create:   { icon: Megaphone,  color: "text-primary"      },
   cancel:   { icon: CalendarX,  color: "text-red-400"      },
   feedback: { icon: Heart,      color: "text-emerald-400"  },
+  request:  { icon: Hourglass,  color: "text-primary"      },
+  question: { icon: MessageCircleQuestion, color: "text-gray-300" },
 };
 
 interface NotificationsSheetProps {
