@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useRallies, useUser, usePeopleTrust, useJoinRequests } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
 import { SafetyConcernModal } from "@/components/SafetyConcernModal";
+import { LeaveMoveModal } from "@/components/LeaveMoveModal";
 import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
 import { AskHostModal } from "@/components/AskHostModal";
 import { TrustInfoModal } from "@/components/TrustInfoModal";
@@ -120,10 +121,14 @@ export default function MoveDetail() {
     }
   };
 
-  const handleLeaveConfirm = () => {
-    leaveRally(move.id);
+  const handleLeaveConfirm = (reason: { reasonType: string; details: string } | null) => {
+    leaveRally(move.id, reason ?? undefined);
     setLeaveOpen(false);
-    toast({ title: "You left the Move. Your spot is open again." });
+    toast({
+      title: reason
+        ? "You left the Move. Your reason was sent for review."
+        : "You left the Move. Your spot is open again.",
+    });
     navigate("/discover");
   };
 
@@ -439,33 +444,12 @@ export default function MoveDetail() {
         )}
       </div>
 
-      {/* Leave Move confirmation */}
-      <Dialog open={leaveOpen} onOpenChange={setLeaveOpen}>
-        <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-white">Leave this Move?</DialogTitle>
-            <DialogDescription className="text-gray-400 leading-relaxed">
-              You'll be removed from the attendee list and the Move Chat will disappear from your chats.
-              Leaving ahead of time isn't a no-show — your spot simply opens back up for someone else.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-2 mt-2">
-            <Button
-              variant="outline"
-              className="flex-1 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-xl"
-              onClick={() => setLeaveOpen(false)}
-            >
-              Stay In
-            </Button>
-            <Button
-              className="flex-1 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 font-bold rounded-xl"
-              onClick={handleLeaveConfirm}
-            >
-              Leave Move
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Leave Move confirmation (with optional reason) */}
+      <LeaveMoveModal
+        open={leaveOpen}
+        onOpenChange={setLeaveOpen}
+        onConfirm={handleLeaveConfirm}
+      />
 
       {/* Cancel Move confirmation (host only) */}
       <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>

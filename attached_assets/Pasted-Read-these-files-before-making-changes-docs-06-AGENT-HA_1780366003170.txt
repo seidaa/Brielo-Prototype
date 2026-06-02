@@ -1,0 +1,171 @@
+Read these files before making changes:
+
+* `docs/06_AGENT_HANDOFF.md`
+* `docs/05_DECISION_LOG.md`
+* `docs/02_PRODUCT_SPEC.md`
+* `docs/11_MVP_CHECKLIST.md`
+* the Brielo Show-Up Trust project note
+
+Task:
+Add an optional reason prompt when a user leaves a Move.
+
+This is front-end/localStorage prototype behavior only.
+
+Do not add:
+
+* backend
+* database
+* real auth
+* API routes
+* WebSockets
+* real push notifications
+* payments
+* livestreaming
+* AI matching
+* major refactors
+* new major screens
+
+Do not rename folders or routes.
+
+Preserve:
+
+* Brielo branding
+* Moves language
+* I’m In
+* Request to Join
+* Ask Host
+* Leave Move
+* Cancel Move
+* Move Chat
+* Show-Up Trust
+* Circle
+* localStorage/mock data
+* current clickable flows
+
+Problem:
+When a user leaves a Move, they may want to explain why. Sometimes the reason is harmless, like plans changing, but sometimes it may signal that something feels off.
+
+Goal:
+Add an optional reason step to the Leave Move flow without making leaving feel difficult or punitive.
+
+Expected Leave Move flow:
+
+When user taps Leave Move, show the existing confirmation modal.
+
+Title:
+“Leave this Move?”
+
+Body:
+“Leaving ahead of time isn’t a no-show — your spot simply opens back up for someone else.”
+
+Add optional section:
+
+Label:
+“Want to share why?”
+
+Helper copy:
+“Optional. This helps us understand what happened.”
+
+Options:
+
+* Plans changed
+* Timing no longer works
+* Location feels off
+* Host communication felt unclear
+* Something feels uncomfortable
+* Other
+
+Add optional text area:
+
+Placeholder:
+“Add details if you want…”
+
+Buttons:
+
+* Stay In
+* Leave Move
+
+Behavior:
+
+* User can leave without selecting a reason.
+* Leaving should still work even if no reason is provided.
+* Leaving should not count as a no-show.
+* Leaving should not create a trust penalty.
+* User is removed from the Move.
+* Spots left updates.
+* Move Chat disappears.
+* Notification added:
+  “You left [Move Name]. Your spot is open again.”
+
+If user provides a reason:
+
+* Save the reason in mock localStorage.
+* Show toast:
+  “You left the Move. Your reason was sent for review.”
+* Add notification:
+  “Your reason for leaving [Move Name] was sent for review.”
+
+If user does not provide a reason:
+
+* Show normal toast:
+  “You left the Move. Your spot is open again.”
+
+Suggested localStorage key:
+`brio_leave_reasons`
+
+Suggested object:
+
+* id
+* moveId
+* moveName
+* reasonType
+* details
+* createdAt
+* status: submitted
+
+Important:
+Reasons should be private/moderation-facing in the prototype.
+Do not show leave reasons publicly.
+Do not use leave reasons as public reviews.
+Do not immediately penalize hosts or attendees from this flow.
+Do not make the user feel guilty for leaving early.
+
+Copy/tone:
+Use:
+
+* “Optional”
+* “sent for review”
+* “Leaving ahead of time isn’t a no-show”
+* “your spot opens back up”
+
+Avoid:
+
+* flake
+* bad user
+* penalty
+* punishment
+* public report
+* creepy
+* blacklisted
+
+Quality check:
+After changes, test:
+
+* Leave Move with no reason
+* Leave Move with a selected reason
+* Leave Move with custom text
+* chat disappears after leaving
+* spots left updates
+* notification appears after leaving
+* reason is saved in localStorage/mock data if provided
+* leaving does not count as missed/no-show
+* Profile Show-Up Trust still works
+* Request to Join still works
+* Ask Host still works
+* Cancel hosted Move still works
+* notification drawer still works
+* no old Rally/Brio/Plan/Crew language is reintroduced
+* no emoji icons are added
+
+Final goal:
+Leaving a Move should stay easy and fair, while giving users an optional way to explain why they left if something needs review.

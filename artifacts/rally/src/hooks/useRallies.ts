@@ -14,6 +14,7 @@ import {
   pushNotification, getNotifications, markAllNotificationsRead,
   AppNotification, NOTIF_EVENT,
 } from "@/lib/notifications";
+import { saveLeaveReason } from "@/lib/leaveReasons";
 
 const MOVES_KEY      = "brio_moves";
 const USER_KEY       = "brio_user";
@@ -59,10 +60,20 @@ export function useRallies() {
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: true, going: r.going + 1 } : r));
     if (move) pushNotification("join", `Your spot is saved for ${move.title}.`);
   };
-  const leaveRally = (id: string) => {
+  // Leaving a Move is always easy and fair — never a no-show, never a trust
+  // penalty. An optional reason can be attached; if provided it is saved to a
+  // private moderation-facing store and a separate "sent for review" notification
+  // is added on top of the normal "your spot is open again" one.
+  const leaveRally = (id: string, reason?: { reasonType: string; details: string }) => {
     const move = rallies.find(r => r.id === id);
     saveMoves(rallies.map(r => r.id === id ? { ...r, joined: false, going: Math.max(0, r.going - 1) } : r));
-    if (move) pushNotification("leave", `You left ${move.title}. Your spot is open again.`);
+    if (move) {
+      pushNotification("leave", `You left ${move.title}. Your spot is open again.`);
+      if (reason && (reason.reasonType || reason.details)) {
+        saveLeaveReason({ moveId: move.id, moveName: move.title, reasonType: reason.reasonType, details: reason.details });
+        pushNotification("report", `Your reason for leaving ${move.title} was sent for review.`);
+      }
+    }
   };
   // Host closes a Move they created: fully remove it so it stops appearing on every
   // active surface (Discover, Live Moves Nearby, Live Map, Profile, Move Chat list,
