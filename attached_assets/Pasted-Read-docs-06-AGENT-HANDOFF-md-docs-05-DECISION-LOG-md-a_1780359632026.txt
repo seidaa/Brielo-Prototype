@@ -1,0 +1,72 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and `docs/01_BRAND_BRIEF.md` before making changes.
+
+Task:
+Clean up the browser/page metadata so the app no longer shows old Rally branding in the browser tab, metadata, or previews.
+
+This is a small metadata polish fix only.
+
+Do not add:
+
+* backend
+* database
+* auth
+* WebSockets
+* push notifications
+* payments
+* livestreaming
+* AI matching
+* new screens
+* major refactors
+
+Do not rename folders or routes.
+
+Problem:
+`artifacts/rally/index.html` still has old Rally metadata, including:
+
+* `<title>Rally</title>`
+* meta description mentioning Rally/Replit template language
+
+Even though the folder is still named `artifacts/rally`, user-facing browser metadata should say Brielo.
+
+Update `artifacts/rally/index.html`:
+
+Set page title to:
+
+`Brielo — Live More`
+
+Set meta description to:
+
+`Brielo helps people make real-life Moves, meet people through activities, and add good people to their Circle.`
+
+If there are Open Graph or social preview tags, update them to Brielo language too:
+
+* `og:title`: `Brielo — Live More`
+* `og:description`: `Make real-life Moves, meet people through activities, and build your Circle.`
+* `twitter:title`: `Brielo — Live More`
+* `twitter:description`: `Make real-life Moves, meet people through activities, and build your Circle.`
+
+Remove or replace any user-facing metadata that says:
+
+* Rally
+* Brio
+* built on Replit template language
+* generic placeholder copy
+
+Important:
+Do not rename `artifacts/rally`.
+Do not rename internal routes like `/rally/:id`.
+Only update browser-facing metadata and preview text.
+
+Quality check:
+After changes, confirm:
+
+* the browser tab/title says Brielo, not Rally
+* page metadata says Brielo
+* app still runs
+* Discover still loads
+* bottom nav still works
+* no app UI functionality changed
+* no old Rally/Brio/Plan/Crew language is reintroduced into user-facing metadata
+
+Final goal:
+When Brielo is opened in a normal browser, the page title and preview metadata should match the current Brielo brand.
