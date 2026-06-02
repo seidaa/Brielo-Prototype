@@ -1,0 +1,189 @@
+Use this in Replit Agent:
+
+```text
+You are working on the Brielo prototype.
+
+This is a documentation-only backend planning cleanup task.
+
+Do not write backend code.
+Do not add auth.
+Do not add a database.
+Do not add API routes.
+Do not install packages.
+Do not refactor the app.
+Do not rename folders or routes.
+Do not change frontend behavior.
+
+Read these files first:
+
+- docs/06_AGENT_HANDOFF.md
+- docs/05_DECISION_LOG.md
+- docs/02_PRODUCT_SPEC.md
+- docs/10_BACKEND_PLAN.md
+- docs/11_MVP_CHECKLIST.md
+- docs/12_CODEX_BACKEND_HANDOFF.md
+
+Task:
+Update the backend planning docs so Phase 1 is unambiguous and implementation-safe.
+
+Phase 1 must be narrowed to:
+
+User + Move + MoveAttendee only.
+
+Phase 1 should support only:
+
+- user identity placeholder or basic user shell
+- Move table/model
+- MoveAttendee table/model
+- create Move
+- fetch/list active Moves
+- join normal Move
+- leave Move
+- cancel hosted Move
+
+Phase 1 must NOT include:
+
+- Request to Join
+- Ask Host
+- Move Chat persistence
+- Circle connections
+- Show-Up Trust scoring
+- Notifications
+- Safety reports
+- Leave reasons
+- Post-Move feedback
+- moderation workflows
+- real push notifications
+- WebSockets
+- payments
+- livestreaming
+- AI matching
+
+Required doc updates:
+
+1. In docs/10_BACKEND_PLAN.md and docs/12_CODEX_BACKEND_HANDOFF.md, make it clear that the full data model list is future planning, not Phase 1 implementation scope.
+
+2. Add a clear “Phase 1 behavior overrides” note:
+   - In Phase 1, joining a Move should NOT persist Move Chat.
+   - In Phase 1, joining a Move should NOT create real notifications.
+   - Move Chat and notifications remain prototype/localStorage behavior until later phases.
+
+3. Clarify that Phase 1 handles normal Moves only.
+   - Host-approval Moves, Request to Join, and Ask Host stay out of backend Phase 1.
+   - They can remain prototype/localStorage behavior until Phase 2.
+
+4. Clarify Phase 1 model fields.
+
+   Phase 1 User should only include basic identity/profile fields, such as:
+   - id
+   - displayName
+   - handle
+   - avatarUrl
+   - city
+   - createdAt
+   - updatedAt
+
+   Do not include real auth fields, trust counters, or safety fields in Phase 1.
+
+   Phase 1 Move should include:
+   - id
+   - hostUserId
+   - title
+   - category
+   - locationName
+   - latitude
+   - longitude
+   - startTime
+   - endTime
+   - status
+   - maxSpots
+   - details
+   - createdAt
+   - updatedAt
+   - canceledAt
+
+   Phase 1 MoveAttendee should include:
+   - id
+   - moveId
+   - userId
+   - status
+   - joinedAt
+   - leftAt
+   - createdAt
+   - updatedAt
+
+5. Clarify Phase 1 status enums.
+
+   Move.status:
+   - active
+   - canceled
+   - completed
+
+   MoveAttendee.status:
+   - joined
+   - left
+   - removed
+
+   Do not use requested, approved, declined, attended, or noShow in Phase 1.
+
+6. Add capacity rules:
+   - attendee count should be derived from MoveAttendee records with status joined
+   - spots left should be maxSpots minus joined attendee count
+   - joining must use an atomic capacity check
+   - prevent duplicate active attendee records for the same user and Move
+   - users cannot join canceled or completed Moves
+   - users cannot join full Moves
+   - canceling a Move should update status instead of deleting it
+   - leaving a Move should update attendee status instead of deleting it
+
+7. Clarify whether maxSpots includes the host.
+   Recommended wording:
+   “For Phase 1, maxSpots means attendee spots available to non-host users. The host does not count against maxSpots.”
+
+8. Clarify auth wording:
+   Replace or qualify “authenticated users can create Moves” so it does not imply real auth in Phase 1.
+   Recommended wording:
+   “In Phase 1, a basic user identity shell may act as the current user. Real authentication is out of scope until explicitly requested.”
+
+9. Keep all product language aligned with Brielo:
+   Use:
+   - Brielo
+   - Moves
+   - Make a Move
+   - Make It Live
+   - I'm In
+   - Request to Join
+   - Ask Host
+   - Leave Move
+   - Cancel Move
+   - Move Chat
+   - Circle
+   - Add to Circle
+   - Show-Up Trust
+   - Something feels off
+
+   Do not reintroduce user-facing:
+   - Rally
+   - Brio
+   - Plans
+   - Crews
+   - RSVP
+   - Flake
+   - Low Show Rate
+   - Low Show-Up Rate
+   - Creepy
+   - Bad User
+   - Blacklisted
+   - Unreliable
+
+Output:
+After updating docs only, summarize:
+- which documentation files changed
+- what Phase 1 now includes
+- what Phase 1 explicitly excludes
+- any remaining open questions
+
+Again:
+This is documentation-only.
+Do not implement backend code.
+```

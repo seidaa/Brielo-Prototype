@@ -52,6 +52,8 @@ Make a Move → Join or Request to Join → Move Chat → Show up → After the 
 
 ## Core Data Models
 
+> Note: This full data model list is future planning, not Phase 1 implementation scope. Phase 1 implements only User, Move, and MoveAttendee, with the reduced fields and enums described in "Phase 1 Implementation Scope" below.
+
 ### 1. User
 
 Fields:
@@ -386,7 +388,7 @@ Rules:
 
 ### Move creation
 
-- Authenticated users can create Moves.
+- In Phase 1, a basic user identity shell may act as the current user. Real authentication is out of scope until explicitly requested.
 - Moves require title, category, time, location, and max spots.
 - Details and vibe tags are optional but recommended.
 - Host approval can be toggled on or off.
@@ -491,6 +493,85 @@ The following are explicitly out of Phase 1:
 
 > Warning: Do not build chat, Circle, trust, notifications, or safety until the database-backed Move lifecycle is working.
 
+## Phase 1 Implementation Scope
+
+The Core Data Models section above is full future planning. It is NOT the Phase 1 implementation scope. Phase 1 implements only User, Move, and MoveAttendee, with the reduced fields and enums below.
+
+### Phase 1 handles normal Moves only
+
+- Phase 1 backend handles normal (instant-join) Moves only.
+- Host-approval Moves, Request to Join, and Ask Host stay out of backend Phase 1.
+- They remain prototype/localStorage behavior until Phase 2.
+
+### Phase 1 behavior overrides
+
+- In Phase 1, joining a Move should NOT persist Move Chat.
+- In Phase 1, joining a Move should NOT create real notifications.
+- Move Chat and notifications remain prototype/localStorage behavior until later phases.
+
+### Phase 1 model fields
+
+Phase 1 User should include basic identity/profile fields only. Do not include real auth fields, trust counters, or safety fields in Phase 1.
+
+- id
+- displayName
+- handle
+- avatarUrl
+- city
+- createdAt
+- updatedAt
+
+Phase 1 Move:
+
+- id
+- hostUserId
+- title
+- category
+- locationName
+- latitude
+- longitude
+- startTime
+- endTime
+- status
+- maxSpots
+- details
+- createdAt
+- updatedAt
+- canceledAt
+
+Phase 1 MoveAttendee:
+
+- id
+- moveId
+- userId
+- status
+- joinedAt
+- leftAt
+- createdAt
+- updatedAt
+
+### Phase 1 status enums
+
+Move.status:
+- active
+- canceled
+- completed
+
+MoveAttendee.status:
+- joined
+- left
+- removed
+
+Do not use requested, approved, declined, attended, or noShow in Phase 1.
+
+### Phase 1 maxSpots and host
+
+For Phase 1, maxSpots means attendee spots available to non-host users. The host does not count against maxSpots.
+
+### Phase 1 auth
+
+In Phase 1, a basic user identity shell may act as the current user. Real authentication is out of scope until explicitly requested.
+
 ## Revised Backend Phase Order
 
 Phase 0: Planning / Schema Review
@@ -538,13 +619,16 @@ Phase 5: Notifications + Polish
 
 ## Capacity Rules
 
-- attendee count should be derived from MoveAttendee records with status joined/attended
-- requested users should not count as going
-- requested users should not reduce spots
-- joining must check capacity
+Phase 1 capacity rules:
+
+- attendee count should be derived from MoveAttendee records with status joined
+- spots left should be maxSpots minus joined attendee count
+- joining must use an atomic capacity check
 - prevent duplicate active attendee records for the same user and Move
 - users cannot join canceled or completed Moves
-- leaving before start does not count as no-show
+- users cannot join full Moves
+- canceling a Move should update status instead of deleting it
+- leaving a Move should update attendee status instead of deleting it
 
 > Codex warning: Do not let Codex build the entire backend at once. The first backend implementation should only prove the database-backed Move lifecycle.
 
