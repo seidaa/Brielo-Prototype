@@ -4,6 +4,7 @@ import { ChevronLeft, Search, UserPlus, Check, MessageCircle, Users, Zap } from 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/BottomNav";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
@@ -22,6 +23,7 @@ const YOUR_FRIENDS = [
 ];
 
 export default function Friends() {
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [added, setAdded] = useState<Record<string, boolean>>({});
 
@@ -87,7 +89,11 @@ export default function Friends() {
                       </div>
                     </div>
                   </div>
-                  <button className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                  <button
+                    onClick={() => toast({ title: "Coming soon in the prototype." })}
+                    aria-label="Message"
+                    className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
+                  >
                     <MessageCircle className="w-4 h-4 text-gray-400" />
                   </button>
                 </div>

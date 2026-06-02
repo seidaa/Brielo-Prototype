@@ -165,7 +165,21 @@ export default function MoveDetail() {
             <ChevronLeft className="w-5 h-5 text-white" />
           </div>
         </Link>
-        <button className="w-9 h-9 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center">
+        <button
+          onClick={() => {
+            const url = window.location.href;
+            if (navigator.clipboard?.writeText) {
+              navigator.clipboard.writeText(url).then(
+                () => toast({ title: "Link copied." }),
+                () => toast({ title: "Coming soon in the prototype." }),
+              );
+            } else {
+              toast({ title: "Coming soon in the prototype." });
+            }
+          }}
+          aria-label="Share Move"
+          className="w-9 h-9 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center active:scale-95 transition-transform"
+        >
           <Share2 className="w-4 h-4 text-white" />
         </button>
       </div>

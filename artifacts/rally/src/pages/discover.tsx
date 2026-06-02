@@ -118,7 +118,11 @@ export default function Discover() {
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <BrioLogo size="md" />
-            <button className="flex items-center text-[11px] font-bold text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 gap-1 active:scale-95 transition-transform">
+            <button
+              onClick={() => toast({ title: "Coming soon in the prototype." })}
+              aria-label="Change location"
+              className="flex items-center text-[11px] font-bold text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 gap-1 active:scale-95 transition-transform"
+            >
               <MapPin className="w-3 h-3 text-primary" /> Chicago
             </button>
           </div>
