@@ -1,0 +1,425 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, `docs/02_PRODUCT_SPEC.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Create a clear Brielo MVP v0.1 checklist document.
+
+This is documentation only.
+
+Do not build new features.
+Do not add backend code.
+Do not add database logic.
+Do not add auth.
+Do not add API routes.
+Do not add WebSockets.
+Do not add push notifications.
+Do not add payments.
+Do not add livestreaming.
+Do not change app functionality.
+Do not rename folders or routes.
+Do not refactor the prototype.
+
+Create this file:
+
+`docs/11_MVP_CHECKLIST.md`
+
+Purpose:
+This document should define what counts as Brielo MVP v0.1 so future Replit, Codex, ChatGPT, and Perplexity work stays focused.
+
+Use this structure:
+
+# Brielo MVP v0.1 Checklist
+
+## MVP Goal
+
+Brielo MVP v0.1 should prove the core loop:
+
+Make a Move → Join or Request to Join → Move Chat → Show up → After the Move → Add to Circle → Trust updates
+
+The MVP should focus on proving that users can turn social intent into real-life action and find people they would actually move with again.
+
+## Core Product Positioning
+
+Brielo is a mobile social lifestyle app that helps people make real-life Moves, meet people through activities, and add good people to their Circle.
+
+Brielo is not:
+- a dating app
+- a professional networking app
+- just an event listing app
+- just a nightlife app
+- a recurring club app by default
+
+## Core Product Language
+
+Must use:
+- Brielo
+- Live More
+- Make a Move
+- Make It Live
+- Moves
+- I’m In
+- Request to Join
+- Ask Host
+- Leave Move
+- Cancel Move
+- Move Chat
+- Circle
+- Add to Circle
+- In Your Circle
+- Circle Activity
+- After the Move?
+- Show-Up Trust
+- Something feels off
+
+Must avoid user-facing:
+- Rally
+- Brio
+- Plans
+- Crews
+- RSVP
+- Flake
+- Low Show Rate
+- Low Show-Up Rate
+- Creepy
+- Bad User
+- Blacklisted
+- Unreliable
+
+## MVP Screens Required
+
+List each screen with acceptance criteria.
+
+### 1. Onboarding / Welcome
+
+Acceptance criteria:
+- Shows Brielo logo
+- Shows Live More tagline
+- Shows “Less scrolling. More doing.”
+- Explains Make Moves, Build your Circle, and Live More
+- CTA leads into onboarding/interest selection
+- No old Brio/Rally language
+
+### 2. Interest Selection
+
+Acceptance criteria:
+- User can select interests
+- Selected chips visually activate/glow
+- CTA activates after at least one selection
+- Uses clean line icons, not emoji
+- Interests guide Discover mock content
+
+### 3. Discover / What’s the Move?
+
+Acceptance criteria:
+- Shows Brielo header
+- Shows location
+- Notification bell works
+- Profile shortcut works
+- Make a Move card works
+- Live Moves Nearby displays active Moves
+- Moves from your Circle section exists
+- Filters are visible and clickable/prototype-safe
+- Bottom nav is anchored cleanly on mobile web
+- No dead-looking tappable elements
+
+### 4. Make a Move
+
+Acceptance criteria:
+- User can enter Move title
+- User can select category
+- User can select time
+- User can enter location
+- User can add details
+- User can set max spots
+- User can choose vibe tags
+- User can toggle host approval required
+- CTA says Make It Live
+- Created Move appears in Discover
+- Created Move persists after refresh through localStorage/mock data
+- Notification added: “Your Move is live: [Move Name].”
+
+### 5. Move Detail
+
+Acceptance criteria:
+- Shows Move title, category, time, location, host, distance, details, vibe tags
+- Shows host trust context
+- Shows Who’s In
+- Shows attendee trust labels
+- Shows spot count and spots left
+- Shows correct CTA depending on Move type:
+  - I’m In for normal Moves
+  - Request to Join for host-approval Moves
+- Shows Ask Host as separate from joining
+- Shows Something feels off before the Move
+- Shows Report options only in appropriate post-Move contexts
+
+### 6. Join Flow / I’m In
+
+Acceptance criteria:
+- Tapping I’m In opens Save your spot modal
+- Modal uses natural copy:
+  “3 spots left for [Move Name].”
+  “Only join if you plan to show. When you save a spot, someone else may miss out.”
+- Confirming joins the Move
+- Going count increases
+- Spots left decreases
+- Move Chat appears
+- Notification added:
+  “Your spot is saved for [Move Name].”
+- Toast auto-dismisses around 4 seconds
+
+### 7. Request to Join Flow
+
+Acceptance criteria:
+- Host-approval Moves show Request to Join
+- Request to Join does not auto-add the user
+- Going count does not increase immediately
+- Spots left does not decrease immediately
+- Move Chat does not appear while request is pending
+- Button changes to Request Sent
+- Notification added:
+  “Request sent for [Move Name].”
+- Ask Host remains separate
+
+### 8. Ask Host Flow
+
+Acceptance criteria:
+- Ask Host does not join or request to join
+- Opens a lightweight question modal/sheet
+- User can send a question or choose preset question
+- Toast says:
+  “Question sent to host.”
+- Notification added:
+  “Question sent to host for [Move Name].”
+
+### 9. Move Chat
+
+Acceptance criteria:
+- Joined Moves appear in Move Chat list
+- Move Chat opens
+- User can send mock messages
+- Messages persist through localStorage/mock data
+- Move Chat disappears after Leave Move
+- Move Chat closes/disappears after hosted Cancel Move
+- Chat badge/count updates appropriately
+
+### 10. Leave Move
+
+Acceptance criteria:
+- Joined user can leave a Move
+- Leave Move modal says:
+  “Leaving ahead of time isn’t a no-show — your spot simply opens back up for someone else.”
+- Button says Stay In / Leave Move
+- Leaving removes user from attendee count
+- Spots left updates
+- Move Chat disappears
+- Leaving does not count as no-show
+- Notification added:
+  “You left [Move Name]. Your spot is open again.”
+
+### 11. Cancel Hosted Move
+
+Acceptance criteria:
+- Host can cancel their own Move
+- Cancel Move is distinct from Leave Move
+- Canceling removes Move from active surfaces:
+  - Discover
+  - Live Moves Nearby
+  - Live Map
+  - Profile Active Moves
+  - Move Chat list
+- Chat closes
+- No trust penalty in prototype
+- Notification added:
+  “[Move Name] was canceled. The chat is closed.”
+
+### 12. After the Move?
+
+Acceptance criteria:
+- User can react after a Move
+- User can mark Good Vibes
+- User can mark Would Move Again
+- User can Add to Circle
+- User can mark Didn’t Show
+- User can open Felt Off / Report flow
+- Feedback affects mock trust data only where appropriate
+- Feedback toggles do not stack repeatedly
+- Negative feedback is not displayed as public reviews
+
+### 13. Circle / Your Circle
+
+Acceptance criteria:
+- Circle means people, not recurring groups
+- Your Circle shows people the user would move with again
+- Cards say “Met through [Move Name]”
+- In Your Circle state works
+- Add to Circle works after a Move
+- Circle Activity shows updates from people the user has moved with before
+- No Crew/Crews language
+
+### 14. Show-Up Trust
+
+Acceptance criteria:
+- Profile includes Show-Up Trust section
+- Shows Trust Status
+- Shows Show-Up Rate
+- Shows Attended
+- Shows Missed
+- Shows No recent misses when missed count is 0
+- Shows How trust works modal
+- Uses Recently Missed Moves only as warning label
+- Does not use Low Show Rate or Low Show-Up Rate
+- Trust feels firm but fair
+
+### 15. Safety / Reporting
+
+Acceptance criteria:
+- Pre-Move safety action says Something feels off
+- Pre-Move modal asks what feels wrong
+- User can add details
+- Submit says Send for Review
+- Toast says:
+  “Thanks. We’ll review this.”
+- Post-Move reporting has stronger report options
+- Reports are private/moderation-facing
+- No public shaming language
+
+### 16. Notifications
+
+Acceptance criteria:
+- Bell opens notification drawer/sheet
+- Red dot clears when opened
+- Notifications update from prototype actions:
+  - join
+  - leave
+  - create Move
+  - cancel Move
+  - request to join
+  - ask host
+  - feedback submitted
+  - safety note submitted
+- Empty state says:
+  “You’re all caught up.”
+- Uses mock localStorage only
+- No real push notification permissions
+
+### 17. Profile / Settings
+
+Acceptance criteria:
+- Profile loads
+- Stats display
+- Badges display
+- Show-Up Trust displays
+- Active Moves display correctly
+- Settings gear opens Settings sheet/modal
+- Settings rows are clickable or show Coming soon toast
+- Theme settings work if already implemented
+
+### 18. Live Map
+
+Acceptance criteria:
+- Shows active nearby Moves
+- Canceled Moves do not appear
+- Pins/cards are clickable/prototype-safe
+- Map layout still feels like FOMO radar / live nearby discovery
+
+### 19. Theme / Appearance
+
+Acceptance criteria:
+- Dark mode works
+- Light mode works if present
+- Auto theme works if present
+- Yellow action accent remains consistent
+- No layout breaks across theme changes
+
+## MVP Non-Negotiables
+
+List:
+- Core loop must work
+- Posting a Move must work
+- Joining a Move must work
+- Leaving a Move must work
+- Canceling hosted Move must work
+- Move Chat must only exist for joined/active Moves
+- Circle must stay people-based
+- Show-Up Trust must feel fair
+- Safety flows must feel private and responsible
+- Bottom nav must work on mobile web
+- No major dead buttons
+- localStorage must survive refresh
+- No user-facing Rally/Brio/Plan/Crew language
+
+## Out of Scope for MVP v0.1
+
+Do not build yet:
+- real backend
+- real auth
+- database
+- payments
+- subscriptions
+- livestreaming
+- real push notifications
+- AI matching
+- venue dashboards
+- creator tools
+- public social feed
+- DMs outside Move Chat
+- full moderation dashboard
+- app store deployment
+- complex gamification
+- advanced map clustering
+
+## MVP QA Walkthrough
+
+Create a checklist:
+
+1. Open app fresh
+2. Complete onboarding
+3. Select interests
+4. Open Discover
+5. Create a Move
+6. Confirm Move appears
+7. Join a normal Move
+8. Confirm Move Chat appears
+9. Send a chat message
+10. Leave Move
+11. Confirm chat disappears
+12. Request to Join host-approval Move
+13. Confirm not auto-added
+14. Ask Host
+15. Cancel hosted Move
+16. Confirm it disappears everywhere
+17. Open After the Move
+18. Add someone to Circle
+19. Submit feedback
+20. Open Profile
+21. Check Show-Up Trust
+22. Open Notifications
+23. Open Settings
+24. Refresh app
+25. Confirm localStorage data persists
+
+## MVP Done Definition
+
+Brielo MVP v0.1 is done when:
+- the full core loop works in the prototype
+- the app feels polished enough to demo on mobile web
+- user-facing language is consistent
+- no obvious dead buttons exist
+- localStorage state is stable
+- the product clearly communicates why Brielo is different from event apps, dating apps, and group apps
+
+## Next After MVP v0.1
+
+After MVP v0.1 is stable, next planning steps:
+1. backend architecture
+2. real user accounts
+3. real Move database
+4. real Move Chat persistence
+5. real Circle connections
+6. basic moderation/admin review
+7. broader user testing
+
+Do not implement these yet unless explicitly requested.
+
+Final note:
+This document is the checklist for keeping Brielo focused. Future agents should use it before adding features.
