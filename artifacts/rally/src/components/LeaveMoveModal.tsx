@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 
 const REASONS = [
   "Plans changed",
-  "Timing no longer works",
+  "Timing changed",
   "Location feels off",
-  "Host communication felt unclear",
-  "Something feels uncomfortable",
+  "Host unclear",
+  "Felt uncomfortable",
   "Other",
 ];
 
@@ -76,7 +76,7 @@ export function LeaveMoveModal({ open, onOpenChange, onConfirm }: {
             onChange={e => setDetails(e.target.value)}
             rows={2}
             placeholder="Add details if you want…"
-            className="w-full resize-none rounded-xl bg-black/30 border border-white/10 text-sm text-white placeholder:text-gray-600 px-3 py-2.5 mt-2.5 leading-relaxed focus:outline-none focus:border-primary/40"
+            className="w-full resize-none rounded-xl bg-black/30 border border-white/10 text-sm text-white placeholder:text-gray-500 px-3 py-2.5 mt-2.5 leading-relaxed focus:outline-none focus:border-primary/40"
           />
         </div>
 
