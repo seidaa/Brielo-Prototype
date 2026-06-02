@@ -7,7 +7,7 @@ const NOTIF_KEY = "brio_notifications";
 const MAX_NOTIFS = 50;
 export const NOTIF_EVENT = "brio:notifications";
 
-export type NotifKind = "join" | "leave" | "create" | "cancel" | "feedback" | "request" | "question";
+export type NotifKind = "join" | "leave" | "create" | "cancel" | "feedback" | "request" | "question" | "safety" | "report";
 
 export interface AppNotification {
   id: string;

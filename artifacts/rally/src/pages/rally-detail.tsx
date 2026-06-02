@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useParams, useLocation } from "wouter";
 import {
-  ChevronLeft, MapPin, Clock, MessageCircle, AlertTriangle, Share2,
+  ChevronLeft, MapPin, Clock, MessageCircle, ShieldAlert, Share2,
   Users, Zap, ChevronRight, LogOut, Heart, Info,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints, MessageCircleQuestion,
@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRallies, useUser, usePeopleTrust, useJoinRequests } from "@/hooks/useRallies";
 import { useToast } from "@/hooks/use-toast";
-import { ReportModal } from "@/components/ReportModal";
+import { SafetyConcernModal } from "@/components/SafetyConcernModal";
 import { JoinCommitmentModal } from "@/components/JoinCommitmentModal";
 import { AskHostModal } from "@/components/AskHostModal";
 import { TrustInfoModal } from "@/components/TrustInfoModal";
@@ -62,7 +62,7 @@ export default function MoveDetail() {
   const { getStatus, requestToJoin } = useJoinRequests();
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  const [reportOpen, setReportOpen] = useState(false);
+  const [safetyOpen, setSafetyOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
@@ -346,9 +346,9 @@ export default function MoveDetail() {
           </Link>
         )}
 
-        {/* Report */}
-        <button onClick={() => setReportOpen(true)} className="w-full flex items-center justify-center gap-1.5 py-2 text-[11px] text-gray-700 hover:text-gray-500 transition-colors">
-          <AlertTriangle className="w-3 h-3" /> Report this Move
+        {/* Pre-Move safety concern */}
+        <button onClick={() => setSafetyOpen(true)} className="w-full flex items-center justify-center gap-1.5 py-2 text-[11px] text-gray-700 hover:text-gray-500 transition-colors">
+          <ShieldAlert className="w-3 h-3" /> Something feels off
         </button>
       </div>
 
@@ -488,7 +488,7 @@ export default function MoveDetail() {
       />
       <AskHostModal open={askHostOpen} onOpenChange={setAskHostOpen} moveName={move.title} />
       <TrustInfoModal open={trustInfoOpen} onOpenChange={setTrustInfoOpen} />
-      <ReportModal open={reportOpen} onOpenChange={setReportOpen} />
+      <SafetyConcernModal open={safetyOpen} onOpenChange={setSafetyOpen} moveId={move.id} moveName={move.title} context="preMove" />
     </div>
   );
 }

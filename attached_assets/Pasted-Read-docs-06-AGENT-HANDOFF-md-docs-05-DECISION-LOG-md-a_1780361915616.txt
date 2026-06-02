@@ -1,0 +1,215 @@
+Read `docs/06_AGENT_HANDOFF.md`, `docs/05_DECISION_LOG.md`, and the Brielo Show-Up Trust project note before making changes.
+
+Task:
+Improve Brielo’s safety/reporting flow so pre-Move concerns and post-Move reports are logically different.
+
+This is front-end/localStorage prototype behavior only.
+
+Do not add:
+- backend
+- database
+- real auth
+- WebSockets
+- push notifications
+- payments
+- livestreaming
+- AI matching
+- major refactors
+- new major screens
+
+Do not rename folders or routes.
+
+Preserve:
+- Brielo branding
+- Moves language
+- I’m In
+- Request to Join
+- Ask Host
+- Leave Move
+- Cancel Move
+- Move Chat
+- Show-Up Trust
+- Circle
+- localStorage/mock data
+- current clickable flows
+
+Problem:
+The current pre-Move report flow says “Report this Move” and shows options like No-show, Harassment, Fake Move, Spam/scam, etc.
+
+That makes more sense after a Move, but before a Move happens, the user is usually reporting that something feels suspicious, unsafe, misleading, or uncomfortable.
+
+Goal:
+Separate pre-Move safety concerns from post-Move reporting.
+
+PART 1 — Pre-Move safety flow
+
+On Move Detail before the Move has happened, replace or reframe the “Report this Move” action as:
+
+“Something feels off”
+
+Use a subtle safety link near the bottom of Move Detail.
+
+When tapped, open a modal/sheet titled:
+
+“Something feels off?”
+
+Subtitle:
+“Tell us what’s making you unsure. We’ll use this to review the Move.”
+
+Options:
+- Move details seem misleading
+- Location feels unsafe
+- Host feels suspicious
+- Spam or scam
+- I’m uncomfortable with this Move
+- Other
+
+After selecting an option, show a text area:
+
+“Add a few details”
+
+Placeholder:
+“What happened or what feels off?”
+
+Buttons:
+- Cancel
+- Send for Review
+
+After submitting:
+Show toast:
+“Thanks. We’ll review this.”
+
+Add a mock notification:
+“Your safety note was sent for review.”
+
+Do not call this a public report.
+Do not show the report publicly.
+Do not penalize anyone immediately from this pre-Move flow.
+
+PART 2 — Post-Move reporting flow
+
+After a Move has ended or inside the After the Move flow, keep a stronger reporting option.
+
+Post-Move report title:
+“Report this Move”
+
+Subtitle:
+“Tell us what happened. Reports are private.”
+
+Post-Move options:
+- Host didn’t show
+- Attendee didn’t show
+- Made me uncomfortable
+- Harassment
+- Fake Move
+- Unsafe situation
+- Spam / scam
+- Other
+
+After choosing an option, show a text area:
+
+“Add details”
+
+Placeholder:
+“What happened?”
+
+Buttons:
+- Cancel
+- Submit Report
+
+After submitting:
+Show toast:
+“Thanks. We’ll review this.”
+
+Add mock notification:
+“Your report was submitted for review.”
+
+PART 3 — Post-Move attendee-specific feedback
+
+Inside After the Move, keep lightweight feedback separate from formal reports.
+
+Feedback options can include:
+- Good Vibes
+- Would Move Again
+- Great Host
+- Low Pressure
+- Didn’t Show
+- Felt Off
+- Report
+
+Logic:
+- Good Vibes affects positive mock reputation
+- Would Move Again affects Circle/trust signal
+- Didn’t Show affects missed Move mock data
+- Felt Off should open a softer safety follow-up
+- Report should open the formal post-Move report flow
+
+Do not turn all negative feedback into public reviews.
+Do not publicly shame users.
+Reports and safety notes should feel private/moderation-facing.
+
+PART 4 — Copy/tone rules
+
+Use:
+- Something feels off
+- Send for Review
+- Reports are private
+- Thanks. We’ll review this.
+- Made me uncomfortable
+- Unsafe situation
+- Spam / scam
+- Fake Move
+
+Avoid:
+- Creepy
+- Bad user
+- Blacklisted
+- Flake
+- Public review
+- Reported publicly
+- Punishment language
+
+PART 5 — localStorage/mock data
+
+If needed, store safety reports in mock localStorage.
+
+Suggested key:
+`brio_safety_reports`
+
+Suggested object:
+- id
+- moveId
+- moveName
+- reportContext: preMove or postMove
+- reportType
+- details
+- createdAt
+- status: submitted
+
+This is prototype-only.
+Do not add backend/moderation infrastructure.
+
+PART 6 — Quality check
+
+After changes, test:
+- pre-Move Move Detail shows “Something feels off”
+- tapping it opens the softer pre-Move safety modal
+- selecting an option allows details to be entered
+- Send for Review submits and closes
+- toast appears and disappears normally
+- mock notification is created if notifications exist
+- After the Move still has report/felt-off options
+- post-Move report flow uses stronger report language
+- Show-Up Trust still works
+- Request to Join still works
+- Ask Host still works
+- I’m In still works
+- Leave Move still works
+- Cancel Move still works
+- Move Chat still works
+- localStorage still works after refresh
+- no old Rally/Brio/Plan/Crew language is reintroduced
+- no emoji icons are added
+
+Final goal:
+Brielo should treat pre-Move concerns as “Something feels off” safety notes and post-Move issues as private reports. The flow should feel safe, clear, and fair without making the product feel punitive.

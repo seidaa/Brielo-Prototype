@@ -3,7 +3,7 @@ import { Link, useParams, useLocation } from "wouter";
 import {
   ChevronLeft, ChevronRight, Check, ArrowRight, X,
   Sparkles, RefreshCw, CheckCircle2, Minus, UserX, Star, Feather, Heart,
-  Zap, Smartphone, UsersRound, AlertTriangle, AlertCircle, ShieldAlert, Trash2, MoreHorizontal,
+  Zap, Smartphone, UsersRound, AlertTriangle, AlertCircle, ShieldAlert, Trash2, MoreHorizontal, UserMinus, AlertOctagon,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
   Gamepad2, Handshake, Palette, CheckCheck, Footprints,
 } from "lucide-react";
@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { pushNotification } from "@/lib/notifications";
+import { saveSafetyReport } from "@/lib/safetyReports";
+import { SafetyConcernModal } from "@/components/SafetyConcernModal";
 
 const CAT_ICONS: Record<string, React.ElementType> = {
   Fitness:    Dumbbell,
@@ -58,12 +60,14 @@ const PERSON_FEEDBACK = [
 
 type ReportOption = { label: string; Icon: React.ElementType };
 const REPORT_OPTIONS: ReportOption[] = [
-  { label: "No-show",         Icon: UserX          },
+  { label: "Host didn't show",      Icon: UserX          },
+  { label: "Attendee didn't show",  Icon: UserMinus      },
   { label: "Made me uncomfortable", Icon: AlertCircle    },
-  { label: "Harassment",      Icon: ShieldAlert    },
-  { label: "Fake Move",       Icon: AlertTriangle  },
-  { label: "Spam / scam",     Icon: Trash2         },
-  { label: "Other",           Icon: MoreHorizontal },
+  { label: "Harassment",            Icon: ShieldAlert    },
+  { label: "Fake Move",             Icon: AlertTriangle  },
+  { label: "Unsafe situation",      Icon: AlertOctagon   },
+  { label: "Spam / scam",           Icon: Trash2         },
+  { label: "Other",                 Icon: MoreHorizontal },
 ];
 
 const MOCK_ATTENDEES = [
@@ -89,7 +93,10 @@ export default function PostMove() {
   const [reactions, setReactions] = useState<Set<string>>(new Set());
   const [attendeeFeedback, setAttendeeFeedback] = useState<Record<string, string[]>>({});
   const [reportTarget, setReportTarget] = useState<string | null>(null);
+  const [reportType, setReportType] = useState<string | null>(null);
+  const [reportDetails, setReportDetails] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState<Set<string>>(new Set());
+  const [safetyFollowUp, setSafetyFollowUp] = useState(false);
 
   const toggleReaction = (id: string) => {
     setReactions(prev => {
@@ -101,6 +108,7 @@ export default function PostMove() {
 
   const toggleAttendeeFeedback = (attendeeId: string, feedbackId: string) => {
     if (feedbackId === "report") { setReportTarget(attendeeId); return; }
+    if (feedbackId === "felt-off") { setSafetyFollowUp(true); return; }
     const current = attendeeFeedback[attendeeId] ?? [];
     const isAdding = !current.includes(feedbackId);
     const updated = isAdding
@@ -129,11 +137,25 @@ export default function PostMove() {
     setAttendeeFeedback(prev => ({ ...prev, [attendeeId]: updated }));
   };
 
-  const handleReportSubmit = (reason: string) => {
-    if (reportTarget) {
+  const closeReport = () => {
+    setReportTarget(null);
+    setReportType(null);
+    setReportDetails("");
+  };
+
+  const handleReportSubmit = () => {
+    if (reportTarget && reportType && move) {
+      saveSafetyReport({
+        moveId: move.id,
+        moveName: move.title,
+        reportContext: "postMove",
+        reportType,
+        details: reportDetails.trim(),
+      });
+      pushNotification("report", "Your report was submitted for review.");
       setReportSubmitted(prev => new Set(prev).add(reportTarget));
-      setReportTarget(null);
-      toast({ title: "Thanks. We'll review this.", description: "Your feedback is private and helps keep Brielo safe.", duration: 3000 });
+      closeReport();
+      toast({ title: "Thanks. We'll review this.", description: "Reports are private.", duration: 3000 });
     }
   };
 
@@ -375,29 +397,73 @@ export default function PostMove() {
       </div>
 
       {/* Report modal */}
-      <Dialog open={reportTarget !== null} onOpenChange={() => setReportTarget(null)}>
-        <DialogContent className="w-[90%] max-w-[320px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
+      <Dialog open={reportTarget !== null} onOpenChange={o => { if (!o) closeReport(); }}>
+        <DialogContent className="w-[90%] max-w-[340px] rounded-2xl bg-[#1a1a1a] border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Tell us what happened</DialogTitle>
+            <DialogTitle className="text-white">Report this Move</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Your report is private. We'll review it.
+              Tell us what happened. Reports are private.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-2 mt-1">
-            {REPORT_OPTIONS.map(({ label, Icon }) => (
-              <Button
-                key={label}
-                variant="outline"
-                className="justify-start bg-white/5 border-white/8 hover:bg-white/10 text-left rounded-xl text-gray-200 gap-2.5 h-auto py-3"
-                onClick={() => handleReportSubmit(label)}
+          {!reportType ? (
+            <div className="flex flex-col gap-2 mt-1">
+              {REPORT_OPTIONS.map(({ label, Icon }) => (
+                <Button
+                  key={label}
+                  variant="outline"
+                  className="justify-start bg-white/5 border-white/8 hover:bg-white/10 text-left rounded-xl text-gray-200 gap-2.5 h-auto py-3"
+                  onClick={() => setReportType(label)}
+                >
+                  <Icon className="w-4 h-4 shrink-0 text-gray-400" strokeWidth={1.75} />
+                  <span className="text-sm font-medium">{label}</span>
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => setReportType(null)}
+                className="flex items-center gap-1 text-[12px] font-bold text-gray-400 hover:text-white transition-colors -mt-1 self-start"
               >
-                <Icon className="w-4 h-4 shrink-0 text-gray-400" strokeWidth={1.75} />
-                <span className="text-sm font-medium">{label}</span>
-              </Button>
-            ))}
-          </div>
+                <ChevronLeft className="w-3.5 h-3.5" /> {reportType}
+              </button>
+              <div>
+                <label className="text-[12px] font-bold text-gray-400 mb-1.5 block">Add details</label>
+                <textarea
+                  value={reportDetails}
+                  onChange={e => setReportDetails(e.target.value)}
+                  rows={3}
+                  placeholder="What happened?"
+                  className="w-full resize-none rounded-xl bg-black/30 border border-white/10 text-sm text-white placeholder:text-gray-600 px-3 py-2.5 leading-relaxed focus:outline-none focus:border-primary/40"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={closeReport}
+                  className="flex-1 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 rounded-xl h-11 font-bold"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleReportSubmit}
+                  className="flex-1 bg-primary hover:bg-primary/90 text-black font-black rounded-xl h-11"
+                >
+                  Submit Report
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
+
+      <SafetyConcernModal
+        open={safetyFollowUp}
+        onOpenChange={setSafetyFollowUp}
+        moveId={move.id}
+        moveName={move.title}
+        context="postMove"
+      />
     </div>
   );
 }

@@ -60,3 +60,24 @@ Icons: Lucide line icons only — no emoji icons.
 
 Future (not yet implemented): server-backed reputation, real safety review
 queue, host reliability scoring beyond the prototype values.
+
+## Safety vs. Reports — pre-Move concerns separated from post-Move reports
+
+Brielo separates two distinct safety surfaces so they never feel the same:
+
+* Pre-Move (on Move Detail): a subtle "Something feels off" link opens a softer
+  SafetyConcernModal. It is a private safety note for review — not a public
+  report and never a penalty. Copy: "Something feels off?" / "Tell us what's
+  making you unsure. We'll use this to review the Move." → 6 options →
+  "Add a few details" → Cancel / Send for Review. Notification:
+  "Your safety note was sent for review."
+* Post-Move (post-move.tsx): the formal "Report this Move" flow — "Tell us what
+  happened. Reports are private." → 8 options → "Add details" →
+  Cancel / Submit Report. Notification: "Your report was submitted for review."
+* After-the-Move attendee feedback: "Felt off" opens the softer SafetyConcernModal
+  (postMove context); "Report" opens the formal report flow.
+
+Both are stored front-end only in `brio_safety_reports`
+({ id, moveId, moveName, reportContext: preMove|postMove, reportType, details,
+createdAt, status: "submitted" }). No backend, no moderation queue, nothing public.
+Shared toast for both: "Thanks. We'll review this." Lucide line icons only.
