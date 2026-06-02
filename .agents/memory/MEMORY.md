@@ -1,1 +1,2 @@
 - [Brielo Show-Up Trust](show-up-trust.md) — flaking-accountability prototype: reversible feedback, banned labels, static-build serving.
+- [Rally/Brielo build & serve](rally-build-serve.md) — rally is served as a static build by api-server; its own "web" workflow shows "failed" by design; rebuild + restart api-server to see changes.

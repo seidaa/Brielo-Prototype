@@ -1,0 +1,463 @@
+Read these files before making changes:
+
+- `docs/06_AGENT_HANDOFF.md`
+- `docs/05_DECISION_LOG.md`
+- `docs/02_PRODUCT_SPEC.md`
+- `docs/11_MVP_CHECKLIST.md`
+- the Brielo Show-Up Trust project note
+
+Task:
+Finish the current Brielo prototype cleanup pass and align the app with `docs/11_MVP_CHECKLIST.md`.
+
+This is a focused MVP cleanup and behavior pass.
+
+Do not add:
+- backend
+- database
+- real auth
+- API routes
+- WebSockets
+- real push notifications
+- payments
+- livestreaming
+- AI matching
+- venue tools
+- new major screens
+- major refactors
+
+Do not rename folders or routes.
+
+Preserve:
+- Brielo branding
+- Live More
+- Make a Move
+- Make It Live
+- Moves
+- I’m In
+- Request to Join
+- Ask Host
+- Leave Move
+- Cancel Move
+- Move Chat
+- Circle
+- Add to Circle
+- In Your Circle
+- Circle Activity
+- After the Move?
+- Show-Up Trust
+- Something feels off
+- localStorage/mock data
+- current clickable flows
+
+Goal:
+Make the prototype feel more complete, consistent, and demo-ready according to the MVP v0.1 checklist.
+
+PART 1 — Fix Request to Join behavior
+
+Problem:
+Host-approval Moves should not behave like instant-join Moves.
+
+Expected behavior:
+
+For normal Moves:
+- CTA says “I’m In”
+- tapping opens Save your spot modal
+- confirming joins the Move
+- going count increases
+- spots left decreases
+- Move Chat appears
+- notification added:
+  “Your spot is saved for [Move Name].”
+
+For host-approval Moves:
+- CTA says “Request to Join”
+- tapping does NOT add the user immediately
+- going count does NOT increase
+- spots left does NOT decrease
+- Move Chat does NOT appear while pending
+- save request status in mock localStorage
+- button changes to “Request Sent”
+- show toast:
+  “Request sent. The host will review it.”
+- add notification:
+  “Request sent for [Move Name].”
+
+Suggested localStorage key:
+`brio_join_requests`
+
+Suggested request object:
+- id
+- moveId
+- moveName
+- requesterName
+- status: pending
+- createdAt
+
+Important distinction:
+- “I’m In” = instant join
+- “Request to Join” = asks host for approval
+- “Ask Host” = asks a question, not a join request
+
+PART 2 — Fix Ask Host behavior
+
+Problem:
+Ask Host should not join the Move or request to join.
+
+Expected behavior:
+When “Ask Host” is tapped:
+- open a lightweight modal/sheet titled:
+  “Ask Host”
+- include copy:
+  “Send a quick question before joining.”
+- include either a text input or preset questions:
+  - “Is this beginner friendly?”
+  - “Can I bring a friend?”
+  - “Where should we meet?”
+  - “What should I bring?”
+- buttons:
+  - Cancel
+  - Send
+- after Send, show toast:
+  “Question sent to host.”
+- add notification:
+  “Question sent to host for [Move Name].”
+
+Do not create a Move Chat from Ask Host.
+Do not mark the user as joined.
+Do not decrease spots left.
+
+PART 3 — Polish Save your spot modal copy
+
+Update the “Save your spot?” modal copy so it sounds natural.
+
+Use:
+
+Title:
+“Save your spot?”
+
+Dynamic body:
+“3 spots left for [Move Name].”
+
+Secondary body:
+“Only join if you plan to show. When you save a spot, someone else may miss out.”
+
+Primary button:
+“I’m In — Save My Spot”
+
+Secondary button:
+“Not yet”
+
+Footer:
+“Things come up. Leaving before it starts opens your spot back up and does not count as a no-show.”
+
+Keep the spot count and Move name dynamic.
+
+Do not use:
+- “spots left on”
+- “seat”
+- “seats”
+- “RSVP”
+
+PART 4 — Improve safety/reporting logic
+
+Pre-Move safety should be softer and should not be framed like a full post-Move report.
+
+Pre-Move action:
+“Something feels off”
+
+When tapped, open modal/sheet:
+
+Title:
+“Something feels off?”
+
+Subtitle:
+“Tell us what’s making you unsure. We’ll use this to review the Move.”
+
+Options:
+- Move details seem misleading
+- Location feels unsafe
+- Host feels suspicious
+- Spam or scam
+- I’m uncomfortable with this Move
+- Other
+
+After selecting an option, show text area:
+
+Label:
+“Add a few details”
+
+Placeholder:
+“What happened or what feels off?”
+
+Buttons:
+- Cancel
+- Send for Review
+
+After submitting:
+- show toast:
+  “Thanks. We’ll review this.”
+- add notification:
+  “Your safety note was sent for review.”
+
+Do not publicly display the safety note.
+Do not immediately penalize anyone from this pre-Move flow.
+
+Post-Move reporting should be stronger and only appear in After the Move / post-Move context.
+
+Post-Move report title:
+“Report this Move”
+
+Subtitle:
+“Tell us what happened. Reports are private.”
+
+Post-Move options:
+- Host didn’t show
+- Attendee didn’t show
+- Made me uncomfortable
+- Harassment
+- Fake Move
+- Unsafe situation
+- Spam / scam
+- Other
+
+After choosing an option, show text area:
+
+Label:
+“Add details”
+
+Placeholder:
+“What happened?”
+
+Buttons:
+- Cancel
+- Submit Report
+
+After submitting:
+- show toast:
+  “Thanks. We’ll review this.”
+- add notification:
+  “Your report was submitted for review.”
+
+Suggested localStorage key:
+`brio_safety_reports`
+
+Suggested object:
+- id
+- moveId
+- moveName
+- reportContext: preMove or postMove
+- reportType
+- details
+- createdAt
+- status: submitted
+
+PART 5 — Make notifications update from prototype actions
+
+If not already fully working, make the notification drawer update from prototype actions.
+
+Use localStorage/mock state only.
+
+Suggested key:
+`brio_notifications`
+
+Add notifications for:
+- join Move:
+  “Your spot is saved for [Move Name].”
+- leave Move:
+  “You left [Move Name]. Your spot is open again.”
+- create/post Move:
+  “Your Move is live: [Move Name].”
+- cancel hosted Move:
+  “[Move Name] was canceled. The chat is closed.”
+- request to join:
+  “Request sent for [Move Name].”
+- ask host:
+  “Question sent to host for [Move Name].”
+- feedback submitted:
+  “Thanks for your feedback on [Move Name].”
+- safety note submitted:
+  “Your safety note was sent for review.”
+- post-Move report submitted:
+  “Your report was submitted for review.”
+
+Notification drawer should:
+- open when bell is tapped
+- title says “Notifications”
+- show newest notifications first
+- clear red dot when opened
+- show empty state:
+  “You’re all caught up.”
+- use clean line icons only
+- not request real notification permissions
+
+PART 6 — Toast/banner behavior
+
+Make sure action confirmation toasts:
+- auto-dismiss after about 4 seconds
+- can be manually dismissed if supported
+- can be swiped away if existing toast system supports it
+- do not permanently block the top of the screen
+
+Apply to:
+- join
+- leave
+- cancel hosted Move
+- create Move
+- request to join
+- ask host
+- feedback submitted
+- safety note submitted
+- report submitted
+
+PART 7 — Profile settings gear
+
+If Profile settings gear still does not work, make it open a simple prototype settings sheet/modal.
+
+Title:
+“Settings”
+
+Sections:
+
+Account:
+- Edit Profile
+- Privacy
+- Notifications
+
+Appearance:
+- Theme
+- Auto / Light / Dark
+- connect to existing theme behavior if already present
+
+Trust & Safety:
+- Show-Up Trust
+- Blocked users
+- Report a problem
+
+About Brielo:
+- Live More
+- Version 0.1 prototype
+
+Rows can show:
+“Coming soon in the prototype.”
+
+Do not add real account infrastructure.
+
+PART 8 — Clean metadata
+
+Check `artifacts/rally/index.html`.
+
+User-facing metadata should say Brielo, not Rally.
+
+Update:
+- title:
+  `Brielo — Live More`
+- meta description:
+  `Brielo helps people make real-life Moves, meet people through activities, and add good people to their Circle.`
+
+If Open Graph or Twitter metadata exists, update it to Brielo language.
+
+Do not rename the `artifacts/rally` folder.
+
+PART 9 — Keep Circle language clean
+
+Circle must stay people-based.
+
+Correct:
+- Your Circle
+- In Your Circle
+- Add to Circle
+- Circle Activity
+- Met through [Move Name]
+- Moves from your Circle
+- People you’ve moved with before
+- People you’d move with again
+- From Circle
+
+Avoid:
+- Crew
+- Crews
+- recurring group language
+- themed club language
+
+If Move cards use a badge, use:
+“From Circle”
+
+Do not use just “Circle” if it makes the Move look like a recurring group.
+
+PART 10 — Check visible tappable elements
+
+Audit visible buttons/icons.
+
+If something looks tappable, it should:
+- work,
+- open a prototype modal/sheet,
+- navigate,
+- or show “Coming soon in the prototype.”
+
+Focus on:
+- notification bell
+- settings gear
+- Ask Host
+- How trust works
+- Something feels off
+- Report options
+- theme/settings rows
+- Circle / All links
+- Map links
+- profile buttons
+
+Do not build full systems. Just prevent dead-feeling UI.
+
+PART 11 — Keep icon style consistent
+
+Search for native emoji icons in user-facing UI.
+
+Replace remaining emoji icons with clean Lucide/line icons.
+
+Do not add:
+- emoji icons
+- sun icons
+- spark icons
+- checkered flags
+- racing visuals
+
+PART 12 — Quality check against MVP checklist
+
+After changes, test:
+
+- app runs
+- onboarding works
+- interest selection works
+- Discover loads
+- bottom nav still sits cleanly at the bottom
+- Make a Move works
+- created Moves appear in Discover
+- created Moves persist after refresh
+- I’m In works for normal Moves
+- Save your spot modal copy is natural
+- Move Chat appears after joining
+- Leave Move works
+- Move Chat disappears after leaving
+- hosted Cancel Move works
+- canceled hosted Move disappears from active surfaces
+- Request to Join does not auto-add user
+- Request Sent state works
+- Ask Host opens question flow and does not join/request
+- Profile loads
+- Profile settings gear opens
+- Show-Up Trust section still works
+- notification drawer opens
+- notifications update after prototype actions
+- toasts disappear after about 4 seconds
+- pre-Move safety says Something feels off
+- post-Move reporting remains private
+- localStorage still works after refresh
+- no user-facing Rally/Brio/Plan/Crew language is reintroduced
+- no emoji icons are added
+
+Final goal:
+Brielo should feel like a polished, clickable MVP v0.1 prototype. The core loop should be stable:
+
+Make a Move → Join or Request to Join → Move Chat → Show up → After the Move → Add to Circle → Trust updates.
+
+Keep the product focused, mobile-first, and demo-ready.

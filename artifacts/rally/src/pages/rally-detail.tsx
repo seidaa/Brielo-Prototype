@@ -187,7 +187,7 @@ export default function MoveDetail() {
             </span>
             <div className="flex items-center gap-2">
               {move.isCircleMove && (
-                <span className="text-[10px] font-black bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full">Circle Move</span>
+                <span className="text-[10px] font-black bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full">From Circle</span>
               )}
               <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
                 <MapPin className="w-3 h-3 text-primary" /> {move.distance}
