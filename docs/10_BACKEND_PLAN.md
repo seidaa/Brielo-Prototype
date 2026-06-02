@@ -461,22 +461,92 @@ For host-approval Moves:
 
 ## MVP Backend Phase 1
 
-The first backend implementation should include only:
+The first backend slice should be:
 
-1. real user accounts
-2. real Move database
-3. create Move
-4. instant join for normal Moves
-5. Request to Join for host-approval Moves
-6. Ask Host messages
-7. leave Move
-8. cancel hosted Move
-9. Move Chat persistence
-10. Circle connections
-11. basic Show-Up Trust fields
-12. notifications table
-13. safety reports table
-14. leave reasons table
+User + Move + MoveAttendee only.
+
+Phase 1 should support only:
+
+- user identity placeholder or basic user shell
+- Move table/model
+- MoveAttendee table/model
+- create Move
+- fetch/list active Moves
+- join normal Move
+- leave Move
+- cancel hosted Move
+
+The following are explicitly out of Phase 1:
+
+- Request to Join
+- Ask Host
+- Move Chat persistence
+- Circle connections
+- Show-Up Trust scoring
+- Notifications
+- Safety reports
+- Leave reasons
+- Post-Move feedback
+- moderation workflows
+
+> Warning: Do not build chat, Circle, trust, notifications, or safety until the database-backed Move lifecycle is working.
+
+## Revised Backend Phase Order
+
+Phase 0: Planning / Schema Review
+- finalize model names
+- finalize status enums
+- finalize capacity rules
+- finalize localStorage migration strategy
+
+Phase 1: Move Lifecycle Foundation
+- User
+- Move
+- MoveAttendee
+- create Move
+- list active Moves
+- join normal Move
+- leave Move
+- cancel hosted Move
+
+Phase 2: Host Approval + Ask Host
+- JoinRequest
+- AskHostMessage
+- request to join
+- approve/decline request
+- ask host question
+
+Phase 3: Move Chat + Circle
+- MoveChat
+- ChatMessage
+- CircleConnection
+- chat access rules
+- add to Circle
+
+Phase 4: Trust + Safety
+- PostMoveFeedback
+- TrustEvent
+- SafetyReport
+- LeaveReason
+- private review handling
+
+Phase 5: Notifications + Polish
+- Notification table
+- read states
+- notification cleanup
+- later real push notification planning
+
+## Capacity Rules
+
+- attendee count should be derived from MoveAttendee records with status joined/attended
+- requested users should not count as going
+- requested users should not reduce spots
+- joining must check capacity
+- prevent duplicate active attendee records for the same user and Move
+- users cannot join canceled or completed Moves
+- leaving before start does not count as no-show
+
+> Codex warning: Do not let Codex build the entire backend at once. The first backend implementation should only prove the database-backed Move lifecycle.
 
 ## Do Not Build Yet
 

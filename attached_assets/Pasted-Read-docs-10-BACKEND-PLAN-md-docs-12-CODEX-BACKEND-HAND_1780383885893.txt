@@ -1,0 +1,122 @@
+Read:
+
+- docs/10_BACKEND_PLAN.md
+- docs/12_CODEX_BACKEND_HANDOFF.md
+- docs/11_MVP_CHECKLIST.md
+- docs/06_AGENT_HANDOFF.md
+
+Task:
+Revise the backend planning docs based on the Codex backend architecture review.
+
+This is documentation only.
+
+Do not build backend code.
+Do not add database logic.
+Do not add auth.
+Do not add API routes.
+Do not install packages.
+Do not change app functionality.
+Do not refactor the prototype.
+Do not rename folders or routes.
+
+Goal:
+Narrow the first backend phase so Brielo does not overbuild too early.
+
+Update docs/10_BACKEND_PLAN.md and docs/12_CODEX_BACKEND_HANDOFF.md to reflect this:
+
+The first backend slice should be:
+
+User + Move + MoveAttendee only.
+
+Phase 1 should support only:
+- user identity placeholder or basic user shell
+- Move table/model
+- MoveAttendee table/model
+- create Move
+- fetch/list active Moves
+- join normal Move
+- leave Move
+- cancel hosted Move
+
+Explicitly move these out of Phase 1:
+- Request to Join
+- Ask Host
+- Move Chat persistence
+- Circle connections
+- Show-Up Trust scoring
+- Notifications
+- Safety reports
+- Leave reasons
+- Post-Move feedback
+- moderation workflows
+
+Add a warning:
+“Do not build chat, Circle, trust, notifications, or safety until the database-backed Move lifecycle is working.”
+
+Add a section called:
+
+## Revised Backend Phase Order
+
+Use:
+
+Phase 0: Planning / Schema Review
+- finalize model names
+- finalize status enums
+- finalize capacity rules
+- finalize localStorage migration strategy
+
+Phase 1: Move Lifecycle Foundation
+- User
+- Move
+- MoveAttendee
+- create Move
+- list active Moves
+- join normal Move
+- leave Move
+- cancel hosted Move
+
+Phase 2: Host Approval + Ask Host
+- JoinRequest
+- AskHostMessage
+- request to join
+- approve/decline request
+- ask host question
+
+Phase 3: Move Chat + Circle
+- MoveChat
+- ChatMessage
+- CircleConnection
+- chat access rules
+- add to Circle
+
+Phase 4: Trust + Safety
+- PostMoveFeedback
+- TrustEvent
+- SafetyReport
+- LeaveReason
+- private review handling
+
+Phase 5: Notifications + Polish
+- Notification table
+- read states
+- notification cleanup
+- later real push notification planning
+
+Add capacity rules:
+
+- attendee count should be derived from MoveAttendee records with status joined/attended
+- requested users should not count as going
+- requested users should not reduce spots
+- joining must check capacity
+- prevent duplicate active attendee records for the same user and Move
+- users cannot join canceled or completed Moves
+- leaving before start does not count as no-show
+
+Add Codex warning:
+
+“Do not let Codex build the entire backend at once. The first backend implementation should only prove the database-backed Move lifecycle.”
+
+Keep all Brielo language rules intact.
+
+Final goal:
+The backend docs should now clearly tell Codex to start with the smallest possible backend foundation: User, Move, and MoveAttendee only.
