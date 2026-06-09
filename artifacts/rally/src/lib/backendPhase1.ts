@@ -29,7 +29,7 @@ export type BackendMove = {
   latitude?: number;
   longitude?: number;
   startTime: string;
-  endTime?: number;
+  endTime?: string;
   status: BackendMoveStatus;
   maxSpots: number;
   details: string;
@@ -235,7 +235,7 @@ export function joinMove(moveId: string, profile: UserProfile): Move[] {
   const attendees = read<MoveAttendee[]>(ATTENDEES_KEY, []);
   const move = moves.find((m) => m.id === moveId);
 
-  if (!move || move.status !== "active") return syncLegacyMoves(moves, attendees, user);
+  if (!move || move.status !== "active" || move.hostApprovalRequired) return syncLegacyMoves(moves, attendees, user);
   if (currentUserJoined(moveId, attendees, user)) return syncLegacyMoves(moves, attendees, user);
   if (activeAttendeeCount(moveId, attendees) >= move.maxSpots) return syncLegacyMoves(moves, attendees, user);
 
