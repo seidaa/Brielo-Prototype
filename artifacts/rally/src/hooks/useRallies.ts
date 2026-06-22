@@ -180,7 +180,22 @@ export function useJoinRequests() {
     return true;
   };
 
-  return { requests, getStatus, requestToJoin };
+  // Withdraw an in-flight request: drops the pending record for this Move so the
+  // CTA falls back to "Request to Join". Purely a prototype/localStorage change —
+  // it never touched the going count, spots, joined flag, or Move Chat to begin
+  // with, so there is nothing to roll back beyond removing the request itself.
+  // Returns false when there is no pending request, so callers can skip the toast.
+  const cancelRequest = (move: { id: string; title: string }): boolean => {
+    const existing = readJoinRequests();
+    if (!existing.some(r => r.moveId === move.id && r.status === "pending")) return false;
+    const remaining = existing.filter(r => !(r.moveId === move.id && r.status === "pending"));
+    localStorage.setItem(JOIN_REQUESTS_KEY, JSON.stringify(remaining));
+    window.dispatchEvent(new Event(JOIN_REQUESTS_EVENT));
+    pushNotification("request", `Request canceled for ${move.title}.`);
+    return true;
+  };
+
+  return { requests, getStatus, requestToJoin, cancelRequest };
 }
 
 export function useUser() {

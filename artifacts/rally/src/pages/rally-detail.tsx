@@ -4,7 +4,7 @@ import {
   ChevronLeft, MapPin, Clock, MessageCircle, ShieldAlert, Share2,
   Users, Zap, ChevronRight, LogOut, Heart, Info,
   Dumbbell, Coffee, Utensils, BookOpen, Trophy, Music, Leaf, Mic2,
-  Gamepad2, Handshake, Palette, CheckCheck, Footprints, MessageCircleQuestion,
+  Gamepad2, Handshake, Palette, CheckCheck, Footprints, MessageCircleQuestion, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRallies, useUser, usePeopleTrust, useJoinRequests } from "@/hooks/useRallies";
@@ -60,7 +60,7 @@ export default function MoveDetail() {
   const { rallies, joinRally, leaveRally, cancelMove } = useRallies();
   const { user } = useUser();
   const { getTrust } = usePeopleTrust();
-  const { getStatus, requestToJoin } = useJoinRequests();
+  const { getStatus, requestToJoin, cancelRequest } = useJoinRequests();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [safetyOpen, setSafetyOpen] = useState(false);
@@ -118,6 +118,14 @@ export default function MoveDetail() {
   const handleRequest = () => {
     if (requestToJoin(move)) {
       toast({ title: "Request sent. The host will review it." });
+    }
+  };
+
+  // Withdraw a still-pending request: returns the CTA to "Request to Join". No
+  // going-count, spots, or Move Chat change since none happened when requesting.
+  const handleCancelRequest = () => {
+    if (cancelRequest(move)) {
+      toast({ title: `Request canceled for ${move.title}.` });
     }
   };
 
@@ -399,12 +407,20 @@ export default function MoveDetail() {
         ) : move.requiresApproval ? (
           <>
             {requestStatus === "pending" ? (
-              <Button
-                disabled
-                className="w-full font-black text-base rounded-xl h-14 bg-white/5 text-gray-400 border border-white/8 cursor-not-allowed"
-              >
-                Request Sent
-              </Button>
+              <>
+                <Button
+                  disabled
+                  className="w-full font-black text-base rounded-xl h-14 bg-white/5 text-gray-400 border border-white/8 cursor-not-allowed"
+                >
+                  Request Sent
+                </Button>
+                <button
+                  onClick={handleCancelRequest}
+                  className="w-full flex items-center justify-center gap-2 py-2 text-[12px] font-bold text-gray-600 hover:text-red-400 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" /> Cancel Request
+                </button>
+              </>
             ) : (
               <Button
                 onClick={handleRequest}
