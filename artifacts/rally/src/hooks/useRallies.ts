@@ -15,6 +15,14 @@ import {
   AppNotification, NOTIF_EVENT,
 } from "@/lib/notifications";
 import { saveLeaveReason } from "@/lib/leaveReasons";
+import {
+  cancelMove as cancelPhase1Move,
+  createMove,
+  initializePhase1Storage,
+  joinMove,
+  leaveMove,
+  listActiveMoves,
+} from "@/lib/backendPhase1";
 
 const MOVES_KEY      = "brio_moves";
 const USER_KEY       = "brio_user";
@@ -41,32 +49,37 @@ function safeParse<T>(raw: string | null): T | null {
   }
 }
 
+function readCurrentUserProfile(): UserProfile {
+  return safeParse<UserProfile>(localStorage.getItem(USER_KEY)) ?? defaultUserProfile;
+}
+
 export function useRallies() {
   const [rallies, setRallies] = useState<Move[]>([]);
 
   useEffect(() => {
-    const parsed = safeParse<Move[]>(localStorage.getItem(MOVES_KEY));
-    setRallies(parsed ?? defaultMoves);
-    if (!parsed) localStorage.setItem(MOVES_KEY, JSON.stringify(defaultMoves));
+    setRallies(initializePhase1Storage(defaultMoves, readCurrentUserProfile()));
   }, []);
 
-  const saveMoves  = (m: Move[]) => { setRallies(m); localStorage.setItem(MOVES_KEY, JSON.stringify(m)); };
   const addRally   = (m: Move)   => {
-    saveMoves([m, ...rallies]);
+    setRallies(createMove(m, readCurrentUserProfile()));
     pushNotification("create", `Your Move is live: ${m.title}.`);
   };
   const joinRally  = (id: string) => {
-    const move = rallies.find(r => r.id === id);
-    saveMoves(rallies.map(r => r.id === id ? { ...r, joined: true, going: r.going + 1 } : r));
-    if (move) pushNotification("join", `Your spot is saved for ${move.title}.`);
+    const before = rallies.find(r => r.id === id) ?? listActiveMoves(readCurrentUserProfile()).find(r => r.id === id);
+    const updated = joinMove(id, readCurrentUserProfile());
+    const after = updated.find(r => r.id === id);
+    setRallies(updated);
+    if (before && after?.joined && !before.joined) {
+      pushNotification("join", `Your spot is saved for ${before.title}.`);
+    }
   };
   // Leaving a Move is always easy and fair — never a no-show, never a trust
   // penalty. An optional reason can be attached; if provided it is saved to a
   // private moderation-facing store and a separate "sent for review" notification
   // is added on top of the normal "your spot is open again" one.
   const leaveRally = (id: string, reason?: { reasonType: string; details: string }) => {
-    const move = rallies.find(r => r.id === id);
-    saveMoves(rallies.map(r => r.id === id ? { ...r, joined: false, going: Math.max(0, r.going - 1) } : r));
+    const move = rallies.find(r => r.id === id) ?? listActiveMoves(readCurrentUserProfile()).find(r => r.id === id);
+    setRallies(leaveMove(id, readCurrentUserProfile()));
     if (move) {
       pushNotification("leave", `You left ${move.title}. Your spot is open again.`);
       if (reason && (reason.reasonType || reason.details)) {
@@ -80,8 +93,8 @@ export function useRallies() {
   // chat badge). This is NOT a no-show or trust penalty — past Activity History lives
   // in a separate store (HISTORY_KEY) and is untouched.
   const cancelMove = (id: string) => {
-    const move = rallies.find(r => r.id === id);
-    saveMoves(rallies.filter(r => r.id !== id));
+    const move = rallies.find(r => r.id === id) ?? listActiveMoves(readCurrentUserProfile()).find(r => r.id === id);
+    setRallies(cancelPhase1Move(id, readCurrentUserProfile()));
     if (move) pushNotification("cancel", `${move.title} was canceled. The chat is closed.`);
   };
 
@@ -320,7 +333,7 @@ export function useActivityHistory() {
   };
 }
 
-// ── Show-Up Trust for other people (Phase 1 prototype) ───────────────────────
+// ── Show-Up Trust for other people (Phase 1 prototype) ──────────────────────
 // Reads from the shared PEOPLE_TRUST defaults, layering any locally-stored
 // overrides created by After-the-Move feedback. Feedback the user gives is
 // private and only nudges trust signals — it never permanently marks anyone.
