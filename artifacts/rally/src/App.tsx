@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 
+import Landing from "@/pages/landing";
 import Onboarding from "@/pages/onboarding";
 import Interests from "@/pages/interests";
 import Discover from "@/pages/discover";
@@ -25,7 +26,8 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/"              component={Onboarding}  />
+      <Route path="/"              component={Landing}     />
+      <Route path="/welcome"       component={Onboarding}  />
       <Route path="/interests"     component={Interests}   />
       <Route path="/discover"      component={Discover}    />
       <Route path="/create"        component={CreateMove}  />
