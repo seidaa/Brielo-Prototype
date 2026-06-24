@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
+import SplashGate from "@/components/splash";
 
 import Landing from "@/pages/landing";
 import Onboarding from "@/pages/onboarding";
@@ -56,6 +57,7 @@ function App() {
       <TooltipProvider>
         <div className="max-w-sm mx-auto min-h-screen overflow-hidden relative bg-[#0d0d0d] shadow-2xl">
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <SplashGate />
             <Router />
           </WouterRouter>
           <Toaster />
