@@ -1,4 +1,7 @@
 {
+  "installCommand": "pnpm install",
+  "buildCommand": "PORT=5173 BASE_PATH=/ pnpm --filter @workspace/rally build",
+  "outputDirectory": "artifacts/rally/dist/public",
   "rewrites": [
     {
       "source": "/(.*)",

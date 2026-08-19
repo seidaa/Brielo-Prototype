@@ -74,6 +74,36 @@ function write<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function asArray<T>(value: T[] | null): T[] | null {
+  return Array.isArray(value) ? value : null;
+}
+
+function isUsableBackendMove(move: BackendMove) {
+  return (
+    typeof move?.id === "string" &&
+    typeof move.title === "string" &&
+    typeof move.category === "string" &&
+    typeof move.locationName === "string" &&
+    typeof move.startTime === "string" &&
+    typeof move.maxSpots === "number" &&
+    typeof move.details === "string" &&
+    Array.isArray(move.vibeTags) &&
+    typeof move.hostApprovalRequired === "boolean" &&
+    typeof move.legacyView?.distance === "string" &&
+    typeof move.legacyView.hostName === "string" &&
+    typeof move.legacyView.hostLevel === "number"
+  );
+}
+
+function hasActiveMoves(moves: BackendMove[] | null) {
+  return !!moves?.some((move) => isUsableBackendMove(move) && move.status === "active");
+}
+
+function seedMovesForPreview(defaultMoves: Move[]) {
+  const legacyMoves = asArray(safeParse<Move[]>(localStorage.getItem(LEGACY_MOVES_KEY)));
+  return legacyMoves && legacyMoves.length > 0 ? legacyMoves : defaultMoves;
+}
+
 function currentUserShell(profile: UserProfile): UserShell {
   const existing = safeParse<UserShell>(localStorage.getItem(USER_SHELL_KEY));
   const now = Date.now();
@@ -183,15 +213,20 @@ function syncLegacyMoves(moves: BackendMove[], attendees: MoveAttendee[], user: 
 
 export function initializePhase1Storage(defaultMoves: Move[], profile: UserProfile): Move[] {
   const user = currentUserShell(profile);
-  const legacyMoves = read<Move[]>(LEGACY_MOVES_KEY, defaultMoves);
-  const existingMoves = safeParse<BackendMove[]>(localStorage.getItem(MOVES_KEY));
-  const existingAttendees = safeParse<MoveAttendee[]>(localStorage.getItem(ATTENDEES_KEY));
+  const seedMoves = seedMovesForPreview(defaultMoves);
+  const existingMoves = asArray(safeParse<BackendMove[]>(localStorage.getItem(MOVES_KEY)));
+  const existingAttendees = asArray(safeParse<MoveAttendee[]>(localStorage.getItem(ATTENDEES_KEY)));
+  const shouldSeedMoves =
+    !existingMoves ||
+    existingMoves.length === 0 ||
+    !existingMoves.every(isUsableBackendMove) ||
+    !hasActiveMoves(existingMoves);
 
-  if (!existingMoves) {
-    write(MOVES_KEY, legacyMoves.map((move) => toBackendMove(move, user)));
+  if (shouldSeedMoves) {
+    write(MOVES_KEY, seedMoves.map((move) => toBackendMove(move, user)));
   }
-  if (!existingAttendees) {
-    write(ATTENDEES_KEY, seedAttendeesFromMoves(legacyMoves, user));
+  if (shouldSeedMoves || !existingAttendees) {
+    write(ATTENDEES_KEY, seedAttendeesFromMoves(seedMoves, user));
   }
 
   return listActiveMoves(profile);

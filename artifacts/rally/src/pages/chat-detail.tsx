@@ -31,7 +31,29 @@ export default function ChatDetail() {
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
       <div className="text-center">
         <p className="text-white font-bold mb-2">Move not found</p>
-        <Link href="/chat"><span className="text-primary text-sm">← Back to chats</span></Link>
+        <Link href="/chat"><span className="text-primary text-sm">â† Back to chats</span></Link>
+      </div>
+    </div>
+  );
+
+  if (!move.joined) return (
+    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center px-6">
+      <div className="text-center">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center mx-auto mb-5">
+          <Lock className="w-7 h-7 text-gray-500" strokeWidth={1.75} />
+        </div>
+        <p className="text-white font-bold mb-2">Move Chat is locked</p>
+        <p className="text-sm text-gray-500 max-w-[240px] mx-auto mb-6">
+          Move Chat opens after you join an active Move.
+        </p>
+        <div className="flex flex-col gap-3 items-center">
+          <Link href={`/rally/${move.id}`}>
+            <span className="text-primary text-sm font-bold">Open Move details</span>
+          </Link>
+          <Link href="/chat">
+            <span className="text-gray-500 text-sm">Back to chats</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -53,7 +75,7 @@ export default function ChatDetail() {
         <div className="flex-1 min-w-0">
           <h1 className="text-sm font-black text-white truncate leading-tight">{move.title}</h1>
           <p className="text-[11px] text-gray-500 flex items-center gap-1">
-            <Users className="w-3 h-3" /> {move.going} in · {move.time}
+            <Users className="w-3 h-3" /> {move.going} in Â· {move.time}
           </p>
         </div>
         <Link href={`/rally/${move.id}`}>
