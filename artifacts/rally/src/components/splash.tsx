@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { useLocation } from "wouter";
+import { useEffect, useState } from "react";
 
 const SPLASH_KEY = "brio_splash_shown";
 
 function Splash({ fading }: { fading: boolean }) {
   return (
     <div
-      className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0d0d0d] transition-opacity duration-500 ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0d0d0d] transition-opacity duration-500 ${
         fading ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
@@ -27,47 +26,32 @@ function Splash({ fading }: { fading: boolean }) {
 }
 
 export default function SplashGate() {
-  const [location] = useLocation();
   const [show, setShow] = useState(false);
   const [fading, setFading] = useState(false);
-  const shownRef = useRef(false);
 
-  // Trigger once per session, only when entering a prototype route (not the landing page "/").
+  // Show once per browser session on the initial app mount, regardless of route.
   useEffect(() => {
-    // Never cover the landing page — hide immediately if we land here mid-splash.
-    if (location === "/" || location === "") {
-      setShow(false);
-      setFading(false);
-      return;
-    }
-    if (shownRef.current) return;
-
     let alreadyShown = false;
     try {
       alreadyShown = !!sessionStorage.getItem(SPLASH_KEY);
     } catch {
-      alreadyShown = false; // restricted storage: fall back to in-memory once-guard
+      alreadyShown = false;
     }
-    if (alreadyShown) {
-      shownRef.current = true;
-      return;
-    }
+    if (alreadyShown) return;
 
-    shownRef.current = true;
     try {
       sessionStorage.setItem(SPLASH_KEY, "1");
     } catch {
-      // ignore storage failures; the in-memory guard still limits it to once per load
+      // Ignore storage failures; the splash still shows for this page load.
     }
     setFading(false);
     setShow(true);
-  }, [location]);
+  }, []);
 
-  // Handle fade/hide timing independently so route changes never reset the timers.
   useEffect(() => {
     if (!show) return;
-    const fadeTimer = setTimeout(() => setFading(true), 1500);
-    const hideTimer = setTimeout(() => setShow(false), 2000);
+    const fadeTimer = setTimeout(() => setFading(true), 2000);
+    const hideTimer = setTimeout(() => setShow(false), 2500);
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(hideTimer);
